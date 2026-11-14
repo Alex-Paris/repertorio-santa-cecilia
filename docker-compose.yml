@@ -1,0 +1,72 @@
+# Ambiente de desenvolvimento: MongoDB (replica set de nó único) e aplicação Next.js.
+# Uso: cp .env.example .env, preencha BETTER_AUTH_SECRET e execute docker compose up --build.
+name: repertorio
+
+services:
+  mongo:
+    image: mongo:8.0
+    entrypoint: ["bash", "/docker/start-replica.sh"]
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:?defina no arquivo .env}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:?defina no arquivo .env}
+    ports:
+      # Somente na própria máquina: o banco de desenvolvimento não fica exposto na rede.
+      - "127.0.0.1:${MONGO_PORT:-27017}:27017"
+    volumes:
+      - mongo_data:/data/db
+      - mongo_config:/data/configdb
+      - ./docker/mongo:/docker:ro
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - mongosh --quiet -u "$$MONGO_INITDB_ROOT_USERNAME" -p "$$MONGO_INITDB_ROOT_PASSWORD" --authenticationDatabase admin /docker/healthcheck.js
+      interval: 5s
+      timeout: 10s
+      retries: 20
+      start_period: 20s
+
+  app:
+    build:
+      context: .
+      target: dev
+    command: sh -c "pnpm install --frozen-lockfile --prefer-offline && exec pnpm dev --hostname 0.0.0.0 --port 3000"
+    depends_on:
+      mongo:
+        condition: service_healthy
+    environment:
+      MONGODB_URI: mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongo:27017/?authSource=admin&replicaSet=rs0
+      MONGODB_DB_NAME: ${MONGODB_DB_NAME:-repertorio_dev}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?defina no arquivo .env}
+      BETTER_AUTH_URL: http://localhost:${APP_PORT:-3000}
+      AUTH_ALLOW_DEV_SIGNUP: ${AUTH_ALLOW_DEV_SIGNUP:-false}
+      PUBLIC_SHARING_ENABLED: ${PUBLIC_SHARING_ENABLED:-false}
+      SHARE_LINK_SECRET: ${SHARE_LINK_SECRET:-}
+      SHARE_MAX_LINKS_PER_REPERTOIRE: ${SHARE_MAX_LINKS_PER_REPERTOIRE:-}
+      SHARE_MAX_LINKS_PER_USER: ${SHARE_MAX_LINKS_PER_USER:-}
+      SHARE_MAX_ITEMS: ${SHARE_MAX_ITEMS:-}
+      SHARE_MAX_SNAPSHOT_BYTES: ${SHARE_MAX_SNAPSHOT_BYTES:-}
+      SHARE_MAX_WRITES_PER_HOUR: ${SHARE_MAX_WRITES_PER_HOUR:-}
+      NEXT_TELEMETRY_DISABLED: "1"
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    volumes:
+      - .:/app
+      # O container mantém dependências e build próprios, separados dos da máquina.
+      - app_node_modules:/app/node_modules
+      - app_next:/app/.next
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - fetch('http://127.0.0.1:3000/').then((r)=>process.exit(r.ok?0:1),()=>process.exit(1))
+      interval: 10s
+      timeout: 15s
+      retries: 12
+      start_period: 40s
+
+volumes:
+  mongo_data:
+  mongo_config:
+  app_node_modules:
+  app_next:

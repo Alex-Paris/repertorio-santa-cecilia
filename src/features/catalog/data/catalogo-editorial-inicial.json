@@ -1,0 +1,728 @@
+{
+  "format": "repertorio-web/catalogo-editorial",
+  "version": 1,
+  "description": "Primeiro catálogo real (Etapa 2E.4): só metadados (título, autoria, referência e fonte), sem letra, cifra, partitura ou gravação. Conferido em 2026-11-14 por leitura automatizada das fontes citadas, sem revisão humana: tudo entra como rascunho, e as classificações como não conferidas. O que as fontes não confirmam (tom, momento das sequências, uso litúrgico dos hinos) fica pendente.",
+  "records": [
+    {
+      "importKey": "cnbb-quaresma-b-senhor-deus-de-nossos-pais",
+      "title": "Senhor, Deus de nossos pais",
+      "artist": "Pe. José Antônio de Oliveira (letra) e Pe. José Carlos Sala (música)",
+      "contentType": "metadata-only",
+      "compositionReference": "Álbum da CF 2012, faixa 2",
+      "metadataSources": [
+        {
+          "title": "CNBB — Equipe de Reflexão de Música da Comissão de Liturgia: “Diversos cantos para a Quaresma – Ano B” (org. Eurivaldo S. Ferreira)",
+          "url": "https://www.cnbb.org.br/wp-content/uploads/2024/01/Outros-Cantos-para-Quaresma-Abertura-Ato-Penitencial-Aclamacao-Oferendas.pdf",
+          "accessedAt": "2026-11-14"
+        }
+      ],
+      "classification": {
+        "category": "liturgical",
+        "moments": [
+          "entrada"
+        ],
+        "seasons": [
+          "quaresma"
+        ],
+        "editorialRationale": "Listado na seção “Abertura” do subsídio de Quaresma (Ano B) da Equipe de Música da Comissão de Liturgia da CNBB.",
+        "guidanceSource": "CNBB, “Diversos cantos para a Quaresma – Ano B”",
+        "suitabilityNotes": ""
+      }
+    },
+    {
+      "importKey": "cnbb-quaresma-b-ele-chamara-por-mim",
+      "title": "Ele chamará por mim",
+      "artist": "Reginaldo Veloso (letra do refrão) e Daniel De Angeles (música)",
+      "contentType": "metadata-only",
+      "compositionReference": "Álbum da CF 2020, faixa 3; estrofes do Sl 91(90), Liturgia das Horas",
+      "metadataSources": [
+        {
+          "title": "CNBB — Equipe de Reflexão de Música da Comissão de Liturgia: “Diversos cantos para a Quaresma – Ano B” (org. Eurivaldo S. Ferreira)",
+          "url": "https://www.cnbb.org.br/wp-content/uploads/2024/01/Outros-Cantos-para-Quaresma-Abertura-Ato-Penitencial-Aclamacao-Oferendas.pdf",
+          "accessedAt": "2026-11-14"
+        }
+      ],
+      "classification": {
+        "category": "liturgical",
+        "moments": [
+          "entrada"
+        ],
+        "seasons": [
+          "quaresma"
+        ],
+        "editorialRationale": "Listado na seção “Abertura” do subsídio de Quaresma (Ano B) da Equipe de Música da Comissão de Liturgia da CNBB.",
+        "guidanceSource": "CNBB, “Diversos cantos para a Quaresma – Ano B”",
+        "suitabilityNotes": "O subsídio indica para o 1º, o 2º, o 3º e o 5º domingos da Quaresma."
+      }
+    },
+    {
+      "importKey": "cnbb-quaresma-b-joao-batista-clamou-no-deserto",
+      "title": "João Batista clamou no deserto",
+      "artist": "Reginaldo Veloso",
+      "contentType": "metadata-only",
+      "compositionReference": "Hinário Litúrgico da CNBB – Ciclo da Páscoa – Vol. II, pág. 284",
+      "metadataSources": [
+        {
+          "title": "CNBB — Equipe de Reflexão de Música da Comissão de Liturgia: “Diversos cantos para a Quaresma – Ano B” (org. Eurivaldo S. Ferreira)",
+          "url": "https://www.cnbb.org.br/wp-content/uploads/2024/01/Outros-Cantos-para-Quaresma-Abertura-Ato-Penitencial-Aclamacao-Oferendas.pdf",
+          "accessedAt": "2026-11-14"
+        }
+      ],
+      "classification": {
+        "category": "liturgical",
+        "moments": [
+          "entrada"
+        ],
+        "seasons": [
+          "quaresma"
+        ],
+        "editorialRationale": "Listado na seção “Abertura” do subsídio de Quaresma (Ano B) da Equipe de Música da Comissão de Liturgia da CNBB.",
+        "guidanceSource": "CNBB, “Diversos cantos para a Quaresma – Ano B”",
+        "suitabilityNotes": ""
+      }
+    },
+    {
+      "importKey": "cnbb-quaresma-b-fala-assim-meu-coracao",
+      "title": "Fala assim, meu coração",
+      "artist": "Reginaldo Veloso (letra) e Eurivaldo S. Ferreira (música)",
+      "contentType": "metadata-only",
+      "compositionReference": "Álbum da CF 2014, faixa 3",
+      "metadataSources": [
+        {
+          "title": "CNBB — Equipe de Reflexão de Música da Comissão de Liturgia: “Diversos cantos para a Quaresma – Ano B” (org. Eurivaldo S. Ferreira)",
+          "url": "https://www.cnbb.org.br/wp-content/uploads/2024/01/Outros-Cantos-para-Quaresma-Abertura-Ato-Penitencial-Aclamacao-Oferendas.pdf",
+          "accessedAt": "2026-11-14"
+        }
+      ],
+      "classification": {
+        "category": "liturgical",
+        "moments": [
+          "entrada"
+        ],
+        "seasons": [
+          "quaresma"
+        ],
+        "editorialRationale": "Listado na seção “Abertura” do subsídio de Quaresma (Ano B) da Equipe de Música da Comissão de Liturgia da CNBB.",
+        "guidanceSource": "CNBB, “Diversos cantos para a Quaresma – Ano B”",
+        "suitabilityNotes": "O subsídio indica para o 2º domingo da Quaresma."
+      }
+    },
+    {
+      "importKey": "cnbb-quaresma-b-e-agora-o-tempo-favoravel",
+      "title": "É agora o tempo favorável",
+      "artist": "Frei Wanderson Luiz Freitas, O. Carm. (música); texto bíblico",
+      "contentType": "metadata-only",
+      "compositionReference": "Caderno de partituras da CF 2019, págs. 6-7; texto: 2Cor 5,20b; 6,2b e Is 55,6-7",
+      "metadataSources": [
+        {
+          "title": "CNBB — Equipe de Reflexão de Música da Comissão de Liturgia: “Diversos cantos para a Quaresma – Ano B” (org. Eurivaldo S. Ferreira)",
+          "url": "https://www.cnbb.org.br/wp-content/uploads/2024/01/Outros-Cantos-para-Quaresma-Abertura-Ato-Penitencial-Aclamacao-Oferendas.pdf",
+          "accessedAt": "2026-11-14"
+        }
+      ],
+      "classification": {
+        "category": "liturgical",
+        "moments": [
+          "entrada"
+        ],
+        "seasons": [
+          "quaresma"
+        ],
+        "editorialRationale": "Listado na seção “Abertura” do subsídio de Quaresma (Ano B) da Equipe de Música da Comissão de Liturgia da CNBB.",
+        "guidanceSource": "CNBB, “Diversos cantos para a Quaresma – Ano B”",
+        "suitabilityNotes": ""
+      }
+    },
+    {
+      "importKey": "cnbb-quaresma-b-meus-amigos-ficai-e-orai-comigo",
+      "title": "Meus amigos, ficai e orai comigo",
+      "artist": "Pe. Wallison Rodrigues (refrão e música); Sl 87(88), versão da Liturgia das Horas",
+      "contentType": "metadata-only",
+      "compositionReference": "Subsídio CNBB de Quaresma – Ano B",
+      "metadataSources": [
+        {
+          "title": "CNBB — Equipe de Reflexão de Música da Comissão de Liturgia: “Diversos cantos para a Quaresma – Ano B” (org. Eurivaldo S. Ferreira)",
+          "url": "https://www.cnbb.org.br/wp-content/uploads/2024/01/Outros-Cantos-para-Quaresma-Abertura-Ato-Penitencial-Aclamacao-Oferendas.pdf",
+          "accessedAt": "2026-11-14"
+        }
+      ],
+      "classification": {
+        "category": "liturgical",
+        "moments": [
+          "entrada"
+        ],
+        "seasons": [
+          "quaresma"
+        ],
+        "editorialRationale": "Listado na seção “Abertura para a segunda, terça e quarta-feira da Semana Santa” do subsídio de Quaresma (Ano B) da Equipe de Música da Comissão de Liturgia da CNBB.",
+        "guidanceSource": "CNBB, “Diversos cantos para a Quaresma – Ano B”",
+        "suitabilityNotes": "Indicado para a segunda, a terça e a quarta-feira da Semana Santa."
+      }
+    },
+    {
+      "importKey": "cnbb-quaresma-b-tende-compaixao-de-nos-senhor",
+      "title": "Tende compaixão de nós, Senhor",
+      "artist": "Pe. José Weber, SVD (música)",
+      "contentType": "metadata-only",
+      "compositionReference": "Álbum da CF 2014, faixa 4",
+      "metadataSources": [
+        {
+          "title": "CNBB — Equipe de Reflexão de Música da Comissão de Liturgia: “Diversos cantos para a Quaresma – Ano B” (org. Eurivaldo S. Ferreira)",
+          "url": "https://www.cnbb.org.br/wp-content/uploads/2024/01/Outros-Cantos-para-Quaresma-Abertura-Ato-Penitencial-Aclamacao-Oferendas.pdf",
+          "accessedAt": "2026-11-14"
+        }
+      ],
+      "classification": {
+        "category": "liturgical",
+        "moments": [
+          "ato-penitencial"
+        ],
+        "seasons": [
+          "quaresma"
+        ],
+        "editorialRationale": "Listado na seção “Ato Penitencial” do subsídio de Quaresma (Ano B) da Equipe de Música da Comissão de Liturgia da CNBB.",
+        "guidanceSource": "CNBB, “Diversos cantos para a Quaresma – Ano B”",
+        "suitabilityNotes": "Melodia para o texto do Missal: confira o texto na 3ª edição do Missal Romano."
+      }
+    },
+    {
+      "importKey": "cnbb-quaresma-b-honra-gloria-poder-e-louvor",
+      "title": "Honra, glória, poder e louvor",
+      "artist": "Pe. José Weber, SVD (refrão e música) e Reginaldo Veloso (estrofes)",
+      "contentType": "metadata-only",
+      "compositionReference": "Hinário Litúrgico da CNBB – Ciclo da Páscoa – Vol. II, pág. 111",
+      "metadataSources": [
+        {
+          "title": "CNBB — Equipe de Reflexão de Música da Comissão de Liturgia: “Diversos cantos para a Quaresma – Ano B” (org. Eurivaldo S. Ferreira)",
+          "url": "https://www.cnbb.org.br/wp-content/uploads/2024/01/Outros-Cantos-para-Quaresma-Abertura-Ato-Penitencial-Aclamacao-Oferendas.pdf",
+          "accessedAt": "2026-11-14"
+        }
+      ],
+      "classification": {
+        "category": "liturgical",
+        "moments": [
+          "aclamacao-ao-evangelho"
+        ],
+        "seasons": [
+          "quaresma"
+        ],
+        "editorialRationale": "Listado na seção “Aclamação ao Evangelho” do subsídio de Quaresma (Ano B) da Equipe de Música da Comissão de Liturgia da CNBB.",
+        "guidanceSource": "CNBB, “Diversos cantos para a Quaresma – Ano B”",
+        "suitabilityNotes": "Aclamação sem Aleluia, própria da Quaresma."
+      }
+    },
+    {
+      "importKey": "cnbb-quaresma-b-louvor-e-gloria-a-ti-senhor-terra",
+      "title": "Louvor e glória a ti, Senhor",
+      "artist": "Adenor Leonardo Terra (música)",
+      "contentType": "metadata-only",
+      "compositionReference": "Hinário Litúrgico da CNBB – Ciclo da Páscoa – Vol. II, pág. 109",
+      "metadataSources": [
+        {
+          "title": "CNBB — Equipe de Reflexão de Música da Comissão de Liturgia: “Diversos cantos para a Quaresma – Ano B” (org. Eurivaldo S. Ferreira)",
+          "url": "https://www.cnbb.org.br/wp-content/uploads/2024/01/Outros-Cantos-para-Quaresma-Abertura-Ato-Penitencial-Aclamacao-Oferendas.pdf",
+          "accessedAt": "2026-11-14"
+        }
+      ],
+      "classification": {
+        "category": "liturgical",
+        "moments": [
+          "aclamacao-ao-evangelho"
+        ],
+        "seasons": [
+          "quaresma"
+        ],
+        "editorialRationale": "Listado na seção “Aclamação ao Evangelho” do subsídio de Quaresma (Ano B) da Equipe de Música da Comissão de Liturgia da CNBB.",
+        "guidanceSource": "CNBB, “Diversos cantos para a Quaresma – Ano B”",
+        "suitabilityNotes": "Aclamação sem Aleluia, própria da Quaresma."
+      }
+    },
+    {
+      "importKey": "cnbb-quaresma-b-escuta-senhor-a-voz-do-povo-teu",
+      "title": "Escuta, Senhor, a voz do povo teu",
+      "artist": "Frei Telles Ramon, O. de M. (letra) e Frei Wanderson Luiz Freitas, O. Carm. (música)",
+      "contentType": "metadata-only",
+      "compositionReference": "Álbum da CF 2014, faixa 7; Álbum da CF 2018, faixa 12",
+      "metadataSources": [
+        {
+          "title": "CNBB — Equipe de Reflexão de Música da Comissão de Liturgia: “Diversos cantos para a Quaresma – Ano B” (org. Eurivaldo S. Ferreira)",
+          "url": "https://www.cnbb.org.br/wp-content/uploads/2024/01/Outros-Cantos-para-Quaresma-Abertura-Ato-Penitencial-Aclamacao-Oferendas.pdf",
+          "accessedAt": "2026-11-14"
+        }
+      ],
+      "classification": {
+        "category": "liturgical",
+        "moments": [
+          "preparacao-das-oferendas"
+        ],
+        "seasons": [
+          "quaresma"
+        ],
+        "editorialRationale": "Listado na seção “Apresentação das Oferendas” do subsídio de Quaresma (Ano B) da Equipe de Música da Comissão de Liturgia da CNBB.",
+        "guidanceSource": "CNBB, “Diversos cantos para a Quaresma – Ano B”",
+        "suitabilityNotes": ""
+      }
+    },
+    {
+      "importKey": "cnbb-quaresma-b-recebe-este-canto-do-chao",
+      "title": "Recebe este canto do chão",
+      "artist": "Geraldo Leite Bastos e Reginaldo Veloso",
+      "contentType": "metadata-only",
+      "compositionReference": "Hinário Litúrgico da CNBB – Ciclo da Páscoa – Vol. II, pág. 289",
+      "metadataSources": [
+        {
+          "title": "CNBB — Equipe de Reflexão de Música da Comissão de Liturgia: “Diversos cantos para a Quaresma – Ano B” (org. Eurivaldo S. Ferreira)",
+          "url": "https://www.cnbb.org.br/wp-content/uploads/2024/01/Outros-Cantos-para-Quaresma-Abertura-Ato-Penitencial-Aclamacao-Oferendas.pdf",
+          "accessedAt": "2026-11-14"
+        }
+      ],
+      "classification": {
+        "category": "liturgical",
+        "moments": [
+          "preparacao-das-oferendas"
+        ],
+        "seasons": [
+          "quaresma"
+        ],
+        "editorialRationale": "Listado na seção “Apresentação das Oferendas” do subsídio de Quaresma (Ano B) da Equipe de Música da Comissão de Liturgia da CNBB.",
+        "guidanceSource": "CNBB, “Diversos cantos para a Quaresma – Ano B”",
+        "suitabilityNotes": ""
+      }
+    },
+    {
+      "importKey": "cnbb-quaresma-b-todo-povo-sofredor",
+      "title": "Todo povo sofredor",
+      "artist": "Pe. João Carlos Ribeiro (letra e música)",
+      "contentType": "metadata-only",
+      "compositionReference": "Hinário Litúrgico da CNBB – Ciclo do Natal – Vol. II, pág. 73",
+      "metadataSources": [
+        {
+          "title": "CNBB — Equipe de Reflexão de Música da Comissão de Liturgia: “Diversos cantos para a Quaresma – Ano B” (org. Eurivaldo S. Ferreira)",
+          "url": "https://www.cnbb.org.br/wp-content/uploads/2024/01/Outros-Cantos-para-Quaresma-Abertura-Ato-Penitencial-Aclamacao-Oferendas.pdf",
+          "accessedAt": "2026-11-14"
+        }
+      ],
+      "classification": {
+        "category": "liturgical",
+        "moments": [
+          "preparacao-das-oferendas"
+        ],
+        "seasons": [
+          "quaresma"
+        ],
+        "editorialRationale": "Listado na seção “Apresentação das Oferendas” do subsídio de Quaresma (Ano B) da Equipe de Música da Comissão de Liturgia da CNBB.",
+        "guidanceSource": "CNBB, “Diversos cantos para a Quaresma – Ano B”",
+        "suitabilityNotes": ""
+      }
+    },
+    {
+      "importKey": "cnbb-quaresma-b-pela-compaixao-tocados",
+      "title": "Pela compaixão tocados",
+      "artist": "Fr. José Moacyr Cadenassi, OFMCap. (letra) e Fr. Wanderson Luiz Freitas, O. Carm. (música)",
+      "contentType": "metadata-only",
+      "compositionReference": "Álbum da CF 2021, faixa 4; Caderno de partituras da CF 2021, págs. 14-16",
+      "metadataSources": [
+        {
+          "title": "CNBB — Equipe de Reflexão de Música da Comissão de Liturgia: “Diversos cantos para a Quaresma – Ano B” (org. Eurivaldo S. Ferreira)",
+          "url": "https://www.cnbb.org.br/wp-content/uploads/2024/01/Outros-Cantos-para-Quaresma-Abertura-Ato-Penitencial-Aclamacao-Oferendas.pdf",
+          "accessedAt": "2026-11-14"
+        }
+      ],
+      "classification": {
+        "category": "liturgical",
+        "moments": [
+          "preparacao-das-oferendas"
+        ],
+        "seasons": [
+          "quaresma"
+        ],
+        "editorialRationale": "Listado na seção “Apresentação das Oferendas” do subsídio de Quaresma (Ano B) da Equipe de Música da Comissão de Liturgia da CNBB.",
+        "guidanceSource": "CNBB, “Diversos cantos para a Quaresma – Ano B”",
+        "suitabilityNotes": ""
+      }
+    },
+    {
+      "importKey": "cf-2025-hino",
+      "title": "Hino da Campanha da Fraternidade 2025",
+      "artist": "Ismael Oliveira do Nascimento (letra) e Miguel Philippi (música)",
+      "contentType": "metadata-only",
+      "compositionReference": "Campanha da Fraternidade 2025 — tema “Fraternidade e Ecologia Integral”, lema “Deus viu que tudo era muito bom!” (cf. Gn 1,31)",
+      "metadataSources": [
+        {
+          "title": "Arquidiocese de Goiânia — partitura do Hino da Campanha da Fraternidade 2025",
+          "url": "https://arquidiocesedegoiania.org.br/wp-content/uploads/2025/05/hino-da-cf-2025-fraternidade-e-ecologia-integral-0173627.pdf.pdf",
+          "accessedAt": "2026-11-14"
+        }
+      ]
+    },
+    {
+      "importKey": "cf-2024-hino",
+      "title": "Hino da Campanha da Fraternidade 2024",
+      "artist": "Douglas Diego Palmeira Rocha (letra) e José David Melo (música)",
+      "contentType": "metadata-only",
+      "compositionReference": "Campanha da Fraternidade 2024 — tema “Fraternidade e Amizade Social”, lema “Vós sois todos irmãos e irmãs” (Mt 23,8)",
+      "metadataSources": [
+        {
+          "title": "Portal Kairós (com CNBB) — “O Hino da Campanha da Fraternidade 2024”",
+          "url": "https://portalkairos.org/o-hino-da-campanha-da-fraternidade-2024/",
+          "accessedAt": "2026-11-14"
+        }
+      ]
+    },
+    {
+      "importKey": "moc-advento-2025-alegrai-vos-ele-esta-bem-perto",
+      "title": "Alegrai-vos: ele está bem perto",
+      "artist": "J. Gelineau (música); texto do Sl 85(84)",
+      "contentType": "metadata-only",
+      "metadataSources": [
+        {
+          "title": "Arquidiocese de Montes Claros — Comissão de Música Sacra e Canto Pastoral: Fascículo do Advento 2025",
+          "url": "https://arquimoc.org/wp-content/uploads/2025/11/Fasciculo-Advento-2025_compressed.pdf",
+          "accessedAt": "2026-11-14"
+        }
+      ],
+      "classification": {
+        "category": "liturgical",
+        "moments": [
+          "entrada"
+        ],
+        "seasons": [
+          "advento"
+        ],
+        "editorialRationale": "Indicado no fascículo do Advento 2025 da Arquidiocese de Montes Claros: entrada do 3º Domingo do Advento.",
+        "guidanceSource": "Arquidiocese de Montes Claros, Fascículo do Advento 2025",
+        "suitabilityNotes": ""
+      }
+    },
+    {
+      "importKey": "moc-advento-2025-tu-es-a-gloria-de-jerusalem",
+      "title": "Tu és a glória de Jerusalém",
+      "artist": "Fernando Meiro (letra) e Manuel Luís (música)",
+      "contentType": "metadata-only",
+      "metadataSources": [
+        {
+          "title": "Arquidiocese de Montes Claros — Comissão de Música Sacra e Canto Pastoral: Fascículo do Advento 2025",
+          "url": "https://arquimoc.org/wp-content/uploads/2025/11/Fasciculo-Advento-2025_compressed.pdf",
+          "accessedAt": "2026-11-14"
+        }
+      ],
+      "classification": {
+        "category": "liturgical",
+        "moments": [
+          "entrada"
+        ],
+        "seasons": [],
+        "editorialRationale": "Indicado no fascículo do Advento 2025 da Arquidiocese de Montes Claros: entrada da solenidade da Imaculada Conceição.",
+        "guidanceSource": "Arquidiocese de Montes Claros, Fascículo do Advento 2025",
+        "suitabilityNotes": "",
+        "celebrations": [
+          "imaculada-conceicao"
+        ]
+      }
+    },
+    {
+      "importKey": "moc-advento-2025-pao-e-vinho-apresentamos",
+      "title": "Pão e vinho apresentamos",
+      "artist": "Pe. José Weber (letra e música)",
+      "contentType": "metadata-only",
+      "metadataSources": [
+        {
+          "title": "Arquidiocese de Montes Claros — Comissão de Música Sacra e Canto Pastoral: Fascículo do Advento 2025",
+          "url": "https://arquimoc.org/wp-content/uploads/2025/11/Fasciculo-Advento-2025_compressed.pdf",
+          "accessedAt": "2026-11-14"
+        }
+      ],
+      "classification": {
+        "category": "liturgical",
+        "moments": [
+          "preparacao-das-oferendas"
+        ],
+        "seasons": [],
+        "editorialRationale": "Indicado no fascículo do Advento 2025 da Arquidiocese de Montes Claros: ofertório do 1º Domingo do Advento.",
+        "guidanceSource": "Arquidiocese de Montes Claros, Fascículo do Advento 2025",
+        "suitabilityNotes": "O fascículo o indica no Advento; o texto não é próprio do tempo."
+      }
+    },
+    {
+      "importKey": "moc-advento-2025-a-nossa-oferta-apresentamos",
+      "title": "A nossa oferta apresentamos",
+      "artist": "Maria de Fátima de Oliveira (letra) e Frei Joel Postma, OFM (música)",
+      "contentType": "metadata-only",
+      "metadataSources": [
+        {
+          "title": "Arquidiocese de Montes Claros — Comissão de Música Sacra e Canto Pastoral: Fascículo do Advento 2025",
+          "url": "https://arquimoc.org/wp-content/uploads/2025/11/Fasciculo-Advento-2025_compressed.pdf",
+          "accessedAt": "2026-11-14"
+        }
+      ],
+      "classification": {
+        "category": "liturgical",
+        "moments": [
+          "preparacao-das-oferendas"
+        ],
+        "seasons": [],
+        "editorialRationale": "Indicado no fascículo do Advento 2025 da Arquidiocese de Montes Claros: ofertório do 1º Domingo do Advento.",
+        "guidanceSource": "Arquidiocese de Montes Claros, Fascículo do Advento 2025",
+        "suitabilityNotes": "O fascículo o indica no Advento; o texto não é próprio do tempo."
+      }
+    },
+    {
+      "importKey": "moc-advento-2025-o-senhor-dara-a-sua-bencao-freitas",
+      "title": "O Senhor dará a sua bênção",
+      "artist": "Frei Wanderson Luiz Freitas, O. Carm. (música); texto do Missal Romano e da Liturgia das Horas",
+      "contentType": "metadata-only",
+      "metadataSources": [
+        {
+          "title": "Arquidiocese de Montes Claros — Comissão de Música Sacra e Canto Pastoral: Fascículo do Advento 2025",
+          "url": "https://arquimoc.org/wp-content/uploads/2025/11/Fasciculo-Advento-2025_compressed.pdf",
+          "accessedAt": "2026-11-14"
+        }
+      ],
+      "classification": {
+        "category": "liturgical",
+        "moments": [
+          "comunhao"
+        ],
+        "seasons": [
+          "advento"
+        ],
+        "editorialRationale": "Indicado no fascículo do Advento 2025 da Arquidiocese de Montes Claros: comunhão do 1º Domingo do Advento.",
+        "guidanceSource": "Arquidiocese de Montes Claros, Fascículo do Advento 2025",
+        "suitabilityNotes": "Musicação da antífona de comunhão do Missal Romano."
+      }
+    },
+    {
+      "importKey": "moc-advento-2025-o-senhor-dara-a-sua-bencao-postma",
+      "title": "O Senhor dará a sua bênção",
+      "artist": "Frei Joel Postma, OFM (música); texto do Missal Romano e da Liturgia das Horas",
+      "contentType": "metadata-only",
+      "metadataSources": [
+        {
+          "title": "Arquidiocese de Montes Claros — Comissão de Música Sacra e Canto Pastoral: Fascículo do Advento 2025",
+          "url": "https://arquimoc.org/wp-content/uploads/2025/11/Fasciculo-Advento-2025_compressed.pdf",
+          "accessedAt": "2026-11-14"
+        }
+      ],
+      "classification": {
+        "category": "liturgical",
+        "moments": [
+          "comunhao"
+        ],
+        "seasons": [
+          "advento"
+        ],
+        "editorialRationale": "Indicado no fascículo do Advento 2025 da Arquidiocese de Montes Claros: comunhão do 1º Domingo do Advento.",
+        "guidanceSource": "Arquidiocese de Montes Claros, Fascículo do Advento 2025",
+        "suitabilityNotes": "Musicação da antífona de comunhão do Missal Romano."
+      }
+    },
+    {
+      "importKey": "moc-advento-2025-levanta-te-jerusalem",
+      "title": "Levanta-te, Jerusalém",
+      "artist": "Frei Wanderson Luiz Freitas, O. Carm. (música); texto do Missal Romano e da Liturgia das Horas",
+      "contentType": "metadata-only",
+      "metadataSources": [
+        {
+          "title": "Arquidiocese de Montes Claros — Comissão de Música Sacra e Canto Pastoral: Fascículo do Advento 2025",
+          "url": "https://arquimoc.org/wp-content/uploads/2025/11/Fasciculo-Advento-2025_compressed.pdf",
+          "accessedAt": "2026-11-14"
+        }
+      ],
+      "classification": {
+        "category": "liturgical",
+        "moments": [
+          "comunhao"
+        ],
+        "seasons": [
+          "advento"
+        ],
+        "editorialRationale": "Indicado no fascículo do Advento 2025 da Arquidiocese de Montes Claros: comunhão do 2º Domingo do Advento.",
+        "guidanceSource": "Arquidiocese de Montes Claros, Fascículo do Advento 2025",
+        "suitabilityNotes": "Musicação da antífona de comunhão do Missal Romano."
+      }
+    },
+    {
+      "importKey": "moc-advento-2025-dizei-aos-que-estao-desanimados",
+      "title": "Dizei aos que estão desanimados",
+      "artist": "Frei Wanderson Luiz Freitas, O. Carm. (adaptação do texto e música); texto do Missal Romano e do Lecionário Dominical",
+      "contentType": "metadata-only",
+      "metadataSources": [
+        {
+          "title": "Arquidiocese de Montes Claros — Comissão de Música Sacra e Canto Pastoral: Fascículo do Advento 2025",
+          "url": "https://arquimoc.org/wp-content/uploads/2025/11/Fasciculo-Advento-2025_compressed.pdf",
+          "accessedAt": "2026-11-14"
+        }
+      ],
+      "classification": {
+        "category": "liturgical",
+        "moments": [
+          "comunhao"
+        ],
+        "seasons": [
+          "advento"
+        ],
+        "editorialRationale": "Indicado no fascículo do Advento 2025 da Arquidiocese de Montes Claros: comunhão do 3º Domingo do Advento.",
+        "guidanceSource": "Arquidiocese de Montes Claros, Fascículo do Advento 2025",
+        "suitabilityNotes": ""
+      }
+    },
+    {
+      "importKey": "moc-advento-2025-a-virgem-concebera",
+      "title": "A Virgem conceberá",
+      "artist": "Frei Wanderson Luiz Freitas, O. Carm. (música); texto do Missal Romano e da Liturgia das Horas",
+      "contentType": "metadata-only",
+      "metadataSources": [
+        {
+          "title": "Arquidiocese de Montes Claros — Comissão de Música Sacra e Canto Pastoral: Fascículo do Advento 2025",
+          "url": "https://arquimoc.org/wp-content/uploads/2025/11/Fasciculo-Advento-2025_compressed.pdf",
+          "accessedAt": "2026-11-14"
+        }
+      ],
+      "classification": {
+        "category": "liturgical",
+        "moments": [
+          "comunhao"
+        ],
+        "seasons": [
+          "advento"
+        ],
+        "editorialRationale": "Indicado no fascículo do Advento 2025 da Arquidiocese de Montes Claros: comunhão do 4º Domingo do Advento.",
+        "guidanceSource": "Arquidiocese de Montes Claros, Fascículo do Advento 2025",
+        "suitabilityNotes": "Musicação da antífona de comunhão do Missal Romano."
+      }
+    },
+    {
+      "importKey": "tradicional-victimae-paschali-laudes",
+      "title": "Victimae paschali laudes",
+      "artist": "Atribuída a Wipo de Borgonha (séc. XI)",
+      "contentType": "metadata-only",
+      "compositionReference": "Sequência do Domingo de Páscoa (canto gregoriano)",
+      "metadataSources": [
+        {
+          "title": "Wikipédia (en) — Victimae paschali laudes",
+          "url": "https://en.wikipedia.org/wiki/Victimae_paschali_laudes",
+          "accessedAt": "2026-11-14"
+        }
+      ],
+      "classification": {
+        "category": "proper-text",
+        "moments": [],
+        "seasons": [
+          "pascoa"
+        ],
+        "editorialRationale": "Sequência da Missa do Domingo de Páscoa. O vocabulário não tem o momento “sequência” (cantada antes do Aleluia, IGMR 64): momento pendente.",
+        "guidanceSource": "Wikipédia (en), Victimae paschali laudes; IGMR 64",
+        "suitabilityNotes": "Sequência: cantada antes da aclamação ao Evangelho.",
+        "celebrations": [
+          "pascoa-do-senhor"
+        ]
+      }
+    },
+    {
+      "importKey": "tradicional-veni-sancte-spiritus",
+      "title": "Veni, Sancte Spiritus",
+      "artist": "Atribuída a Estêvão Langton ou ao papa Inocêncio III",
+      "contentType": "metadata-only",
+      "compositionReference": "Sequência de Pentecostes (canto gregoriano)",
+      "metadataSources": [
+        {
+          "title": "Wikipédia (en) — Veni Sancte Spiritus",
+          "url": "https://en.wikipedia.org/wiki/Veni_Sancte_Spiritus",
+          "accessedAt": "2026-11-14"
+        }
+      ],
+      "classification": {
+        "category": "proper-text",
+        "moments": [],
+        "seasons": [
+          "pascoa"
+        ],
+        "editorialRationale": "Sequência da Missa do Domingo de Pentecostes. O vocabulário não tem o momento “sequência”: momento pendente.",
+        "guidanceSource": "Wikipédia (en), Veni Sancte Spiritus; IGMR 64",
+        "suitabilityNotes": "Sequência: cantada antes da aclamação ao Evangelho.",
+        "celebrations": [
+          "pentecostes"
+        ]
+      }
+    },
+    {
+      "importKey": "tradicional-lauda-sion",
+      "title": "Lauda Sion",
+      "artist": "São Tomás de Aquino (c. 1264)",
+      "contentType": "metadata-only",
+      "compositionReference": "Sequência da solenidade de Corpus Christi (canto gregoriano)",
+      "metadataSources": [
+        {
+          "title": "Wikipédia (pt) — Lauda Sion",
+          "url": "https://pt.wikipedia.org/wiki/Lauda_Sion",
+          "accessedAt": "2026-11-14"
+        }
+      ],
+      "classification": {
+        "category": "proper-text",
+        "moments": [],
+        "seasons": [],
+        "editorialRationale": "Sequência da solenidade de Corpus Christi. O vocabulário não tem o momento “sequência”: momento pendente.",
+        "guidanceSource": "Wikipédia (pt), Lauda Sion",
+        "suitabilityNotes": "Sequência: cantada antes da aclamação ao Evangelho.",
+        "celebrations": [
+          "corpus-christi"
+        ]
+      }
+    },
+    {
+      "importKey": "tradicional-ubi-caritas",
+      "title": "Ubi caritas",
+      "artist": "Atribuída a Paulino de Aquileia (796)",
+      "contentType": "metadata-only",
+      "compositionReference": "Antífona da Missa da Ceia do Senhor (canto gregoriano)",
+      "metadataSources": [
+        {
+          "title": "Wikipédia (en) — Ubi caritas",
+          "url": "https://en.wikipedia.org/wiki/Ubi_caritas",
+          "accessedAt": "2026-11-14"
+        }
+      ],
+      "classification": {
+        "category": "liturgical",
+        "moments": [
+          "preparacao-das-oferendas"
+        ],
+        "seasons": [
+          "triduo-pascal"
+        ],
+        "editorialRationale": "No Missal Romano atual, cantada na procissão das oferendas da Missa vespertina da Ceia do Senhor (Quinta-feira Santa).",
+        "guidanceSource": "Wikipédia (en), Ubi caritas",
+        "suitabilityNotes": "Própria da Missa da Ceia do Senhor, na Quinta-feira Santa."
+      }
+    },
+    {
+      "importKey": "tradicional-adeste-fideles",
+      "title": "Adeste fideles",
+      "artist": "Atribuído a John Francis Wade (c. 1740)",
+      "contentType": "metadata-only",
+      "compositionReference": "Hino de Natal; manuscrito mais antigo conhecido de c. 1740",
+      "metadataSources": [
+        {
+          "title": "Wikipédia (pt) — Adeste Fideles",
+          "url": "https://pt.wikipedia.org/wiki/Adeste_Fideles",
+          "accessedAt": "2026-11-14"
+        }
+      ]
+    },
+    {
+      "importKey": "tradicional-noite-feliz",
+      "title": "Noite Feliz",
+      "artist": "Joseph Mohr (letra original) e Franz Xaver Gruber (música)",
+      "contentType": "metadata-only",
+      "compositionReference": "Stille Nacht, Oberndorf (Áustria), 1818",
+      "metadataSources": [
+        {
+          "title": "Wikipédia (pt) — Noite Feliz",
+          "url": "https://pt.wikipedia.org/wiki/Noite_Feliz",
+          "accessedAt": "2026-11-14"
+        }
+      ]
+    }
+  ]
+}

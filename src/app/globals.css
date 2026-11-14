@@ -1,0 +1,153 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/*
+ * Identidade (Etapa 2E.4A): paleta derivada da ilustração de Santa Cecília do Grupo de Canto
+ * Santa Cecília — pergaminho e marfim quentes, oliva profundo no cabeçalho e nas ações,
+ * castanho nos títulos e dourado de apoio. As cores litúrgicas (--liturgy-*) informam o tempo
+ * ou a celebração e sempre aparecem acompanhadas do nome da cor: nunca são só decoração.
+ */
+:root {
+  color-scheme: light;
+  --background: #f4e8d2;
+  --foreground: #472d1b;
+  --card: #fff9ef;
+  --popover: #fff9ef;
+  --popover-foreground: #472d1b;
+  --primary: #4b562b;
+  --primary-foreground: #fff9ef;
+  --secondary: #f1e5cf;
+  --secondary-foreground: #3f2817;
+  --muted: #efe1c8;
+  --muted-foreground: #6b5543;
+  --destructive: #a3341f;
+  --border: #e3d1b2;
+  --input: #d3bb93;
+  --ring: #936d2b;
+  --accent: #b8893c;
+  --chord: #4e6524;
+  /* Títulos em castanho, cabeçalho em oliva escuro e dourado legível sobre marfim. */
+  --heading: #4a2c19;
+  --gold: #b8893c;
+  --gold-strong: #87601f;
+  --header: #3a4123;
+  --header-foreground: #f7eedd;
+  --header-muted: #d8cba9;
+  --header-accent: #d9b261;
+  --surface-alt: #f1e3ca;
+  --liturgy-verde: oklch(0.5 0.12 150);
+  --liturgy-roxo: oklch(0.42 0.14 305);
+  --liturgy-branco: oklch(0.99 0.005 90);
+  --liturgy-vermelho: oklch(0.52 0.19 27);
+  --liturgy-roseo: oklch(0.74 0.11 0);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --background: #1b1a12;
+  --foreground: #efe3cd;
+  --card: #25241a;
+  --popover: #2b2a1f;
+  --popover-foreground: #efe3cd;
+  --primary: #c5b672;
+  --primary-foreground: #1b1a12;
+  --secondary: #302e22;
+  --secondary-foreground: #efe3cd;
+  --muted: #2c2a1f;
+  --muted-foreground: #c4b59c;
+  --destructive: #f08c74;
+  --border: #3d3a2b;
+  --input: #4d4936;
+  --ring: #dcb768;
+  --accent: #d2a452;
+  --chord: #cdd68e;
+  --heading: #f3e2c0;
+  --gold: #d2a452;
+  --gold-strong: #e3bd6b;
+  --header: #13140c;
+  --header-foreground: #efe3cd;
+  --header-muted: #b9ad8e;
+  --header-accent: #d9b261;
+  --surface-alt: #2c2a1f;
+  --liturgy-verde: oklch(0.7 0.13 150);
+  --liturgy-roxo: oklch(0.68 0.13 305);
+  --liturgy-branco: oklch(0.96 0.008 90);
+  --liturgy-vermelho: oklch(0.68 0.18 27);
+  --liturgy-roseo: oklch(0.8 0.1 0);
+}
+
+/* Tela das referências visuais (1448px): colunas mais largas a partir de 1400px. */
+@theme {
+  --breakpoint-hd: 87.5rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-accent: var(--accent);
+  --color-chord: var(--chord);
+  --color-heading: var(--heading);
+  --color-gold: var(--gold);
+  --color-gold-strong: var(--gold-strong);
+  --color-header: var(--header);
+  --color-header-foreground: var(--header-foreground);
+  --color-header-muted: var(--header-muted);
+  --color-header-accent: var(--header-accent);
+  --color-surface-alt: var(--surface-alt);
+  --color-liturgy-verde: var(--liturgy-verde);
+  --color-liturgy-roxo: var(--liturgy-roxo);
+  --color-liturgy-branco: var(--liturgy-branco);
+  --color-liturgy-vermelho: var(--liturgy-vermelho);
+  --color-liturgy-roseo: var(--liturgy-roseo);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-display-serif), "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background font-sans text-foreground antialiased;
+    /* Pergaminho: luz suave no alto, sem textura pesada nem imagem de fundo. */
+    background-image:
+      radial-gradient(1100px 520px at 18% -8%, color-mix(in oklab, var(--card) 70%, transparent), transparent 70%),
+      radial-gradient(900px 600px at 100% 0%, color-mix(in oklab, var(--gold) 9%, transparent), transparent 60%);
+    background-repeat: no-repeat;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-variation-settings: "SOFT" 0, "WONK" 0;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  main:focus-visible {
+    outline: none;
+  }
+}
