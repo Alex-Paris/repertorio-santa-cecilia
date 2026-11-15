@@ -1,5 +1,5 @@
 import { cn } from "cn";
-import { CircleAlert, CircleCheck, Clock } from "lucide-react";
+import { ChevronDown, CircleAlert, CircleCheck, Clock } from "lucide-react";
 
 import {
   CELEBRATION_RANK_LABELS,
@@ -66,37 +66,70 @@ export function ReviewNotice({ context }: { context: LiturgicalCelebrationContex
   );
 }
 
-/**
- * Contexto da celebração. Mostra só referências: o texto das leituras não é reproduzido.
- * `compact`: na preparação da missa, o título já está no topo; o estado editorial fica sempre
- * à vista e o restante (leituras, temas, fontes) num bloco que se abre.
- */
-export function CelebrationCard({
-  context,
-  variant = "full",
-}: {
-  context: LiturgicalCelebrationContext;
-  variant?: "full" | "compact";
-}) {
-  if (variant === "compact") {
-    return (
-      <section aria-labelledby="celebracao-titulo" className="flex flex-wrap items-center gap-x-4 gap-y-2">
-        <h2 id="celebracao-titulo" className="sr-only">
-          {celebrationDisplayTitle(context)}
-        </h2>
-        <div className="min-w-[16rem] flex-1">
-          <ReviewNotice context={context} />
-        </div>
-        <details className="rounded-xl border bg-card/80 px-3 py-1.5 open:basis-full open:px-4 open:py-3">
-          <summary className="cursor-pointer rounded-md py-0.5 text-sm font-medium whitespace-nowrap text-heading">
-            Leituras, temas e fontes
-          </summary>
-          <CelebrationDetails context={context} />
-        </details>
-      </section>
-    );
-  }
+/** Situação editorial em poucas palavras, para a faixa única da preparação da missa. */
+const STATUS_SUMMARY = {
+  reviewed: { label: "Celebração revisada", text: "pela equipe do Repertório Web; revisão editorial, não oficial.", icon: CircleCheck, tone: "text-primary" },
+  pending_review: { label: "Dados em revisão", text: "conferidos nas fontes, ainda sem revisão humana.", icon: Clock, tone: "text-gold-strong" },
+  needs_update: { label: "Dados em atualização", text: "revisados antes, mas precisam ser conferidos de novo.", icon: Clock, tone: "text-gold-strong" },
+  disputed: { label: "Dados com divergência", text: "os itens em divergência não são usados nas sugestões.", icon: CircleAlert, tone: "text-destructive" },
+} as const;
 
+interface CelebrationNoticeProps {
+  context: LiturgicalCelebrationContext;
+  /** Grau de segurança das sugestões e os motivos, vindos da recomendação. */
+  assurance?: "definitive" | "provisional";
+  cautions?: string[];
+}
+
+/**
+ * Um único aviso discreto, no lugar dos três da Etapa 2E.4A: a situação editorial fica sempre
+ * à vista (com a marca "Sugestões provisórias" quando for o caso); os motivos, as leituras, os
+ * temas e as fontes ficam no mesmo bloco, ao abrir. Nada é omitido, só agrupado.
+ */
+export function CelebrationNotice({ context, assurance = "definitive", cautions = [] }: CelebrationNoticeProps) {
+  const status = STATUS_SUMMARY[context.review.status];
+  const provisional = assurance === "provisional";
+  return (
+    <section aria-labelledby="celebracao-titulo" className="rounded-xl border bg-card/75 text-sm">
+      <h2 id="celebracao-titulo" className="sr-only">
+        {celebrationDisplayTitle(context)}
+      </h2>
+      <details className="group">
+        <summary className="flex cursor-pointer list-none flex-wrap items-center gap-x-2 gap-y-1 rounded-xl px-3.5 py-2.5 [&::-webkit-details-marker]:hidden">
+          <status.icon className={cn("size-4 shrink-0", status.tone)} aria-hidden />
+          <span className="font-semibold text-heading">{status.label}</span>
+          <span className="min-w-0 text-muted-foreground">{status.text}</span>
+          {provisional && (
+            <span className="rounded-full border border-gold/50 bg-surface-alt px-2 py-0.5 text-xs font-medium text-heading">
+              Sugestões provisórias
+            </span>
+          )}
+          <span className="ml-auto inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap text-heading underline-offset-3 group-hover:underline">
+            Detalhes, leituras e fontes
+            <ChevronDown className="size-3.5 transition-transform group-open:rotate-180" aria-hidden />
+          </span>
+        </summary>
+        <div className="space-y-4 border-t px-3.5 pt-3 pb-4">
+          <ReviewNotice context={context} />
+          {provisional && cautions.length > 0 && (
+            <div role="note">
+              <p className="font-semibold text-heading">Por que as sugestões são provisórias</p>
+              <ul className="mt-1 list-disc space-y-0.5 pl-5 text-muted-foreground">
+                {cautions.map((caution) => (
+                  <li key={caution}>{caution}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          <CelebrationDetails context={context} />
+        </div>
+      </details>
+    </section>
+  );
+}
+
+/** Contexto da celebração. Mostra só referências: o texto das leituras não é reproduzido. */
+export function CelebrationCard({ context }: { context: LiturgicalCelebrationContext }) {
   return (
     <section aria-labelledby="celebracao-titulo" className="rounded-2xl border bg-card p-5 md:p-7">
       <p className="text-sm text-muted-foreground first-letter:uppercase">{formatLongDate(context.date)}</p>

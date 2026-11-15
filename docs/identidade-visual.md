@@ -70,3 +70,17 @@ Tipografia: Fraunces (serifa, tamanho óptico 72, sem as formas "suaves") para t
 - **Busca do cabeçalho:** "Buscar músicas ou autores…", porque ela consulta o catálogo; celebrações têm a sua própria busca no menu "Conta".
 - **"Minhas músicas"** saiu da barra superior e foi para o menu "Conta" (e para "Conta" no celular).
 - **Ícone do cabeçalho:** o detalhe de Santa Cecília no lugar da lira genérica do mockup, como pede o briefing.
+
+## Refinamento de usabilidade (Etapa 2E.4B)
+
+Mesma identidade; mudanças de densidade, navegação e prioridade de leitura. Nenhuma regra de negócio, dado ou contrato mudou.
+
+- **Aviso editorial único** (`CelebrationNotice`): a situação da celebração ("Dados em revisão", "Celebração revisada", "Dados com divergência", "Dados em atualização") e a marca "Sugestões provisórias" ficam sempre à vista numa linha; o texto completo, os motivos das sugestões provisórias, as leituras, os temas e as fontes ficam no mesmo bloco, ao abrir "Detalhes, leituras e fontes".
+- **Sugestões conforme a quantidade:** uma música vira um cartão largo (título, motivos e ações lado a lado); várias, cartões compactos em grade; nenhuma, um estado vazio com o motivo, a busca no catálogo daquele momento e atalhos para os momentos que têm sugestões.
+- **Onze momentos sem opções escondidas:** no computador as abas quebram linha (todas visíveis; duas linhas a 1448px), com a quantidade de sugestões; momentos sem sugestão ou sem canto ficam tracejados e esmaecidos, mas escolhíveis. No celular, a fileira rola com setas de toque e bordas esmaecidas, e a aba escolhida volta à vista. Teclado: uma parada de Tab, setas, Home e End.
+- **Catálogo mais denso:** topo compacto; lista em linhas (título e autoria numa linha, classificação e situação da cifra na outra); "Filtros litúrgicos" e os atalhos na mesma faixa. A lista mostra cerca de dez músicas acima da dobra a 1448×1086 (eram quatro).
+- **Uma busca por vez:** na página do catálogo, o campo do cabeçalho dá lugar à busca da página (com filtros); nas demais páginas, inclusive na página própria de uma música, a busca do cabeçalho continua.
+- **Cifra em primeiro lugar:** tom, transposição e tamanho da fonte numa barra presa ao topo enquanto a cifra rola; "Apresentar" e "Adicionar ao repertório" na linha das etiquetas (o painel de adicionar abre flutuando); a cifra não tem mais rolagem aninhada; classificação e fontes num bloco recolhível que diz, mesmo fechado, se a classificação foi conferida.
+- **Vídeo:** sem link, só "Sem vídeo de referência"; com link autorizado (ainda não há campo no catálogo), "Referência em vídeo" abre um painel flutuante não modal, com Esc e foco de volta ao botão, sem tirar a cifra da área principal.
+- **Repertório:** estado do salvamento ("Salvo na sua conta" / "Salvando…") e "Trocar de repertório" numa linha só; estado inicial com uma frase, o nome e "Criar repertório"; barra recolhida numa linha, com convite a entrar para visitantes.
+- **Telas baixas** (altura até 520px: zoom de 200%, celular deitado): o cabeçalho rola com a página e a navegação inferior fica mais baixa.

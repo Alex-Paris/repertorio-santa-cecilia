@@ -159,7 +159,7 @@ describe("leitura pública do catálogo", () => {
     render(<CatalogSongScreen song={METADADOS} />);
 
     expect(screen.getByText("Autoria não informada")).toBeDefined();
-    expect(screen.getByText("Hinário fictício, n. 12")).toBeDefined();
+    expect(screen.getByText(/Hinário fictício, n\. 12/)).toBeDefined();
     expect(screen.queryByText("Tom original")).toBeNull();
     expect(screen.getByText("Cifra ainda não disponível")).toBeDefined();
     expect(screen.queryByRole("button", { name: "Aumentar um semitom" })).toBeNull();

@@ -145,10 +145,15 @@ describe("música aberta no painel central", () => {
     expect(((await screen.findByLabelText("Repertório")) as HTMLSelectElement).value).toBe("");
   });
 
-  it("a cifra em área própria pode ser lida pelo teclado; a restauração do tom só aparece depois de transpor", () => {
+  it("controles de leitura numa barra própria sobre a cifra; a restauração do tom só aparece depois de transpor", () => {
     render(<CatalogSongDetail song={B} headingLevel={2} contained />);
     expect(screen.getByRole("heading", { level: 2, name: "Canto Fictício B" })).toBeDefined();
-    expect(screen.getByRole("region", { name: "Letra e cifra de Canto Fictício B" }).getAttribute("tabindex")).toBe("0");
+    const controls = screen.getByRole("group", { name: "Controles da cifra" });
+    expect(within(controls).getByRole("group", { name: "Tom de leitura" })).toBeDefined();
+    expect(within(controls).getByRole("group", { name: "Tamanho da fonte" })).toBeDefined();
+    // Adicionar e apresentar ficam no cabeçalho da música, fora da barra presa.
+    expect(within(controls).queryByRole("button", { name: "Adicionar ao repertório" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Apresentar" })).toBeDefined();
     expect(screen.queryByRole("button", { name: "Restaurar tom original" })).toBeNull();
 
     fireEvent.click(screen.getByRole("button", { name: "Aumentar um semitom" }));
@@ -156,11 +161,10 @@ describe("música aberta no painel central", () => {
     expect(screen.queryByRole("button", { name: "Restaurar tom original" })).toBeNull();
   });
 
-  it("sem link de vídeo, não há player nem miniatura; partitura e PDF não aparecem", () => {
+  it("sem link de vídeo, só uma indicação compacta: sem player, miniatura, partitura ou PDF", () => {
     render(<CatalogSongDetail song={A} />);
-    const video = screen.getByRole("region", { name: "Referências em vídeo" });
-    expect(video.textContent).toContain("Ainda não há vídeo de referência para esta música");
-    expect(within(video).queryByRole("button")).toBeNull();
+    expect(screen.getByText("Sem vídeo de referência")).toBeDefined();
+    expect(screen.queryByRole("button", { name: /vídeo/i })).toBeNull();
     expect(document.querySelector("iframe, img[src*='ytimg']")).toBeNull();
     expect(screen.queryByText(/Partitura|PDF/)).toBeNull();
   });

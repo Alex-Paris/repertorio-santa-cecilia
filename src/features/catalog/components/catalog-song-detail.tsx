@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "cn";
-import { ArrowLeft, FileMusic, MonitorPlay, Music2 } from "lucide-react";
+import { ArrowLeft, ChevronDown, FileMusic, MonitorPlay, Music2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -32,7 +32,7 @@ interface CatalogSongDetailProps {
   back?: { href: string; label: string };
   /** No catálogo em três zonas: o repertório atual já vem escolhido ao adicionar. */
   currentRepertoire?: { repertoireId: string | null };
-  /** No painel central, a cifra rola dentro da própria área. */
+  /** No painel central do catálogo, que rola por conta própria (a barra de controles se prende ao topo dele). */
   contained?: boolean;
   className?: string;
 }
@@ -75,51 +75,81 @@ export function CatalogSongDetail({
           </Link>
         )}
 
-        <header className="flex items-start gap-3">
-          <Music2 className="mt-1 size-9 shrink-0 text-gold md:size-10" aria-hidden />
+        <header className="flex items-start gap-2.5">
+          <Music2 className="mt-1 size-7 shrink-0 text-gold md:size-8" aria-hidden />
           <div className="min-w-0 flex-1">
             <Heading
               id="musica-titulo"
-              className="font-display text-[1.7rem] leading-tight font-semibold text-balance text-heading md:text-[2.15rem]"
+              className="font-display text-[1.5rem] leading-tight font-semibold text-balance text-heading md:text-[1.85rem]"
             >
               {song.title}
             </Heading>
-            <p className="mt-0.5 text-[0.95rem] text-muted-foreground">{song.artist || "Autoria não informada"}</p>
-            {song.compositionReference && <p className="mt-1 text-sm">{song.compositionReference}</p>}
+            <p className="mt-0.5 text-sm text-muted-foreground">
+              {song.artist || "Autoria não informada"}
+              {song.compositionReference && <span className="text-foreground"> · {song.compositionReference}</span>}
+            </p>
           </div>
-          {chordPro && (
-            <Button size="lg" variant="outline" className="shrink-0" onClick={() => setPresenting(true)}>
-              <MonitorPlay data-icon="inline-start" aria-hidden />
-              Apresentar
-            </Button>
-          )}
         </header>
 
-        {liturgy && (liturgy.moments.length > 0 || liturgy.seasons.length > 0 || themes.length > 0) && (
-          <ul aria-label="Classificação litúrgica" className="mt-3 flex flex-wrap gap-2">
-            {liturgy.moments.map((moment) => (
-              <li key={moment}>
-                <MomentTag moment={moment} className="px-3 py-1 text-sm" />
-              </li>
-            ))}
-            {liturgy.seasons.map((season) => (
-              <li key={season}>
-                <SeasonTag season={season} className="px-3 py-1 text-sm" />
-              </li>
-            ))}
-            {themes.length > 0 && (
-              <li className="inline-flex items-center rounded-full border bg-background/60 px-3 py-1 text-sm text-muted-foreground">
-                {themes.map(themeLabel).join(" · ")}
-              </li>
+        {/* Etiquetas da classificação e, na mesma linha, as ações sobre a música. */}
+        <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-2">
+          {liturgy && (liturgy.moments.length > 0 || liturgy.seasons.length > 0 || themes.length > 0) && (
+            <ul aria-label="Classificação litúrgica" className="flex min-w-0 flex-1 flex-wrap gap-1.5">
+              {liturgy.moments.map((moment) => (
+                <li key={moment}>
+                  <MomentTag moment={moment} />
+                </li>
+              ))}
+              {liturgy.seasons.map((season) => (
+                <li key={season}>
+                  <SeasonTag season={season} />
+                </li>
+              ))}
+              {themes.length > 0 && (
+                <li className="inline-flex items-center rounded-full border bg-background/60 px-2.5 py-0.5 text-[0.8rem] text-muted-foreground">
+                  {themes.map(themeLabel).join(" · ")}
+                </li>
+              )}
+            </ul>
+          )}
+          {/* Ações sobre a música; os controles de leitura ficam na barra presa sobre a cifra. */}
+          <div className="ml-auto flex shrink-0 items-center gap-2">
+            {chordPro && (
+              <Button size="lg" variant="outline" className="h-9 px-3" onClick={() => setPresenting(true)}>
+                <MonitorPlay data-icon="inline-start" aria-hidden />
+                Apresentar
+              </Button>
             )}
-          </ul>
-        )}
-        {liturgy?.suitabilityNotes && <p className="mt-3 text-[0.95rem] text-pretty">{liturgy.suitabilityNotes}</p>}
+            <AddToRepertoire
+              songId={song.id}
+              title={song.title}
+              originalKey={song.originalKey}
+              contentType={song.contentType}
+              suggestedMoments={liturgy?.moments}
+              preferCurrent={currentRepertoire}
+              primary
+              popover
+            />
+          </div>
+        </div>
+        {liturgy?.suitabilityNotes && <p className="mt-2 text-sm text-pretty">{liturgy.suitabilityNotes}</p>}
 
-        <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-3 border-t border-gold/20 pt-4">
+        {/*
+          Barra de controles presa ao topo enquanto a cifra rola: no catálogo (zona central com
+          rolagem própria) fica no topo da zona; na página própria, sob o cabeçalho.
+        */}
+        <div
+          role="group"
+          aria-label="Controles da cifra"
+          className={cn(
+            "sticky z-10 -mx-4 mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 border-y border-gold/25 bg-card/95 px-4 py-2 backdrop-blur md:-mx-5 md:px-5",
+            contained ? "top-14 md:top-0" : "top-14 md:top-16 lg:top-[4.6rem]",
+            // Em telas baixas o cabeçalho não fica preso: a barra encosta no topo.
+            "[@media(max-height:520px)]:top-0",
+          )}
+        >
           {song.contentType !== "external-link" && song.originalKey && (
             <p className="flex items-baseline gap-1.5 text-sm">
-              <FileMusic className="size-4 self-center text-gold-strong" aria-hidden />
               <span aria-hidden>Tom original:</span>
               <KeyLabel musicalKey={song.originalKey} />
             </p>
@@ -133,64 +163,51 @@ export function CatalogSongDetail({
               compact
             />
           )}
-          <div className="ml-auto">
-            <AddToRepertoire
-              songId={song.id}
-              title={song.title}
-              originalKey={song.originalKey}
-              contentType={song.contentType}
-              suggestedMoments={liturgy?.moments}
-              preferCurrent={currentRepertoire}
-              primary
-            />
-          </div>
+          {chordPro && <FontSizeControls fontSize={fontSize} compact />}
+          {!chordPro && <p className="text-sm text-muted-foreground">Sem cifra para ajustar.</p>}
         </div>
 
-        <section aria-labelledby="letra-e-cifra" className="mt-5">
-          <div className="flex items-end justify-between gap-3 border-b border-gold/25">
-            <h3
-              id="letra-e-cifra"
-              className="-mb-px inline-flex items-center gap-2 rounded-t-xl bg-primary px-5 py-2 font-display text-[1.02rem] font-medium whitespace-nowrap text-primary-foreground"
-            >
-              <FileMusic className="size-4" aria-hidden />
+        <section aria-labelledby="letra-e-cifra" className="mt-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h3 id="letra-e-cifra" className="inline-flex items-center gap-2 font-display text-[1.05rem] font-semibold text-heading">
+              <FileMusic className="size-4 text-gold-strong" aria-hidden />
               Letra e cifra
             </h3>
-            {chordPro && (
-              <div className="pb-1.5">
-                <FontSizeControls fontSize={fontSize} compact />
-              </div>
-            )}
+            <VideoReference title={song.title} />
           </div>
 
-          <div className="mt-3">
+          <div className="mt-2">
             {song.contentType === "external-link" && <ExternalSourceNotice sourceUrl={song.sourceUrl} />}
             {song.contentType !== "external-link" && !chordPro && (
               <EmptyState icon={FileMusic} title="Cifra ainda não disponível" description={NO_CHORDS} />
             )}
             {chordPro && (
-              <div
-                // Com rolagem própria, a área recebe foco para quem usa teclado.
-                {...(contained ? { tabIndex: 0, role: "region", "aria-label": `Letra e cifra de ${song.title}` } : {})}
-                className={cn(
-                  // Letra e acordes em serifa, como na referência; os acordes seguem em colunas sobre a sílaba.
-                  "overflow-auto rounded-xl border bg-background/40 p-5 font-display md:p-7 [&_.font-mono]:font-display [&_.font-mono]:text-[0.95em]",
-                  contained && "xl:max-h-[max(16rem,calc(100dvh-30rem))]",
-                )}
-              >
+              // Letra e acordes em serifa, como na referência; os acordes seguem em colunas sobre a sílaba.
+              // Sem rolagem própria: a cifra usa toda a altura da zona (ou da página).
+              <div className="overflow-x-auto rounded-xl border bg-background/40 px-5 py-4 font-display md:px-7 md:py-5 [&_.font-mono]:font-display [&_.font-mono]:text-[0.95em]">
                 <ChordSheet source={chordPro} semitones={semitones} fontSize={fontSize} />
               </div>
             )}
           </div>
         </section>
 
-        <VideoReference title={song.title} className="mt-5" />
-
-        {liturgy && (
-          <div className="mt-5">
-            <ClassificationSummary liturgy={liturgy} />
-          </div>
+        {(liturgy || (song.metadataSources && song.metadataSources.length > 0)) && (
+          <details className="group mt-4 rounded-xl border bg-background/40">
+            <summary className="flex cursor-pointer list-none items-center gap-2 px-4 py-2.5 text-sm font-medium text-heading [&::-webkit-details-marker]:hidden">
+              Classificação litúrgica e fontes
+              {liturgy && (
+                <span className="text-xs font-normal text-muted-foreground">
+                  · {liturgy.reviewStatus === "reviewed" ? "conferida pela equipe" : liturgy.reviewStatus === "disputed" ? "com divergência" : "ainda não conferida"}
+                </span>
+              )}
+              <ChevronDown className="ml-auto size-4 transition-transform group-open:rotate-180" aria-hidden />
+            </summary>
+            <div className="space-y-4 border-t px-4 pt-3 pb-4">
+              {liturgy && <ClassificationSummary liturgy={liturgy} />}
+              {song.metadataSources && song.metadataSources.length > 0 && <MetadataSources sources={song.metadataSources} />}
+            </div>
+          </details>
         )}
-        {song.metadataSources && song.metadataSources.length > 0 && <MetadataSources sources={song.metadataSources} />}
       </article>
 
       {presenting && chordPro && song.originalKey && (
@@ -211,7 +228,7 @@ export function CatalogSongDetail({
 
 function MetadataSources({ sources }: { sources: NonNullable<CatalogSongView["metadataSources"]> }) {
   return (
-    <section aria-labelledby="fontes-dos-dados" className="mt-5 rounded-xl border bg-background/40 p-4 text-sm">
+    <section aria-labelledby="fontes-dos-dados" className="rounded-xl border bg-card p-4 text-sm">
       <h3 id="fontes-dos-dados" className="font-display text-base font-semibold text-heading">
         Fontes da identificação
       </h3>

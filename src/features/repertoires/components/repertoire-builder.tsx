@@ -1,7 +1,20 @@
 "use client";
 
 import { cn } from "cn";
-import { ArrowDown, ArrowRight, ArrowUp, BookOpen, ChevronDown, ChevronUp, ListMusic, Minus, Plus, Trash2 } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowRight,
+  ArrowUp,
+  BookOpen,
+  Check,
+  ChevronDown,
+  ChevronUp,
+  ListMusic,
+  LoaderCircle,
+  Minus,
+  Plus,
+  Trash2,
+} from "lucide-react";
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
 
@@ -85,13 +98,18 @@ export function RepertoireBuilder({
   className,
 }: RepertoireBuilderProps) {
   const count = repertoire?.items.length ?? 0;
-  const summary = repertoire ? `${repertoire.name} · ${count === 1 ? "1 música" : `${count} músicas`}` : emptySummary;
+  const summary = repertoire
+    ? `${repertoire.name} · ${count === 1 ? "1 música" : `${count} músicas`}`
+    : status === "signed-out"
+      ? "Entre para montar um repertório"
+      : emptySummary;
   const bodyId = `${label.replace(/\W+/g, "-").toLowerCase()}-conteudo`;
 
   return (
     <div
       className={cn(
         "fixed inset-x-3 bottom-[calc(4.6rem+env(safe-area-inset-bottom))] z-20 md:inset-x-auto md:right-4 md:bottom-4 md:w-[25rem]",
+        "[@media(max-height:520px)]:bottom-[calc(3.6rem+env(safe-area-inset-bottom))] md:[@media(max-height:520px)]:bottom-3",
         "xl:sticky xl:top-[5.6rem] xl:right-auto xl:bottom-auto xl:z-auto xl:w-auto xl:self-start",
         className,
       )}
@@ -105,12 +123,13 @@ export function RepertoireBuilder({
           aria-expanded={open}
           aria-controls={bodyId}
           onClick={onToggle}
-          className="flex w-full items-center gap-3 bg-header px-4 py-3 text-left text-header-foreground xl:hidden"
+          className="flex w-full items-center gap-3 bg-header px-4 py-2.5 text-left text-header-foreground xl:hidden [@media(max-height:520px)]:py-1.5"
         >
           <ListMusic className="size-5 shrink-0 text-header-accent" aria-hidden />
-          <span className="min-w-0 flex-1">
-            <span className="block text-xs text-header-muted">{repertoire ? title : "Repertório"}</span>
-            <span className="block truncate font-medium">{summary}</span>
+          {/* Uma linha só na barra recolhida: o tipo e o resumo lado a lado. */}
+          <span className="flex min-w-0 flex-1 items-baseline gap-2">
+            <span className="shrink-0 text-xs text-header-muted">{repertoire ? title : "Repertório"}</span>
+            <span className="truncate font-medium">{summary}</span>
           </span>
           {open ? <ChevronDown className="size-5 shrink-0" aria-hidden /> : <ChevronUp className="size-5 shrink-0" aria-hidden />}
         </button>
@@ -228,7 +247,6 @@ function BuildingList({ library, repertoire, emptyText, addMore, onChange }: Bui
           ))}
         </ol>
       )}
-      <p className="text-xs text-muted-foreground">Tudo o que aparece aqui já está salvo na sua conta.</p>
       {addMore &&
         ("href" in addMore ? (
           <Link href={addMore.href} className={outline}>
@@ -251,9 +269,25 @@ function BuildingList({ library, repertoire, emptyText, addMore, onChange }: Bui
         </span>
         <ArrowRight className="size-4" aria-hidden />
       </Link>
-      <Button type="button" variant="ghost" size="lg" className="h-9 w-full text-sm" onClick={onChange}>
-        Trocar de repertório
-      </Button>
+      {/* Informações secundárias numa linha só: o estado do salvamento e a troca de repertório. */}
+      <div className="flex items-center justify-between gap-2 pt-0.5 text-xs">
+        <p role="status" className="flex items-center gap-1.5 text-muted-foreground">
+          {busy ? (
+            <>
+              <LoaderCircle className="size-3.5 animate-spin" aria-hidden />
+              Salvando…
+            </>
+          ) : (
+            <>
+              <Check className="size-3.5 text-primary" aria-hidden />
+              Salvo na sua conta
+            </>
+          )}
+        </p>
+        <Button type="button" variant="ghost" size="sm" className="h-8 px-2 text-xs underline-offset-3 hover:underline" onClick={onChange}>
+          Trocar de repertório
+        </Button>
+      </div>
     </div>
   );
 }

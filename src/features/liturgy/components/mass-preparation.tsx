@@ -24,7 +24,7 @@ import {
 } from "../domain/calendar";
 import type { CelebrationRecommendation } from "../domain/recommendation";
 import { LITURGICAL_MOMENT_IDS, type LiturgicalMomentId } from "../domain/vocabulary";
-import { CelebrationCard } from "./celebration-card";
+import { CelebrationNotice } from "./celebration-card";
 import { CelebrationChooser, MassExplore } from "./celebration-chooser";
 import { CelebrationList } from "./celebration-picker";
 import { MassPlanner } from "./mass-planner";
@@ -109,17 +109,14 @@ function VariantPicker({ celebrations, selected }: { celebrations: LiturgicalCel
 /** Reserva honesta para mídia: não há vídeo nem miniatura até existir um link autorizado. */
 function VideoComingSoon() {
   return (
-    <aside aria-labelledby="videos-em-breve" className="mt-8 flex flex-col gap-3 rounded-2xl border bg-card/70 px-5 py-4 md:flex-row md:items-center md:gap-6">
-      <Film className="size-8 shrink-0 text-gold" aria-hidden />
-      <div className="min-w-0 flex-1">
-        <h2 id="videos-em-breve" className="font-display text-lg font-semibold text-heading">
-          Referências em vídeo (em breve)
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          Em desenvolvimento: referências de execução poderão aparecer junto de cada música, quando houver um link
-          autorizado. Nada é reproduzido automaticamente.
-        </p>
-      </div>
+    <aside aria-labelledby="videos-em-breve" className="mt-6 flex items-start gap-2 text-sm text-muted-foreground">
+      <Film className="mt-0.5 size-4 shrink-0 text-gold" aria-hidden />
+      <p>
+        <span id="videos-em-breve" className="font-medium text-heading">
+          Referências em vídeo (em breve):
+        </span>{" "}
+        aparecerão junto de cada música quando houver um link autorizado, sem reprodução automática.
+      </p>
     </aside>
   );
 }
@@ -258,7 +255,8 @@ export async function MassPreparation({ title, subtitle, searchParams, defaultTo
           revision: context.revision,
           hasVariants: celebrations.length > 1,
         }}
-        intro={<CelebrationCard context={context} variant="compact" />}
+        intro={<CelebrationNotice context={context} assurance={recommendation?.assurance} cautions={recommendation?.cautions} />}
+        cautionsInIntro
         moments={recommendation?.moments ?? null}
         assurance={recommendation?.assurance}
         cautions={recommendation?.cautions}

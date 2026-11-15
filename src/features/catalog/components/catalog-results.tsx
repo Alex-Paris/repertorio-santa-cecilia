@@ -1,5 +1,5 @@
 import { cn } from "cn";
-import { ArrowRight, Check, FileMusic, Link2, Music2, Search, SlidersHorizontal, X } from "lucide-react";
+import { Check, ChevronRight, FileMusic, Link2, Search, SlidersHorizontal, X } from "lucide-react";
 import Link from "next/link";
 
 import { EmptyState } from "@/components/layout/empty-state";
@@ -109,13 +109,15 @@ interface CatalogSearchFormProps {
   repertoireId?: string | null;
   /** Caminhos de exploração, dentro do painel de filtros. */
   explore?: React.ReactNode;
+  /** Atalhos de um toque, na mesma faixa do botão de filtros. */
+  quickFilters?: React.ReactNode;
 }
 
 /**
  * Busca da zona esquerda. Formulário GET comum: funciona com teclado e sem JavaScript, e a
  * busca fica no endereço. Os quatro filtros litúrgicos ficam num painel que se abre.
  */
-export function CatalogSearchForm({ query, filters = {}, repertoireId, explore }: CatalogSearchFormProps) {
+export function CatalogSearchForm({ query, filters = {}, repertoireId, explore, quickFilters }: CatalogSearchFormProps) {
   const activeCount = describeFilters(filters).length;
   return (
     <form action="/catalogo" role="search" className="space-y-3">
@@ -138,10 +140,11 @@ export function CatalogSearchForm({ query, filters = {}, repertoireId, explore }
           Buscar
         </button>
       </div>
-      <details className="group rounded-xl border border-transparent open:border-border open:bg-background/50 open:p-3">
-        <summary className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-full border border-gold/40 bg-card px-3 text-sm font-medium text-heading">
+      <div className="flex flex-wrap items-start gap-2">
+      <details className="group shrink-0 rounded-xl border border-transparent open:basis-full open:border-border open:bg-background/50 open:p-3">
+        <summary className="inline-flex h-9 cursor-pointer list-none items-center gap-2 rounded-full border border-gold/40 bg-card px-3 text-sm font-medium whitespace-nowrap text-heading [&::-webkit-details-marker]:hidden">
           <SlidersHorizontal className="size-4 text-gold-strong" aria-hidden />
-          Filtros{activeCount > 0 && ` (${activeCount})`}
+          Filtros litúrgicos{activeCount > 0 && ` (${activeCount})`}
         </summary>
         <fieldset className="mt-3 grid grid-cols-2 gap-2">
           <legend className="sr-only">Filtros litúrgicos</legend>
@@ -155,6 +158,8 @@ export function CatalogSearchForm({ query, filters = {}, repertoireId, explore }
         </button>
         {explore && <div className="mt-4">{explore}</div>}
       </details>
+      {quickFilters && <div className="min-w-0 flex-1">{quickFilters}</div>}
+      </div>
     </form>
   );
 }
@@ -307,7 +312,8 @@ export function CatalogResults({ query, filters = {}, result, selectedId, repert
           )}
         </p>
       </div>
-      <ul className="mt-2 space-y-2">
+      {/* Lista compacta: uma linha de título e autoria, outra de classificação e cifra. */}
+      <ul className="mt-2 divide-y overflow-hidden rounded-xl border bg-card">
         {result.songs.map((song) => {
           const current = song.id === selectedId;
           return (
@@ -316,33 +322,28 @@ export function CatalogResults({ query, filters = {}, result, selectedId, repert
                 href={catalogHref({ ...location, selected: song.id })}
                 aria-current={current ? "true" : undefined}
                 className={cn(
-                  "group flex gap-3 rounded-xl border bg-card px-3.5 py-3 transition-colors hover:border-gold/60",
-                  current && "border-gold bg-surface-alt/60 ring-1 ring-gold/50",
+                  "group flex items-center gap-2.5 px-3 py-2 transition-colors hover:bg-surface-alt/60",
+                  current && "bg-surface-alt shadow-[inset_3px_0_0_var(--gold)]",
                 )}
               >
-                <span aria-hidden className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full bg-surface-alt text-gold-strong group-aria-[current=true]:bg-card">
-                  <Music2 className="size-[1.1rem]" />
-                </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block font-display text-[1.08rem] leading-snug font-semibold wrap-break-word text-heading">{song.title}</span>
-                  <span className="block text-sm text-muted-foreground wrap-break-word">{song.artist || "Autoria não informada"}</span>
-                  {((song.moments && song.moments.length > 0) || (song.seasons && song.seasons.length > 0)) && (
-                    <span className="mt-1.5 flex flex-wrap gap-1.5">
+                  <span className="flex flex-wrap items-baseline gap-x-2">
+                    <span className="font-display text-[1rem] leading-snug font-semibold wrap-break-word text-heading">{song.title}</span>
+                    <span className="text-[0.8rem] text-muted-foreground wrap-break-word">{song.artist || "Autoria não informada"}</span>
+                  </span>
+                  <span className="mt-1 flex flex-wrap items-center gap-1.5">
+                    {((song.moments && song.moments.length > 0) || (song.seasons && song.seasons.length > 0)) && (
                       <span className="sr-only">Classificação: </span>
-                      {song.moments?.slice(0, 2).map((moment) => <MomentTag key={moment} moment={moment} />)}
-                      {song.seasons?.slice(0, 1).map((season) => <SeasonTag key={season} season={season} />)}
-                    </span>
-                  )}
-                  <span className="mt-1.5 block">
+                    )}
+                    {song.moments?.slice(0, 2).map((moment) => <MomentTag key={moment} moment={moment} className="py-0 text-[0.72rem]" />)}
+                    {song.seasons?.slice(0, 1).map((season) => <SeasonTag key={season} season={season} className="py-0 text-[0.72rem]" />)}
                     <ChordStatus song={song} />
                   </span>
                 </span>
-                <span className="flex shrink-0 items-center">
-                  <span aria-hidden className={cn(buttonVariants({ size: "sm" }), "h-8 gap-1 px-3")}>
-                    Abrir
-                    <ArrowRight className="size-3.5" />
-                  </span>
-                </span>
+                <ChevronRight
+                  aria-hidden
+                  className={cn("size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5", current && "text-gold-strong")}
+                />
               </Link>
             </li>
           );

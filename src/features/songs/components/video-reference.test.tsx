@@ -39,19 +39,37 @@ describe("endereço de vídeo", () => {
 });
 
 describe("referência em vídeo", () => {
-  it("com link válido, o player só é carregado depois do pedido", () => {
+  it("com link válido, abre um painel ao lado; o player só é carregado depois do pedido", () => {
     render(<VideoReference title="Canto Fictício" url="https://youtu.be/abcdefghijk" />);
+    const toggle = screen.getByRole("button", { name: "Referência em vídeo" });
+    expect(toggle.getAttribute("aria-expanded")).toBe("false");
+    expect(document.querySelector("iframe")).toBeNull();
+
+    fireEvent.click(toggle);
+    const panel = screen.getByRole("complementary", { name: "Referência em vídeo" });
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: "Fechar referência em vídeo" }));
     expect(document.querySelector("iframe")).toBeNull();
 
     fireEvent.click(screen.getByRole("button", { name: "Carregar vídeo de Canto Fictício" }));
     const frame = screen.getByTitle("Referência em vídeo: Canto Fictício");
+    expect(panel.contains(frame)).toBe(true);
     expect(frame.getAttribute("src")).toBe("https://www.youtube-nocookie.com/embed/abcdefghijk?rel=0");
     expect(frame.getAttribute("allow")).not.toContain("autoplay");
   });
 
-  it("com link inválido, informa que não há vídeo", () => {
+  it("o painel fecha com Esc e devolve o foco ao botão", () => {
+    render(<VideoReference title="Canto Fictício" url="https://youtu.be/abcdefghijk" />);
+    const toggle = screen.getByRole("button", { name: "Referência em vídeo" });
+    fireEvent.click(toggle);
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(screen.queryByRole("complementary", { name: "Referência em vídeo" })).toBeNull();
+    expect(document.activeElement).toBe(toggle);
+  });
+
+  it("sem link válido, só a indicação compacta: nenhum botão nem player", () => {
     render(<VideoReference title="Canto Fictício" url="https://exemplo.test/video" />);
     expect(screen.queryByRole("button")).toBeNull();
-    expect(screen.getByText(/Ainda não há vídeo de referência/)).toBeDefined();
+    expect(screen.getByText("Sem vídeo de referência")).toBeDefined();
+    expect(document.querySelector("iframe")).toBeNull();
   });
 });

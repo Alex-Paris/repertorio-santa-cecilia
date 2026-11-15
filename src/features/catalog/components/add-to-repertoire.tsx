@@ -39,6 +39,8 @@ interface AddToRepertoireProps {
   preferCurrent?: { repertoireId: string | null };
   /** Botão principal (cheio), como na referência do leitor. */
   primary?: boolean;
+  /** Painel flutuante sob o botão, sem empurrar a barra de controles da cifra. */
+  popover?: boolean;
 }
 
 const OFFSETS = Array.from(
@@ -58,15 +60,17 @@ export function AddToRepertoire({
   suggestedMoments = [],
   preferCurrent,
   primary = false,
+  popover = false,
 }: AddToRepertoireProps) {
   const [open, setOpen] = useState(false);
   const panelId = useId();
 
   return (
-    <div>
+    <div className={cn(popover && "relative")}>
       <Button
         variant={primary ? "default" : "outline"}
         size="lg"
+        className={cn(popover && "h-9 px-3")}
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => setOpen((current) => !current)}
@@ -75,7 +79,13 @@ export function AddToRepertoire({
         Adicionar ao repertório
       </Button>
       {open && (
-        <div id={panelId} className="mt-3 rounded-xl border bg-card p-4">
+        <div
+          id={panelId}
+          className={cn(
+            "rounded-xl border bg-card p-4",
+            popover ? "absolute top-full right-0 z-30 mt-2 w-[min(22rem,calc(100vw-2rem))] shadow-xl" : "mt-3",
+          )}
+        >
           <AddToRepertoirePanel
             songId={songId}
             title={title}

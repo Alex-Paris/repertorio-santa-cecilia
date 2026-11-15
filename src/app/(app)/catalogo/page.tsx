@@ -97,9 +97,9 @@ async function CatalogContent({ searchParams }: CatalogPageProps) {
 
   return (
     <div className="grid grid-cols-1 gap-3 pb-24 md:grid-cols-[minmax(18rem,24rem)_minmax(0,1fr)] xl:grid-cols-[22rem_minmax(0,1fr)_18.5rem] xl:pb-0 hd:grid-cols-[31.5rem_minmax(0,1fr)_19.5rem]">
-      <section aria-labelledby="buscar-no-catalogo" className={cn(ZONE, "p-4 md:p-5", explicit && "hidden md:block")}>
-        <h2 id="buscar-no-catalogo" className="mb-3 flex items-center gap-2.5 font-display text-[1.6rem] font-semibold text-heading">
-          <Music2 className="size-7 text-gold" aria-hidden />
+      <section aria-labelledby="buscar-no-catalogo" className={cn(ZONE, "p-3.5 md:p-4", explicit && "hidden md:block")}>
+        <h2 id="buscar-no-catalogo" className="mb-2.5 flex items-center gap-2 font-display text-[1.3rem] font-semibold text-heading">
+          <Music2 className="size-5 text-gold" aria-hidden />
           Buscar no catálogo
         </h2>
         <CatalogSearchForm
@@ -107,11 +107,9 @@ async function CatalogContent({ searchParams }: CatalogPageProps) {
           filters={filters}
           repertoireId={repertoireId}
           explore={facets && <CatalogExplore facets={facets} />}
+          quickFilters={<CatalogQuickFilters location={location} facets={facets} />}
         />
-        <div className="mt-3">
-          <CatalogQuickFilters location={location} facets={facets} />
-        </div>
-        <div className="mt-4 border-t border-gold/20 pt-3">
+        <div className="mt-3 border-t border-gold/20 pt-3">
           {loaded.status === "ready" ? (
             <CatalogResults query={query} filters={filters} result={loaded.result} selectedId={selectedId} repertoireId={repertoireId} />
           ) : (

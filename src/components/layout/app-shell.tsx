@@ -27,7 +27,11 @@ export function AppShell({ children }: { children: ReactNode }) {
         Ir para o conteúdo
       </a>
 
-      <header data-app-chrome className="sticky top-0 z-30 bg-header text-header-foreground shadow-[0_1px_0_rgb(0_0_0/0.25)]">
+      {/* Em telas baixas (zoom de 200%, celular deitado), o cabeçalho rola com a página para sobrar espaço. */}
+      <header
+        data-app-chrome
+        className="sticky top-0 z-30 bg-header text-header-foreground shadow-[0_1px_0_rgb(0_0_0/0.25)] [@media(max-height:520px)]:static"
+      >
         <div className="mx-auto flex h-14 w-full max-w-[1448px] items-center gap-3 px-4 md:h-16 lg:h-[4.6rem] lg:gap-6 lg:px-6">
           <Brand />
           <span aria-hidden className="hidden h-10 w-px bg-header-foreground/20 lg:block" />

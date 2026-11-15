@@ -115,7 +115,7 @@ function BottomLinks({ pathname }: { pathname: string | null }) {
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex h-16 flex-col items-center justify-center gap-1 text-xs font-medium transition-colors",
+                  "flex h-16 flex-col items-center justify-center gap-1 text-xs font-medium transition-colors [@media(max-height:520px)]:h-12 [@media(max-height:520px)]:gap-0",
                   active ? "text-heading" : "text-muted-foreground",
                 )}
               >
