@@ -18,6 +18,10 @@ export type CatalogSongView = MusicalSong & {
   /** Referência da composição e fontes dos metadados, quando registradas. */
   compositionReference?: string;
   metadataSources?: { title: string; url?: string; accessedAt?: string }[];
+  /** Vídeo de referência aprovado: só provedor e identificador, nunca um endereço livre. */
+  video?: { provider: "youtube"; videoId: string; title?: string };
+  /** "Enviado por": nome público autorizado pelo colaborador. Nunca e-mail nem conta. */
+  contributorCredit?: string;
 };
 
 /** Mesmo conjunto no formato do backup e da biblioteca antiga, sem revisões. */

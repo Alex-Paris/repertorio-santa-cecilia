@@ -1,6 +1,6 @@
 # Identidade visual
 
-Redesign da Etapa 2E.4A, a partir das referências aprovadas em `repertorio-redesign-referencias/` (`referencia-01-inicio-preparar-missa.png`, `referencia-02-catalogo-leitor.png`) e do logotipo do Grupo de Canto Santa Cecília. Só a apresentação mudou: contratos HTTP, MongoDB, direitos, revisões (`If-Match`) e regras litúrgicas continuam os mesmos.
+Redesign da Etapa 2E.4A, a partir das referências aprovadas (`referencia-01-inicio-preparar-missa.png`, `referencia-02-catalogo-leitor.png`) e do logotipo do Grupo de Canto Santa Cecília. A pasta `repertorio-redesign-referencias/`, com essas imagens, o logotipo original e o briefing, saiu do projeto depois da Etapa 2F.1 e continua no histórico do Git (commit `07e76bc`). Só a apresentação mudou: contratos HTTP, MongoDB, direitos, revisões (`If-Match`) e regras litúrgicas continuam os mesmos.
 
 ## Santa Cecília
 
@@ -57,7 +57,7 @@ Tipografia: Fraunces (serifa, tamanho óptico 72, sem as formas "suaves") para t
 - O Início abre a próxima celebração cadastrada (a mesma busca de "Próximas celebrações"). Sem base, mostra a escolha da data e um aviso; sem banco, "Calendário indisponível".
 - O estado editorial da celebração fica sempre à vista; leituras, temas e fontes estão em "Leituras, temas e fontes".
 - Partitura, PDF, áudio, favoritos e o botão de tocar não existem no produto e não aparecem.
-- Vídeo: sem endereço válido, só o aviso "Ainda não há vídeo de referência"; com endereço do YouTube (ainda não há campo no catálogo), o player sem cookies (`youtube-nocookie.com`) só carrega depois do clique e nunca toca sozinho.
+- Vídeo: sem vídeo aprovado, só o aviso "Sem vídeo de referência"; com vídeo aprovado numa contribuição (Etapa 2F.1: provedor e identificador do YouTube), o player sem cookies (`youtube-nocookie.com`) só carrega depois do clique e nunca toca sozinho; "Abrir no YouTube" leva ao vídeo em outra aba.
 
 ## Desvios assumidos em relação às referências
 
@@ -81,6 +81,6 @@ Mesma identidade; mudanças de densidade, navegação e prioridade de leitura. N
 - **Catálogo mais denso:** topo compacto; lista em linhas (título e autoria numa linha, classificação e situação da cifra na outra); "Filtros litúrgicos" e os atalhos na mesma faixa. A lista mostra cerca de dez músicas acima da dobra a 1448×1086 (eram quatro).
 - **Uma busca por vez:** na página do catálogo, o campo do cabeçalho dá lugar à busca da página (com filtros); nas demais páginas, inclusive na página própria de uma música, a busca do cabeçalho continua.
 - **Cifra em primeiro lugar:** tom, transposição e tamanho da fonte numa barra presa ao topo enquanto a cifra rola; "Apresentar" e "Adicionar ao repertório" na linha das etiquetas (o painel de adicionar abre flutuando); a cifra não tem mais rolagem aninhada; classificação e fontes num bloco recolhível que diz, mesmo fechado, se a classificação foi conferida.
-- **Vídeo:** sem link, só "Sem vídeo de referência"; com link autorizado (ainda não há campo no catálogo), "Referência em vídeo" abre um painel flutuante não modal, com Esc e foco de volta ao botão, sem tirar a cifra da área principal.
+- **Vídeo:** sem link, só "Sem vídeo de referência"; com vídeo aprovado (a partir da Etapa 2F.1), "Referência em vídeo" abre um painel flutuante não modal, com Esc e foco de volta ao botão, sem tirar a cifra da área principal.
 - **Repertório:** estado do salvamento ("Salvo na sua conta" / "Salvando…") e "Trocar de repertório" numa linha só; estado inicial com uma frase, o nome e "Criar repertório"; barra recolhida numa linha, com convite a entrar para visitantes.
 - **Telas baixas** (altura até 520px: zoom de 200%, celular deitado): o cabeçalho rola com a página e a navegação inferior fica mais baixa.

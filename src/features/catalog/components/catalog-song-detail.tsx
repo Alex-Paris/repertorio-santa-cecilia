@@ -88,6 +88,12 @@ export function CatalogSongDetail({
               {song.artist || "Autoria não informada"}
               {song.compositionReference && <span className="text-foreground"> · {song.compositionReference}</span>}
             </p>
+            {/* Quem enviou não é quem compôs nem quem canta: crédito discreto, só com nome autorizado. */}
+            {song.contributorCredit && (
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Enviado por: <span className="text-foreground">{song.contributorCredit}</span>
+              </p>
+            )}
           </div>
         </header>
 
@@ -173,7 +179,7 @@ export function CatalogSongDetail({
               <FileMusic className="size-4 text-gold-strong" aria-hidden />
               Letra e cifra
             </h3>
-            <VideoReference title={song.title} />
+            <VideoReference videoId={song.video?.videoId} videoTitle={song.video?.title} title={song.title} />
           </div>
 
           <div className="mt-2">

@@ -66,6 +66,35 @@ export interface CatalogMetadataSourceDocument {
   accessedAt?: string;
 }
 
+/** Vídeo de referência aprovado (Etapa 2F.1): só provedor e identificador, nunca HTML. */
+export interface CatalogVideoDocument {
+  provider: "youtube";
+  videoId: string;
+  title?: string;
+  kind: "performance" | "reference";
+  submissionId?: string;
+  approvedBy: string;
+  approvedAt: Date;
+}
+
+/** Contribuição aceita (Etapa 2F.1): de qual proposta e versão, o que foi aplicado e o que foi autorizado. */
+export interface CatalogContributionDocument {
+  submissionId: string;
+  submissionVersion: number;
+  mode: "new" | "complement";
+  fields: string[];
+  approvedBy: string;
+  approvedAt: Date;
+  publicCredit?: string;
+  license?: {
+    display: boolean;
+    reproduce: boolean;
+    redistribute: boolean;
+    declarationVersion: string;
+    acceptedAt: Date;
+  };
+}
+
 /** Música global. Não tem dono: não há `ownerId`, e o acesso segue regras próprias. */
 export interface CatalogSongDocument {
   id: string;
@@ -92,8 +121,13 @@ export interface CatalogSongDocument {
   publishedAt?: Date;
   /** Ausente em músicas ainda não classificadas, inclusive todas as anteriores à Etapa 2E.2. */
   liturgy?: CatalogLiturgyDocument;
+  video?: CatalogVideoDocument;
+  /** Ausente nas músicas cadastradas só pela administração. */
+  contributions?: CatalogContributionDocument[];
 }
 
+// Subdocumentos com `versionKey: false`: ao repetir uma transação (aprovação de contribuição),
+// o Mongoose restaura a chave de versão dos documentos criados, e o modo estrito recusaria `__v`.
 const rightsSchema = new Schema<CatalogRightsDocument>(
   {
     basis: { type: String, enum: RIGHTS_BASES, required: true },
@@ -106,7 +140,7 @@ const rightsSchema = new Schema<CatalogRightsDocument>(
     approvedBy: { type: String, required: true },
     approvedAt: { type: Date, required: true },
   },
-  { _id: false, id: false, strict: "throw" },
+  { _id: false, id: false, versionKey: false, strict: "throw" },
 );
 
 const scriptureSchema = new Schema<ScriptureReferenceDocument>(
@@ -116,7 +150,7 @@ const scriptureSchema = new Schema<ScriptureReferenceDocument>(
     verseStart: { type: Number },
     verseEnd: { type: Number },
   },
-  { _id: false, id: false, strict: "throw" },
+  { _id: false, id: false, versionKey: false, strict: "throw" },
 );
 
 const liturgySchema = new Schema<CatalogLiturgyDocument>(
@@ -137,15 +171,15 @@ const liturgySchema = new Schema<CatalogLiturgyDocument>(
     classifiedAt: { type: Date, required: true },
     reviewStatus: { type: String, enum: CLASSIFICATION_REVIEW_STATUSES, default: "pending_review" },
     review: {
-      type: new Schema({ by: { type: String, required: true }, at: { type: Date, required: true }, source: { type: String, required: true } }, { _id: false, id: false, strict: "throw" }),
+      type: new Schema({ by: { type: String, required: true }, at: { type: Date, required: true }, source: { type: String, required: true } }, { _id: false, id: false, versionKey: false, strict: "throw" }),
       default: null,
     },
     dispute: {
-      type: new Schema({ note: { type: String, required: true }, by: { type: String, required: true }, at: { type: Date, required: true } }, { _id: false, id: false, strict: "throw" }),
+      type: new Schema({ note: { type: String, required: true }, by: { type: String, required: true }, at: { type: Date, required: true } }, { _id: false, id: false, versionKey: false, strict: "throw" }),
       default: null,
     },
   },
-  { _id: false, id: false, strict: "throw" },
+  { _id: false, id: false, versionKey: false, strict: "throw" },
 );
 
 const catalogSongSchema = new Schema<CatalogSongDocument>(
@@ -164,7 +198,7 @@ const catalogSongSchema = new Schema<CatalogSongDocument>(
       type: [
         new Schema(
           { title: { type: String, required: true }, url: { type: String }, accessedAt: { type: String } },
-          { _id: false, id: false, strict: "throw" },
+          { _id: false, id: false, versionKey: false, strict: "throw" },
         ),
       ],
       default: undefined,
@@ -178,6 +212,49 @@ const catalogSongSchema = new Schema<CatalogSongDocument>(
     updatedAt: { type: Date, required: true },
     publishedAt: { type: Date },
     liturgy: { type: liturgySchema },
+    video: {
+      type: new Schema<CatalogVideoDocument>(
+        {
+          provider: { type: String, required: true, enum: ["youtube"] },
+          videoId: { type: String, required: true, match: /^[A-Za-z0-9_-]{11}$/ },
+          title: { type: String },
+          kind: { type: String, required: true, enum: ["performance", "reference"] },
+          submissionId: { type: String },
+          approvedBy: { type: String, required: true },
+          approvedAt: { type: Date, required: true },
+        },
+        { _id: false, id: false, versionKey: false, strict: "throw" },
+      ),
+    },
+    contributions: {
+      type: [
+        new Schema<CatalogContributionDocument>(
+          {
+            submissionId: { type: String, required: true },
+            submissionVersion: { type: Number, required: true },
+            mode: { type: String, required: true, enum: ["new", "complement"] },
+            fields: { type: [String], default: [] },
+            approvedBy: { type: String, required: true },
+            approvedAt: { type: Date, required: true },
+            publicCredit: { type: String },
+            license: {
+              type: new Schema(
+                {
+                  display: { type: Boolean, required: true },
+                  reproduce: { type: Boolean, required: true },
+                  redistribute: { type: Boolean, required: true },
+                  declarationVersion: { type: String, required: true },
+                  acceptedAt: { type: Date, required: true },
+                },
+                { _id: false, id: false, versionKey: false, strict: "throw" },
+              ),
+            },
+          },
+          { _id: false, id: false, versionKey: false, strict: "throw" },
+        ),
+      ],
+      default: undefined,
+    },
   },
   {
     id: false,

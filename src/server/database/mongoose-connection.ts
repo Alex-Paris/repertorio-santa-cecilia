@@ -9,6 +9,7 @@ import { LibraryStateModel } from "./models/library-state-model";
 import { RepertoireModel } from "./models/repertoire-model";
 import { CatalogAdminModel } from "./models/catalog-admin-model";
 import { CatalogSongModel } from "./models/catalog-song-model";
+import { CatalogSubmissionModel, SubmissionQuotaModel } from "./models/catalog-submission-model";
 import { CelebrationHistoryModel } from "./models/liturgical-celebration-history-model";
 import { LiturgicalCelebrationModel } from "./models/liturgical-celebration-model";
 import { RepertoireShareModel } from "./models/repertoire-share-model";
@@ -41,6 +42,8 @@ async function openConnection(): Promise<typeof mongoose> {
     CatalogAdminModel,
     LiturgicalCelebrationModel,
     CelebrationHistoryModel,
+    CatalogSubmissionModel,
+    SubmissionQuotaModel,
   ];
   for (const model of models as Model<unknown>[]) {
     await model.createCollection();

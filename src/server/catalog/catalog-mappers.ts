@@ -68,6 +68,43 @@ export function toCatalogSong(document: CatalogSongFields): CatalogSong {
     updatedAt: document.updatedAt.toISOString(),
     publishedAt: document.publishedAt ? document.publishedAt.toISOString() : null,
     liturgy: liturgy ? toLiturgy(liturgy) : null,
+    ...(document.video
+      ? {
+          video: {
+            provider: document.video.provider,
+            videoId: document.video.videoId,
+            ...(document.video.title ? { title: document.video.title } : {}),
+            kind: document.video.kind,
+            ...(document.video.submissionId ? { submissionId: document.video.submissionId } : {}),
+            approvedBy: document.video.approvedBy,
+            approvedAt: document.video.approvedAt.toISOString(),
+          },
+        }
+      : {}),
+    ...(document.contributions && document.contributions.length > 0
+      ? {
+          contributions: document.contributions.map((entry) => ({
+            submissionId: entry.submissionId,
+            submissionVersion: entry.submissionVersion,
+            mode: entry.mode,
+            fields: [...(entry.fields ?? [])],
+            approvedBy: entry.approvedBy,
+            approvedAt: entry.approvedAt.toISOString(),
+            ...(entry.publicCredit ? { publicCredit: entry.publicCredit } : {}),
+            ...(entry.license
+              ? {
+                  license: {
+                    display: entry.license.display,
+                    reproduce: entry.license.reproduce,
+                    redistribute: entry.license.redistribute,
+                    declarationVersion: entry.license.declarationVersion,
+                    acceptedAt: entry.license.acceptedAt.toISOString(),
+                  },
+                }
+              : {}),
+          })),
+        }
+      : {}),
   });
 
   if (!result.success) {

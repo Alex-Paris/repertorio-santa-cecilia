@@ -66,9 +66,11 @@ interface DeleteSongButtonProps {
   song: Song;
   usedBy: readonly Repertoire[];
   onConfirm: () => Promise<void>;
+  /** Aviso sobre uma sugestão ao catálogo feita a partir desta música. */
+  contributionNotice?: string;
 }
 
-export function DeleteSongButton({ song, usedBy, onConfirm }: DeleteSongButtonProps) {
+export function DeleteSongButton({ song, usedBy, onConfirm, contributionNotice }: DeleteSongButtonProps) {
   if (usedBy.length > 0) {
     return <SongInUseDialog song={song} usedBy={usedBy} />;
   }
@@ -77,7 +79,7 @@ export function DeleteSongButton({ song, usedBy, onConfirm }: DeleteSongButtonPr
     <ConfirmDialog
       trigger={trigger}
       title={`Excluir “${song.title}”?`}
-      description="A música e sua cifra serão removidas da sua biblioteca. Esta ação não pode ser desfeita."
+      description={`A música e sua cifra serão removidas da sua biblioteca. Esta ação não pode ser desfeita.${contributionNotice ? ` ${contributionNotice}` : ""}`}
       confirmLabel="Excluir música"
       onConfirm={onConfirm}
     />

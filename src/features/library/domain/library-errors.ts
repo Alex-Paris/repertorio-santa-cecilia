@@ -32,7 +32,14 @@ export type LibraryErrorCode =
   | "catalog-admin-required"
   | "rate-limited"
   | "celebration-not-covered"
-  | "celebration-not-found";
+  | "celebration-not-found"
+  | "submission-not-found"
+  | "submission-active"
+  | "submission-limit-exceeded"
+  | "submission-daily-limit"
+  | "submission-already-reviewed"
+  | "submission-duplicates"
+  | "submission-content-too-large";
 
 const DEFAULT_MESSAGES: Record<LibraryErrorCode, string> = {
   "storage-unavailable":
@@ -76,6 +83,17 @@ const DEFAULT_MESSAGES: Record<LibraryErrorCode, string> = {
   "celebration-not-covered":
     "Esta data ainda não está na base de celebrações do Repertório Web. Nenhuma leitura é estimada.",
   "celebration-not-found": "Esta celebração não foi encontrada.",
+  "submission-not-found": "Esta sugestão não foi encontrada.",
+  "submission-active":
+    "Esta música já tem uma sugestão em andamento. Acompanhe-a em Minhas sugestões.",
+  "submission-limit-exceeded":
+    "Você atingiu o limite de sugestões em análise. Aguarde a revisão das anteriores ou retire alguma.",
+  "submission-daily-limit": "Você atingiu o limite de sugestões novas por dia. Tente de novo amanhã.",
+  "submission-already-reviewed":
+    "Esta sugestão já foi decidida ou mudou de situação. Recarregue para ver o estado atual.",
+  "submission-duplicates":
+    "Encontramos músicas semelhantes no catálogo. Explique por que esta é outra música antes de enviar.",
+  "submission-content-too-large": "A cifra é grande demais para ser enviada como sugestão.",
 };
 
 export function isLibraryErrorCode(value: unknown): value is LibraryErrorCode {

@@ -32,3 +32,8 @@ export function parseYouTubeId(value: string | null | undefined): string | null 
 export function youTubeEmbedUrl(id: string): string {
   return `https://www.youtube-nocookie.com/embed/${id}?rel=0`;
 }
+
+/** Endereço comum do vídeo, para abrir no próprio YouTube. */
+export function youTubeWatchUrl(id: string): string {
+  return `https://www.youtube.com/watch?v=${encodeURIComponent(id)}`;
+}

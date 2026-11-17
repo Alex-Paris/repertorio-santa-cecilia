@@ -28,6 +28,11 @@ import { showToast } from "@/lib/utils/toast";
 import { useDocumentTitle } from "@/lib/utils/use-document-title";
 
 import { findLibrarySong } from "@/features/library/domain/library";
+import {
+  isActiveSubmission,
+  SongSubmissionAction,
+  useSongSubmission,
+} from "@/features/contributions/components/song-submission-action";
 
 import type { MusicalSong, Song, SongId, SongSource } from "../domain/song";
 import { ChordSheet } from "./chord-sheet";
@@ -142,6 +147,7 @@ function SongDetail({
   );
   const semitones = context ? itemSemitones : temporarySemitones;
   const canPresent = context !== null || (song.contentType !== "external-link" && Boolean(song.chordPro));
+  const { userId: accountId, submission } = useSongSubmission(personalSong ? song.id : null);
 
   function handleSemitonesChange(next: number): void {
     if (context) {
@@ -230,7 +236,19 @@ function SongDetail({
                 <Pencil data-icon="inline-start" aria-hidden />
                 Editar
               </Link>
-              <DeleteSongButton song={personalSong} usedBy={usedBy} onConfirm={onDelete} />
+              {accountId && <SongSubmissionAction songId={song.id} submission={submission} />}
+              <DeleteSongButton
+                song={personalSong}
+                usedBy={usedBy}
+                onConfirm={onDelete}
+                contributionNotice={
+                  isActiveSubmission(submission)
+                    ? "Esta música tem uma sugestão em andamento para o catálogo. A sugestão guarda a própria cópia e continua em análise; se preferir, retire-a em Minhas sugestões."
+                    : submission?.status === "approved"
+                      ? "A versão aprovada no catálogo não é afetada."
+                      : undefined
+                }
+              />
                 </>
               )}
             </>

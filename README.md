@@ -30,6 +30,7 @@ Este repositório está na **Etapa 2E.3**. O MongoDB é a única fonte editável
 - Exportação de backup em JSON e links públicos de repertórios.
 - Recuperação de bibliotecas antigas guardadas no navegador.
 - Modo claro e escuro, em layout para celular e computador, com as cores litúrgicas sempre acompanhadas do nome.
+- Contribuições ao catálogo: quem tem conta sugere uma música da própria biblioteca (com vídeo do YouTube e crédito público opcionais); a administração revisa em `/admin/contribuicoes` antes de qualquer publicação, e a música particular continua privada. Veja [docs/contribuicoes-catalogo.md](docs/contribuicoes-catalogo.md).
 - Identidade visual do Grupo de Canto Santa Cecília: catálogo em três zonas (lista, música e repertório atual) e preparação da missa com sugestões em abas e o repertório ao lado. Veja [docs/identidade-visual.md](docs/identidade-visual.md).
 
 ## Tecnologias
@@ -94,6 +95,7 @@ Com `AUTH_ALLOW_DEV_SIGNUP=true` no `.env`, crie contas em `/cadastro`. Nenhum e
 | `SHARE_LINK_SECRET`     | Assina os links públicos, com pelo menos 32 caracteres      |
 | `BETTER_AUTH_URL`       | Endereço público da aplicação, usado como origem confiável  |
 | `AUTH_ALLOW_DEV_SIGNUP` | Permite cadastro fora de produção                           |
+| `CONTRIBUTION_MAX_PENDING`, `CONTRIBUTION_MAX_PER_DAY`, `CONTRIBUTION_MAX_CHORDPRO_LENGTH` | Limites das contribuições ao catálogo. Padrão: 5 em andamento, 10 novas por dia, 50 mil caracteres |
 | `APP_PORT`, `MONGO_PORT`, `MONGO_ROOT_USERNAME`, `MONGO_ROOT_PASSWORD` | Somente para o Docker Compose |
 
 O `.env` nunca é versionado. Não crie variáveis `NEXT_PUBLIC_` com credenciais: tudo o que tem esse prefixo vai para o navegador. As variáveis são validadas na primeira requisição, e as mensagens de erro citam apenas os nomes. O `pnpm build` não exige banco nem variáveis.
@@ -342,6 +344,10 @@ docker compose exec app pnpm catalog:admin list
 docker compose exec app pnpm catalog:seed
 ```
 
+### Contribuições
+
+Na página de uma música particular, **Sugerir para o catálogo** envia uma cópia dela para análise; nada é publicado sem a decisão de uma pessoa da administração. A pessoa acompanha a situação (em análise, precisa de correções, aprovada, recusada, retirada) em **Minha conta → Minhas sugestões**. A administração revisa em `/admin/contribuicoes`: aprova como música nova (só metadados ou também letra e cifra, quando a autorização foi declarada) ou como complemento de uma música existente, pede correções ou recusa, sempre com a revisão esperada. Fluxo, direitos, duplicatas, vídeo, crédito, limites e concorrência em [docs/contribuicoes-catalogo.md](docs/contribuicoes-catalogo.md).
+
 Modelo, busca, contratos HTTP, índices e limitações estão em [docs/catalogo-central.md](docs/catalogo-central.md). Cadastro em etapas, revisão da classificação, importação, fontes do catálogo real e diagnóstico das sugestões estão em [docs/catalogo-editorial.md](docs/catalogo-editorial.md).
 
 ## Arquitetura de dados
@@ -463,7 +469,7 @@ Todas as rotas exigem sessão válida e aceitam apenas JSON. O limite é de 512 
 
 Os erros seguem o formato `{ "error": { "code", "message" } }`, com status 400, 401, 403, 404, 409, 413, 415, 500 ou 503.
 
-O catálogo tem uma API pública de leitura (`/api/v1/catalog/songs`) e uma de administração (`/api/v1/admin/catalog/songs`), descritas em [docs/catalogo-central.md](docs/catalogo-central.md).
+O catálogo tem uma API pública de leitura (`/api/v1/catalog/songs`) e uma de administração (`/api/v1/admin/catalog/songs`), descritas em [docs/catalogo-central.md](docs/catalogo-central.md). As contribuições usam `/api/v1/catalog/submissions` (conta da sessão) e `/api/v1/admin/catalog/submissions` (administração), descritas em [docs/contribuicoes-catalogo.md](docs/contribuicoes-catalogo.md#endpoints).
 
 ### Importação para a conta
 
@@ -500,6 +506,7 @@ Nunca versione o `.env`, e use segredos diferentes em cada ambiente. O Compose u
 - A base de celebrações cobre 9 datas, entre 15/11/2026 e 01/01/2027, todas ainda em revisão, com dois salmos não conferidos. Nenhuma fonte automatizada confiável cobre o calendário brasileiro com licença adequada. Não há calendário completo, reprodução de áudio, regras para o Tríduo Pascal e os dias de semana, nem precedência entre calendário diocesano e nacional.
 - O primeiro catálogo real tem 30 músicas só com metadados, conferidas por leitura automatizada das fontes, sem revisão humana: entram como rascunho, com a classificação não conferida, e só aparecem depois que a administração revisa e publica. Não há letra, cifra nem tom dessas músicas.
 - A busca do catálogo encontra o começo das palavras, sem relevância nem tolerância a erros. O tom original de uma música do catálogo não muda depois de publicada. Veja as demais limitações em [docs/catalogo-central.md](docs/catalogo-central.md#limitações).
+- Contribuições: a detecção de duplicatas compara títulos normalizados (sem títulos alternativos, que ainda não existem no modelo); os termos da declaração de direitos ainda dependem de revisão jurídica antes da abertura pública. Veja [docs/contribuicoes-catalogo.md](docs/contribuicoes-catalogo.md#limitações-conhecidas).
 - A grafia enarmônica segue a direção da transposição, sem análise harmônica do tom, e ainda não pode ser escolhida na interface.
 - Um backup exportado acima de 5 MB não pode ser reimportado pela ferramenta atual.
 - Atualizar a página durante o modo apresentação volta à leitura normal da música atual.

@@ -87,6 +87,9 @@ export function CatalogAdminList({ userId }: { userId: string }) {
           <Link href="/admin/catalogo/importar" className="text-sm font-medium underline underline-offset-3">
             Importar metadados
           </Link>
+          <Link href="/admin/contribuicoes" className="text-sm font-medium underline underline-offset-3">
+            Contribuições
+          </Link>
         </div>
         <Link href="/admin/catalogo/nova" className={cn(buttonVariants({ size: "lg" }))}>
           <Plus data-icon="inline-start" aria-hidden />

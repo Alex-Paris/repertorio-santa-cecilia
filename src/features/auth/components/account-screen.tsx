@@ -57,12 +57,26 @@ export async function AccountScreen() {
         >
           Compartilhamentos
         </Link>
+        <Link
+          href="/conta/sugestoes"
+          className={cn(buttonVariants({ variant: "outline", size: "lg" }), "h-10 px-4")}
+        >
+          Minhas sugestões
+        </Link>
         {isAdmin && (
           <Link
             href="/admin/catalogo"
             className={cn(buttonVariants({ variant: "outline", size: "lg" }), "h-10 px-4")}
           >
             Administrar catálogo
+          </Link>
+        )}
+        {isAdmin && (
+          <Link
+            href="/admin/contribuicoes"
+            className={cn(buttonVariants({ variant: "outline", size: "lg" }), "h-10 px-4")}
+          >
+            Contribuições
           </Link>
         )}
         {isAdmin && (

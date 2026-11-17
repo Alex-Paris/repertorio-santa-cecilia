@@ -1,17 +1,22 @@
 "use client";
 
 import { cn } from "cn";
-import { Film, PlayCircle, X } from "lucide-react";
+import { ExternalLink, Film, PlayCircle, X } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
-import { parseYouTubeId, youTubeEmbedUrl } from "../domain/video-reference";
+import { parseYouTubeId, youTubeEmbedUrl, youTubeWatchUrl } from "../domain/video-reference";
 
 interface VideoReferenceProps {
-  /** Endereço de referência autorizado; o catálogo ainda não guarda nenhum. */
+  /** Identificador do vídeo aprovado no catálogo (Etapa 2F.1). */
+  videoId?: string | null;
+  /** Endereço comum do YouTube, quando o identificador não está à mão. */
   url?: string | null;
+  /** Título da música, para o nome acessível do player. */
   title: string;
+  /** Título do vídeo informado na contribuição, se houver. */
+  videoTitle?: string;
   className?: string;
 }
 
@@ -21,8 +26,9 @@ interface VideoReferenceProps {
  * flutuante, que não tira a cifra da área principal; o player do YouTube (sem cookies) só é
  * carregado quando a pessoa pede, e nunca toca sozinho.
  */
-export function VideoReference({ url, title, className }: VideoReferenceProps) {
-  const id = parseYouTubeId(url);
+export function VideoReference({ videoId, url, title, videoTitle, className }: VideoReferenceProps) {
+  // O identificador passa pela mesma validação de um endereço: nada fora do padrão chega ao iframe.
+  const id = videoId ? parseYouTubeId(youTubeWatchUrl(videoId)) : parseYouTubeId(url);
   const [open, setOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const panelId = useId();
@@ -94,6 +100,7 @@ export function VideoReference({ url, title, className }: VideoReferenceProps) {
               <X aria-hidden />
             </Button>
           </div>
+          {videoTitle && <p className="text-sm wrap-break-word">{videoTitle}</p>}
           {loaded ? (
             <div className="mt-2 aspect-video overflow-hidden rounded-xl border bg-black">
               <iframe
@@ -111,12 +118,31 @@ export function VideoReference({ url, title, className }: VideoReferenceProps) {
                 O vídeo vem do YouTube, no modo de privacidade aprimorada, e só é carregado quando você pedir. A cifra
                 continua aberta ao lado.
               </p>
-              <Button type="button" variant="outline" size="lg" onClick={() => setLoaded(true)}>
+              <Button
+                type="button"
+                variant="outline"
+                size="lg"
+                className="h-auto min-h-10 max-w-full py-2 text-left whitespace-normal"
+                onClick={() => setLoaded(true)}
+              >
                 <PlayCircle data-icon="inline-start" aria-hidden />
                 Carregar vídeo de {title}
               </Button>
             </div>
           )}
+          <div className="mt-2 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs text-muted-foreground">
+            <p>Se o vídeo tiver sido removido, o YouTube mostra um aviso no lugar dele.</p>
+            <a
+              href={youTubeWatchUrl(id)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 rounded-sm font-medium text-foreground underline underline-offset-3"
+            >
+              Abrir no YouTube
+              <ExternalLink className="size-3.5" aria-hidden />
+              <span className="sr-only">(abre em outra aba)</span>
+            </a>
+          </div>
         </aside>
       )}
     </>

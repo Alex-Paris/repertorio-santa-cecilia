@@ -74,12 +74,51 @@ export interface CatalogMetadataSource {
   accessedAt?: string;
 }
 
+/** Vídeo de referência aprovado pela administração (Etapa 2F.1). */
+export interface CatalogVideo {
+  provider: "youtube";
+  videoId: string;
+  title?: string;
+  kind: "performance" | "reference";
+  /** Proposta de onde veio, quando veio de uma contribuição. */
+  submissionId?: string;
+  approvedBy: string;
+  approvedAt: IsoDateTime;
+}
+
+/**
+ * Contribuição aceita para esta música: de qual proposta, em qual versão, o que foi aplicado
+ * e o que o colaborador autorizou. A autorização é uma declaração, conferida pela administração.
+ */
+export interface CatalogContribution {
+  submissionId: string;
+  submissionVersion: number;
+  mode: "new" | "complement";
+  /** Campos aplicados a partir da proposta. */
+  fields: string[];
+  approvedBy: string;
+  approvedAt: IsoDateTime;
+  /** Nome público autorizado, já moderado. Ausente: sem crédito. */
+  publicCredit?: string;
+  /** Licença não exclusiva declarada, quando a letra e a cifra vieram da proposta. */
+  license?: {
+    display: boolean;
+    reproduce: boolean;
+    redistribute: boolean;
+    declarationVersion: string;
+    acceptedAt: IsoDateTime;
+  };
+}
+
 /** Identificação editorial que vai além dos dados musicais. */
 export interface CatalogSongDetails {
   /** Referência da composição: hinário, coletânea, ano, número. */
   compositionReference?: string;
   /** Fontes consultadas para título e autoria. */
   metadataSources: CatalogMetadataSource[];
+  video?: CatalogVideo;
+  /** Contribuições aceitas, em ordem. Vazio nas músicas cadastradas só pela administração. */
+  contributions?: CatalogContribution[];
 }
 
 /** Música do catálogo central, como a administração a vê. */
@@ -196,10 +235,47 @@ const musicalFields = {
   originalKey: z.enum(MUSICAL_KEYS),
 };
 
+const publicVideoSchema = z.strictObject({
+  provider: z.literal("youtube"),
+  videoId: z.string().regex(/^[A-Za-z0-9_-]{11}$/),
+  title: z.string().max(200).optional(),
+});
+
 const publicDetails = {
   compositionReference: z.string().max(300).optional(),
   metadataSources: z.array(catalogMetadataSourceSchema).optional(),
+  video: publicVideoSchema.optional(),
+  contributorCredit: z.string().max(60).optional(),
 };
+
+const catalogVideoSchema = z.strictObject({
+  provider: z.literal("youtube"),
+  videoId: z.string().regex(/^[A-Za-z0-9_-]{11}$/),
+  title: z.string().optional(),
+  kind: z.enum(["performance", "reference"]),
+  submissionId: z.string().optional(),
+  approvedBy: z.string(),
+  approvedAt: z.iso.datetime(),
+});
+
+const catalogContributionSchema = z.strictObject({
+  submissionId: z.string(),
+  submissionVersion: z.number().int().positive(),
+  mode: z.enum(["new", "complement"]),
+  fields: z.array(z.string()),
+  approvedBy: z.string(),
+  approvedAt: z.iso.datetime(),
+  publicCredit: z.string().optional(),
+  license: z
+    .strictObject({
+      display: z.boolean(),
+      reproduce: z.boolean(),
+      redistribute: z.boolean(),
+      declarationVersion: z.string(),
+      acceptedAt: z.iso.datetime(),
+    })
+    .optional(),
+});
 
 const hostedView = z.strictObject({
   ...musicalFields,
@@ -259,6 +335,8 @@ export const catalogSongSchema: z.ZodType<CatalogSong> = z.intersection(
     importKey: z.string().optional(),
     compositionReference: z.string().optional(),
     metadataSources: z.array(catalogMetadataSourceSchema),
+    video: catalogVideoSchema.optional(),
+    contributions: z.array(catalogContributionSchema).optional(),
     status: z.enum(CATALOG_STATUSES),
     rights: z.strictObject({
       basis: z.enum(RIGHTS_BASES),
@@ -310,6 +388,11 @@ export function canShareChordPro(song: PermissionFields): boolean {
   return canDisplayChordPro(song) && song.rights.shareChordPro;
 }
 
+/** Crédito público: o da contribuição que criou a música, se o colaborador o autorizou. */
+export function contributorCredit(song: Pick<CatalogSong, "contributions">): string | undefined {
+  return song.contributions?.find((entry) => entry.mode === "new" && entry.publicCredit)?.publicCredit;
+}
+
 /**
  * Projeção para usuários comuns. A cifra só aparece quando a exibição é permitida, e o link
  * externo só quando mostrá-lo é permitido; sem isso, a música aparece só com metadados.
@@ -323,6 +406,11 @@ export function toCatalogSongView(song: CatalogSong): CatalogSongView {
     ...(song.liturgy ? { liturgy: toPublicClassification(song.liturgy) } : {}),
     ...(song.compositionReference ? { compositionReference: song.compositionReference } : {}),
     ...(song.metadataSources.length > 0 ? { metadataSources: song.metadataSources.map((source) => ({ ...source })) } : {}),
+    // Vídeo: só provedor, identificador e título. Quem aprovou e de qual proposta veio ficam na administração.
+    ...(song.video
+      ? { video: { provider: song.video.provider, videoId: song.video.videoId, ...(song.video.title ? { title: song.video.title } : {}) } }
+      : {}),
+    ...(contributorCredit(song) ? { contributorCredit: contributorCredit(song) } : {}),
   };
 
   if (song.contentType === "metadata-only" || (song.contentType === "external-link" && !song.rights.linkExternalSource)) {
