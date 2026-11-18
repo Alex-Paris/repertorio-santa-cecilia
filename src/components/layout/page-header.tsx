@@ -21,12 +21,16 @@ export function PageHeader({ title, description, back, actions }: PageHeaderProp
           {back.label}
         </Link>
       )}
-      <div className="sm:flex sm:items-start sm:justify-between sm:gap-4">
-        <div className="min-w-0">
+      {/*
+        Título e ações lado a lado só quando cabem: o título tem uma largura mínima (20rem) e, sem
+        espaço, as ações descem para a linha de baixo em vez de espremer ou cobrir o título.
+      */}
+      <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-4">
+        <div className="min-w-0 flex-[1_1_20rem]">
           <h1 className="font-display text-3xl font-semibold tracking-tight text-balance md:text-4xl">{title}</h1>
           {description && <div className="mt-1.5 text-muted-foreground">{description}</div>}
         </div>
-        {actions && <div className="mt-4 flex shrink-0 flex-wrap gap-2 sm:mt-0">{actions}</div>}
+        {actions && <div className="flex max-w-full flex-wrap gap-2">{actions}</div>}
       </div>
     </header>
   );

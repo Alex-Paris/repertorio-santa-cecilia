@@ -53,8 +53,17 @@ interface PresentationStageProps {
   onExit: () => void;
 }
 
+/** Barras de cima e de baixo e o painel de ajustes: margem própria, com a área segura do aparelho. */
 const SAFE_SIDES =
-  "pr-[max(0.75rem,env(safe-area-inset-right))] pl-[max(0.75rem,env(safe-area-inset-left))]";
+  "pr-[max(0.75rem,env(safe-area-inset-right))] pl-[max(0.75rem,env(safe-area-inset-left))] md:pr-[max(1.5rem,env(safe-area-inset-right))] md:pl-[max(1.5rem,env(safe-area-inset-left))]";
+
+/**
+ * Área da cifra: mais respiro que as barras (1,25rem no celular, 2,5rem no computador), menos que
+ * uma página comum, para sobrar largura à letra. O fim tem folga para os últimos versos subirem
+ * do rodapé e serem lidos com calma durante a rolagem.
+ */
+const READING_SIDES =
+  "pr-[max(1.25rem,env(safe-area-inset-right))] pl-[max(1.25rem,env(safe-area-inset-left))] md:pr-[max(2.5rem,env(safe-area-inset-right))] md:pl-[max(2.5rem,env(safe-area-inset-left))]";
 
 const END_OF_SHEET = "Fim da cifra. Use “Voltar ao início” para rolar de novo.";
 
@@ -195,7 +204,7 @@ export function PresentationStage({
         role="region"
         aria-label={lyricsOnly ? "Letra" : "Cifra"}
         tabIndex={0}
-        className={`min-h-0 flex-1 overflow-auto overscroll-contain py-4 outline-none ${SAFE_SIDES}`}
+        className={`min-h-0 flex-1 overflow-auto overscroll-contain pt-6 pb-[max(4rem,20dvh)] outline-none md:pt-10 ${READING_SIDES}`}
       >
         <div className="mx-auto max-w-3xl">
           {content.notes && (

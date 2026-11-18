@@ -31,7 +31,7 @@ A impressão é sempre a nativa (`window.print()`): impressora física ou "Salva
 | --- | --- | --- |
 | A. Música com cifra | `/musicas/[id]/imprimir?modo=cifra&tom=N`, `/catalogo/[id]/imprimir?modo=cifra&tom=N` | Título, autoria, "Tom: X" (o tom da leitura) e a cifra com os acordes alinhados sobre a sílaba |
 | B. Música só com a letra | `…/imprimir?modo=letra` | Título, autoria e a letra, sem acordes nem comandos |
-| C. Repertório, só letras | `/repertorios/[id]/imprimir?formato=letras` | "Momento: Título" e a letra de cada música, uma depois da outra |
+| C. Repertório, só letras | `/repertorios/[id]/imprimir?formato=letras` | Resumo inicial (nome, celebração, data e a lista "Momento: Título"), depois "Momento: Título" e a letra de cada música, uma depois da outra |
 | D. Repertório, com cifras | `/repertorios/[id]/imprimir?formato=cifras` | Momento, título, autoria e o tom de cada item; cada música começa numa nova folha |
 
 O mesmo vale para um link público: `/s/[token]/imprimir?formato=letras|cifras`.
@@ -52,6 +52,7 @@ Antes de imprimir: nome, quantidade de músicas, ordem, momentos, avisos de mús
 CSS em `src/app/globals.css` (seção "Impressão"):
 
 - `@page { size: A4 portrait; margin: 16mm 15mm }`; papel branco, texto `#161616`, acordes em `#0b3a00` negrito; corpo 11,5 pt (letras) ou 12 pt (cifras), na serifa da identidade.
+- **Resumo do repertório (Etapa 2F.2B), só no formato de letras:** sob o nome, a celebração e a data, a lista "Ordem das músicas", numerada, com "Momento: Título" de cada item (inclusive os sem conteúdo). Fica inteiro na primeira folha (`break-inside: avoid`), e as letras começam logo abaixo, sem página nova. O repertório com cifras e as músicas individuais não têm resumo.
 - **Repertório só com letras:** as músicas seguem uma depois da outra, sem nova página. O título (`.print-song-head`, `break-after: avoid`) fica preso ao início da letra, e cada estrofe fica inteira (`break-inside: avoid`): um título nunca fica sozinho no fim da página.
 - **Repertório com cifras:** cada música a partir da segunda tem `break-before: page`. Uma música longa continua normalmente nas folhas seguintes (uma folha nova **não** limita a música a uma página); não há quebra depois da última, então não sobram folhas em branco.
 - Fora do papel: cabeçalho, navegação do celular, rodapé, avisos (toasts), botões e controles (`data-print-hide`), e o indicador de desenvolvimento do Next.
@@ -92,12 +93,21 @@ Anotações particulares dos itens nunca são impressas. Propostas de contribui�
 - Com o modo Letra, apresenta só a letra; o tom e a transposição saem do cabeçalho e dos ajustes.
 - Preservados: tela cheia, tamanho da fonte, rolagem automática, atalhos (Espaço, ← →, Esc), navegação entre as músicas do repertório e a transposição (na Cifra).
 - Cabeçalho, ajustes e rodapé ficam fora da área da cifra (coluna flexível): abrir os ajustes encolhe a área rolável, sem cobrir versos.
+- Respiro (Etapa 2F.2B): a área da cifra tem margem lateral de 1,25rem no celular e 2,5rem a partir de 768px (sempre respeitando a área segura do aparelho), 1,5–2,5rem no alto e uma folga no fim (`max(4rem, 20dvh)`), para os últimos versos subirem acima do rodapé. As barras e os ajustes usam 0,75rem / 1,5rem. Menos que uma página comum, para sobrar largura à letra.
 
 ## Hero e espaçamento das páginas
 
+- **Brilho do Hero (Etapa 2F.2B):** um núcleo dourado mais forte atrás da Santa Cecília (30%) e um halo largo (20%), com a mesma paleta; uma máscara dissolve a luz até a base da seção, sem linha de corte nos temas claro e escuro.
 - **Hero** (`components/layout/page-hero.tsx`): container externo `section[data-hero][data-bleed]` de ponta a ponta da página, e container interno com o conteúdo, a ilustração e a janela na largura do site (1448 px). A luz quente passa 24rem além do conteúdo dos dois lados e se dissolve aos poucos; a seção corta só na horizontal (`overflow-x: clip`), na borda da tela, sem `100vw` e sem esconder menus que abram para baixo.
 - **Páginas largas** (`data-layout="wide"`): o `main` ocupa a tela toda e cada bloco fica limitado a 1448 px com a mesma margem lateral de antes; só faixas `data-bleed` vão de ponta a ponta.
 - **Espaço sob o cabeçalho:** uma regra única, `--page-top` (20 px no celular, 32 px a partir de 768 px, 40 px a partir de 1024 px), no `main`. Com um Hero no topo, o próprio Hero dá esse espaço. A página da música do catálogo, que não tem Hero e começava a 16–24 px do cabeçalho, passou a seguir a regra comum, como as demais.
+
+## Páginas comuns (Etapa 2F.2B)
+
+- **Contêiner único:** as páginas sem `data-layout="wide"` usam uma coluna de 56rem (era 48rem), com margem lateral de 16px no celular, 24px a partir de 640px e 32px a partir de 768px (`--page-column`, `--page-gutter` em `globals.css`), sem margens por rota. O link público usa a mesma coluna.
+- **Navegação sem recarregar:** ao trocar de página, o Next (com Cache Components) mantém a página anterior escondida (`display: none`) dentro do mesmo `main`. Por isso o layout não pode depender do que o `main` contém: uma regra `main:has([data-layout=wide])` continuava valendo depois de sair do catálogo, e o repertório ficava sem margem até recarregar. Agora o `main` ocupa a largura toda e cada bloco visível recebe a própria margem (`:where(main#conteudo) > …`, especificidade zero: um formulário com largura própria menor continua com ela). O espaço sob o cabeçalho (`--page-top`) fica sempre no `main`, e o Hero no topo de uma página larga o compensa com margem negativa. Sem JavaScript; a regra `:has` no `main` deixou de existir.
+- **Cabeçalho da página (`PageHeader`):** título e ações ficam lado a lado só quando cabem (o título tem largura mínima de 20rem); sem espaço, as ações descem para a linha de baixo. Antes, nas páginas com muitas ações (música particular, repertório), o título ficava espremido em três linhas e, na música, os botões chegavam a cobrir o começo do título.
+- **Minha conta:** seções em cartões, em duas colunas a partir de 768px: **Conta** (nome, e-mail, sessão e "Sair da conta"), **Biblioteca e repertórios** (Minhas músicas, Repertórios, Compartilhamentos, Importar biblioteca antiga), **Contribuições** (Minhas sugestões) e, só para quem tem o papel, **Administração** (catálogo, contribuições, liturgia). Cada ação é uma linha com ícone, nome e o que se faz ali. Os destinos são os mesmos de antes.
 
 ## Testes
 

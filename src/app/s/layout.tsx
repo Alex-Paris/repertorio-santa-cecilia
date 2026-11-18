@@ -18,7 +18,8 @@ export default function PublicShareLayout({ children }: { children: ReactNode })
         <p className="font-semibold">Repertório</p>
         <ThemeToggle />
       </header>
-      <main id="conteudo" tabIndex={-1} className="mx-auto w-full max-w-3xl px-4 pb-6 md:px-8 md:pb-10">
+      {/* Mesma coluna de leitura das demais páginas (regras de layout em globals.css). */}
+      <main id="conteudo" tabIndex={-1} className="w-full pb-6 md:pb-10">
         {children}
       </main>
     </div>

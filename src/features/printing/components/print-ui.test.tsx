@@ -40,6 +40,33 @@ describe("folha: repertório só com letras", () => {
   });
 });
 
+describe("resumo do repertório (Etapa 2F.2B)", () => {
+  it("só letras: nome, celebração e a lista \"Momento: Título\" antes das letras completas", () => {
+    const { container } = render(<PrintDocument format="lyrics" items={items} header={{ title: "Missa", lines: ["Cristo Rei", "22 de novembro"] }} />);
+    const summary = container.querySelector<HTMLElement>("[data-print-summary]")!;
+    expect(within(summary).getByRole("heading", { name: "Ordem das músicas" })).toBeDefined();
+    expect(within(summary).getAllByRole("listitem").map((item) => item.textContent)).toEqual([
+      "1.Entrada: Hino Curto",
+      "2.Música 2: Cântico Longo",
+      "3.Comunhão: Ponte de Papel",
+    ]);
+    // Ordem no papel: cabeçalho (nome e celebração), resumo e só então as letras.
+    const header = container.querySelector("header")!;
+    const firstSong = container.querySelector("[data-print-song]")!;
+    expect(header.textContent).toContain("Cristo Rei");
+    expect(header.compareDocumentPosition(summary) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(summary.compareDocumentPosition(firstSong) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(summary.querySelector("[data-chord]")).toBeNull();
+  });
+
+  it("não aparece nas cifras nem na música individual", () => {
+    const { container, rerender } = render(<PrintDocument format="chords" items={items} header={{ title: "Missa" }} />);
+    expect(container.querySelector("[data-print-summary]")).toBeNull();
+    rerender(<PrintDocument format="lyrics" items={[items[0]!]} single />);
+    expect(container.querySelector("[data-print-summary]")).toBeNull();
+  });
+});
+
 describe("folha: repertório com cifras", () => {
   it("cada música a partir da segunda começa numa nova folha; a primeira não", () => {
     const { container } = render(<PrintDocument format="chords" items={items} />);

@@ -30,14 +30,16 @@ export function PageHero({ title, subtitle, align = "center", children, classNam
       {/* Container interno: conteúdo, ilustração e janela na largura do site (1448px). */}
       <div className={cn("relative mx-auto w-full max-w-[1448px] px-4", centered ? "pt-4 pb-4 md:pt-5" : "pt-3 pb-3")}>
         {/*
-          Luz quente atrás da ilustração e da janela. A camada passa 24rem além do conteúdo dos dois
+          Luz quente atrás da ilustração (um núcleo mais dourado e um halo largo, Etapa 2F.2B) e da
+          janela. A camada passa 24rem além do conteúdo dos dois
           lados, com as mesmas posições de antes (12% e 92% da largura do conteúdo): os degradês somem
           aos poucos em vez de serem cortados na borda do conteúdo. A seção corta só na horizontal
-          (`overflow-x: clip`), na borda da tela, sem esconder menus que abram para baixo.
+          (`overflow-x: clip`), na borda da tela, sem esconder menus que abram para baixo; uma máscara
+          dissolve a luz até a base da seção, para não haver linha de corte embaixo.
         */}
         <div
           aria-hidden
-          className="absolute inset-y-0 -right-[24rem] -left-[24rem] -z-10 bg-[radial-gradient(420px_300px_at_calc(12%_+_18.24rem)_38%,color-mix(in_oklab,var(--gold)_22%,transparent),transparent_70%),radial-gradient(360px_260px_at_calc(92%_-_20.16rem)_10%,color-mix(in_oklab,var(--card)_80%,transparent),transparent_70%)]"
+          className="absolute inset-y-0 -right-[24rem] -left-[24rem] -z-10 [mask-image:linear-gradient(to_bottom,black_55%,transparent)] bg-[radial-gradient(300px_260px_at_calc(12%_+_18.24rem)_42%,color-mix(in_oklab,var(--gold)_30%,transparent),transparent_72%),radial-gradient(560px_380px_at_calc(12%_+_18.24rem)_40%,color-mix(in_oklab,var(--gold)_20%,transparent),transparent_70%),radial-gradient(360px_260px_at_calc(92%_-_20.16rem)_10%,color-mix(in_oklab,var(--card)_80%,transparent),transparent_70%)]"
         />
         <GothicWindow
           className={cn("absolute top-0 right-3 -z-10 hidden opacity-45 xl:block", centered ? "h-[14rem] w-[12rem]" : "h-[8.5rem] w-[7.5rem]")}

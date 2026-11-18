@@ -198,16 +198,36 @@
 }
 
 /*
- * Espaço sob o cabeçalho (Etapa 2F.2): uma regra só para todas as páginas. Sem Hero, o conteúdo
- * começa a `--page-top` do cabeçalho; com Hero no topo, o próprio Hero dá esse espaço.
+ * Layout das páginas (Etapas 2F.2 e 2F.2B). O `main` ocupa a largura toda; cada bloco visível
+ * decide o próprio espaço. Nada aqui depende do que *existe* dentro do `main`: ao navegar sem
+ * recarregar, o Next mantém a página anterior escondida (`display: none`) no mesmo `main`, e uma
+ * regra do tipo `main:has(...)` passaria a valer para a página errada.
+ *
+ * - `--page-top`: espaço sob o cabeçalho, sempre no `main`; o Hero no topo de uma página larga
+ *   o compensa (ele mesmo dá o respiro).
+ * - Páginas comuns: cada bloco direto do `main` fica na coluna de leitura (56rem, com margem
+ *   lateral `--page-gutter`), alinhado à esquerda dela. Especificidade zero (`:where`): um bloco
+ *   com largura própria menor (um formulário estreito) continua com ela.
+ * - Páginas largas (`data-layout="wide"`): cada bloco fica em 1448px; só `data-bleed` (o fundo do
+ *   Hero) vai de ponta a ponta, sem `100vw`.
+ * - Diálogos em tela cheia (`role="dialog"`, como a apresentação) não recebem margem nenhuma.
  */
 :root {
   --page-top: 1.25rem;
+  --page-gutter: 1rem;
+  --page-column: 56rem;
+}
+
+@media (min-width: 40rem) {
+  :root {
+    --page-gutter: 1.5rem;
+  }
 }
 
 @media (min-width: 48rem) {
   :root {
     --page-top: 2rem;
+    --page-gutter: 2rem;
   }
 }
 
@@ -221,15 +241,14 @@ main#conteudo {
   padding-top: var(--page-top);
 }
 
-main#conteudo:has(> [data-layout="wide"] > [data-hero]:first-child) {
-  padding-top: 0;
+:where(main#conteudo) > :where(:not([data-layout="wide"], [role="dialog"])) {
+  margin-inline: max(var(--page-gutter), calc((100% - var(--page-column)) / 2 + var(--page-gutter)));
 }
 
-/*
- * Páginas largas: o `main` ocupa a tela toda e cada bloco fica na largura do site (1448px, com a
- * mesma margem lateral de antes). Só faixas marcadas com `data-bleed` (o fundo do Hero) vão de
- * ponta a ponta, sem `100vw`: a largura vem do próprio fluxo, sem barra de rolagem horizontal.
- */
+[data-layout="wide"] > [data-hero]:first-child {
+  margin-top: calc(var(--page-top) * -1);
+}
+
 [data-layout="wide"] > :not([data-bleed]) {
   width: 100%;
   max-width: 1448px;
@@ -280,6 +299,11 @@ main#conteudo:has(> [data-layout="wide"] > [data-hero]:first-child) {
   break-inside: avoid;
 }
 
+/* O resumo do repertório fica inteiro na primeira folha, quando cabe. */
+.print-paper .print-summary {
+  break-inside: avoid;
+}
+
 .print-paper[data-print-format="lyrics"] .print-song + .print-song {
   margin-top: 1.4em;
 }
@@ -316,6 +340,11 @@ main#conteudo:has(> [data-layout="wide"] > [data-hero]:first-child) {
     max-width: none !important;
     margin: 0 !important;
     padding: 0 !important;
+  }
+
+  /* No papel valem só as margens do @page: a coluna de leitura da tela não se aplica. */
+  main#conteudo > * {
+    margin-inline: 0 !important;
   }
 
   .print-paper {

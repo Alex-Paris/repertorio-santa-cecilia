@@ -57,9 +57,9 @@ export function AppShell({ children }: { children: ReactNode }) {
       <main
         id="conteudo"
         tabIndex={-1}
-        // O espaço sob o cabeçalho vem de uma regra única (`--page-top`, em globals.css); páginas
-        // largas ocupam a tela toda e limitam cada bloco a 1448px, para o fundo do Hero não ser cortado.
-        className="mx-auto w-full max-w-3xl flex-1 px-4 pb-10 md:px-8 md:pb-12 has-[[data-layout=wide]]:max-w-none has-[[data-layout=wide]]:px-0 md:has-[[data-layout=wide]]:px-0"
+        // Largura toda: a coluna de leitura (56rem), as margens e o espaço sob o cabeçalho vêm das
+        // regras de layout em globals.css, aplicadas a cada bloco visível (não ao `main` inteiro).
+        className="w-full flex-1 pb-10 md:pb-12"
       >
         {children}
       </main>

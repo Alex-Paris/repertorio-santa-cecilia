@@ -65,6 +65,28 @@ export function PrintDocument({ format, items, single = false, header, className
         </header>
       )}
 
+      {/*
+        Resumo (Etapa 2F.2B), só no repertório somente letras: a ordem da celebração numa lista,
+        "Momento: Título", antes das letras completas. As cifras continuam como antes.
+      */}
+      {format === "lyrics" && !single && items.length > 0 && (
+        <section data-print-summary aria-labelledby="resumo-do-repertorio" className="print-summary mb-6 border-b border-[#c9c9c9] pb-4">
+          <h2 id="resumo-do-repertorio" className="text-[0.78em] font-semibold tracking-[0.08em] text-[#474747] uppercase">
+            Ordem das músicas
+          </h2>
+          <ol className="mt-1.5 space-y-0.5">
+            {items.map((item) => (
+              <li key={item.id} className="flex gap-2">
+                <span className="w-[1.4em] shrink-0 text-right text-[#474747] tabular-nums">{item.position}.</span>
+                <span className="min-w-0">
+                  <span className="font-semibold">{item.label}:</span> {item.title}
+                </span>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
+
       {items.map((item, index) => (
         <section
           key={item.id}

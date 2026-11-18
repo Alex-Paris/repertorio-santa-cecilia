@@ -76,6 +76,7 @@ Tipografia: Fraunces (serifa, tamanho óptico 72, sem as formas "suaves") para t
 - **Hero em dois containers:** o externo (`section[data-hero][data-bleed]`) vai de ponta a ponta da página; o interno limita conteúdo, ilustração e janela a 1448 px. A luz quente se estende 24rem além do conteúdo e se dissolve, sem as faixas laterais que apareciam em janelas largas (o fundo era cortado na borda do conteúdo). Sem `100vw`: só `overflow-x: clip` na seção.
 - **Páginas largas:** o `main` ocupa a tela toda e cada bloco fica em 1448 px (`[data-layout="wide"] > :not([data-bleed])`).
 - **Espaço sob o cabeçalho:** regra única `--page-top` (20/32/40 px); o Hero dá o próprio espaço. Vale também para páginas largas sem Hero, como a da música do catálogo.
+- **Refinamentos (Etapa 2F.2B):** brilho mais forte atrás da Santa Cecília, com máscara na base do Hero; páginas comuns numa coluna de 56rem com margens de 16/24/32px; `PageHeader` com as ações descendo para a linha de baixo quando não cabem; "Minha conta" em cartões por assunto; mais respiro na área da cifra da apresentação. Detalhes em [leitura-e-impressao.md](leitura-e-impressao.md#páginas-comuns-etapa-2f2b).
 - **Apresentação:** superfície clara própria (`.presentation-light`: pergaminho `#fdf9f1`, letra `#22180f`, acordes `#2e5208`), independente do tema do site; a escura (`.presentation-dark`) é escolha de quem apresenta.
 - **Papel:** a impressão usa sempre branco e quase preto, em serifa, fora do tema do site. Detalhes em [leitura-e-impressao.md](leitura-e-impressao.md).
 
