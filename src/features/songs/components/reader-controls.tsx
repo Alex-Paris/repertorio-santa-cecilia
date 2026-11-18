@@ -17,6 +17,8 @@ import {
   MAX_SCROLL_SPEED,
   MIN_FONT_SIZE,
   MIN_SCROLL_SPEED,
+  READING_MODE_LABELS,
+  READING_MODES,
   SCROLL_SPEED_STEP,
 } from "../domain/reader-preferences";
 import { DISABLED_LOOK } from "./transpose-controls";
@@ -181,6 +183,37 @@ export function ScrollSpeedControls({ speed, onScrollToTop }: ScrollSpeedControl
           velocidades menores movimentam menos a tela.
         </p>
       )}
+    </div>
+  );
+}
+
+/**
+ * Cifra ou Letra. A escolha vale para o leitor e para a apresentação desta pessoa, neste
+ * navegador; o tom e a posição de leitura não mudam ao alternar.
+ */
+export function ReadingModeToggle({ className, compact = false }: { className?: string; compact?: boolean }) {
+  const { readingMode } = useSyncExternalStore(
+    readerPreferencesStore.subscribe,
+    readerPreferencesStore.getSnapshot,
+    readerPreferencesStore.getServerSnapshot,
+  );
+  return (
+    <div role="group" aria-label="Modo de leitura" className={cn("inline-flex rounded-lg border bg-background/60 p-0.5", className)}>
+      {READING_MODES.map((mode) => (
+        <button
+          key={mode}
+          type="button"
+          aria-pressed={readingMode === mode}
+          onClick={() => readerPreferencesStore.update({ readingMode: mode })}
+          className={cn(
+            "rounded-md px-3 font-medium transition-colors aria-pressed:bg-primary aria-pressed:text-primary-foreground",
+            compact ? "h-8 text-sm" : "h-9 text-sm",
+            readingMode !== mode && "text-muted-foreground hover:text-foreground",
+          )}
+        >
+          {READING_MODE_LABELS[mode]}
+        </button>
+      ))}
     </div>
   );
 }

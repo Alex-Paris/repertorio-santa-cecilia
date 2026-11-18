@@ -15,7 +15,8 @@ import { ChordSheet } from "@/features/songs/components/chord-sheet";
 import { ExternalSourceNotice } from "@/features/songs/components/external-source-notice";
 import { KeyLabel } from "@/features/songs/components/key-label";
 import { PresentationStage } from "@/features/songs/components/presentation-stage";
-import { FontSizeControls } from "@/features/songs/components/reader-controls";
+import { PrintMenu } from "@/features/printing/components/print-menu";
+import { FontSizeControls, ReadingModeToggle } from "@/features/songs/components/reader-controls";
 import { TransposeControls } from "@/features/songs/components/transpose-controls";
 import { VideoReference } from "@/features/songs/components/video-reference";
 import { useReaderPreferences } from "@/features/songs/hooks/use-reader-preferences";
@@ -50,7 +51,7 @@ export function CatalogSongDetail({
   contained = false,
   className,
 }: CatalogSongDetailProps) {
-  const { fontSize } = useReaderPreferences();
+  const { fontSize, readingMode } = useReaderPreferences();
   const [semitones, setSemitones] = useState(0);
   const [presenting, setPresenting] = useState(false);
   const chordPro = song.contentType === "external-link" ? undefined : song.chordPro;
@@ -119,12 +120,22 @@ export function CatalogSongDetail({
             </ul>
           )}
           {/* Ações sobre a música; os controles de leitura ficam na barra presa sobre a cifra. */}
-          <div className="ml-auto flex shrink-0 items-center gap-2">
+          <div className="ml-auto flex max-w-full flex-wrap items-center justify-end gap-2">
             {chordPro && (
               <Button size="lg" variant="outline" className="h-9 px-3" onClick={() => setPresenting(true)}>
                 <MonitorPlay data-icon="inline-start" aria-hidden />
                 Apresentar
               </Button>
+            )}
+            {chordPro && (
+              <PrintMenu
+                size="sm"
+                align="end"
+                options={[
+                  { label: "Com cifra", href: `/catalogo/${encodeURIComponent(song.id)}/imprimir?modo=cifra${semitones !== 0 ? `&tom=${semitones}` : ""}` },
+                  { label: "Somente letra", href: `/catalogo/${encodeURIComponent(song.id)}/imprimir?modo=letra` },
+                ]}
+              />
             )}
             <AddToRepertoire
               songId={song.id}
@@ -160,7 +171,9 @@ export function CatalogSongDetail({
               <KeyLabel musicalKey={song.originalKey} />
             </p>
           )}
-          {chordPro && song.originalKey && (
+          {chordPro && <ReadingModeToggle compact />}
+          {/* Na letra não há acordes a transpor; o tom escolhido volta igual na cifra. */}
+          {chordPro && song.originalKey && readingMode === "chords" && (
             <TransposeControls
               originalKey={song.originalKey}
               semitones={semitones}
@@ -191,7 +204,7 @@ export function CatalogSongDetail({
               // Letra e acordes em serifa, como na referência; os acordes seguem em colunas sobre a sílaba.
               // Sem rolagem própria: a cifra usa toda a altura da zona (ou da página).
               <div className="overflow-x-auto rounded-xl border bg-background/40 px-5 py-4 font-display md:px-7 md:py-5 [&_.font-mono]:font-display [&_.font-mono]:text-[0.95em]">
-                <ChordSheet source={chordPro} semitones={semitones} fontSize={fontSize} />
+                <ChordSheet source={chordPro} semitones={semitones} fontSize={fontSize} mode={readingMode} />
               </div>
             )}
           </div>

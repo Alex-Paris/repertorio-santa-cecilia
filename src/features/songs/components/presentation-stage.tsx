@@ -4,6 +4,8 @@ import { Maximize, Minimize, Pause, Play, SlidersHorizontal, X, ChevronLeft, Che
 import Link from "next/link";
 import { useId, useRef, useState } from "react";
 
+import { cn } from "cn";
+
 import { Button } from "@/components/ui/button";
 
 import type { MusicalKey } from "../domain/musical-key";
@@ -12,11 +14,13 @@ import { useAutoScroll } from "../hooks/use-auto-scroll";
 import { useFullscreen } from "../hooks/use-fullscreen";
 import { usePresentationLock } from "../hooks/use-presentation-lock";
 import { usePresentationShortcuts } from "../hooks/use-presentation-shortcuts";
+import { readerPreferencesStore } from "../data/reader-preferences-store";
+import { PRESENTATION_THEMES, type PresentationTheme } from "../domain/reader-preferences";
 import { useReaderPreferences } from "../hooks/use-reader-preferences";
 import { ChordSheet } from "./chord-sheet";
 import { ExternalSourceNotice } from "./external-source-notice";
 import { KeyLabel } from "./key-label";
-import { FontSizeControls, ScrollSpeedControls } from "./reader-controls";
+import { FontSizeControls, ReadingModeToggle, ScrollSpeedControls } from "./reader-controls";
 import { DISABLED_LOOK, TransposeControls } from "./transpose-controls";
 
 export interface PresentationContent {
@@ -54,6 +58,30 @@ const SAFE_SIDES =
 
 const END_OF_SHEET = "Fim da cifra. Use “Voltar ao início” para rolar de novo.";
 
+const THEME_LABELS: Record<PresentationTheme, string> = { light: "Claro", dark: "Escuro" };
+
+/** Fundo da apresentação, independente do tema do site: claro (pergaminho) por padrão. */
+function PresentationThemeToggle({ theme }: { theme: PresentationTheme }) {
+  return (
+    <div role="group" aria-label="Fundo da apresentação" className="flex items-center gap-2 text-sm">
+      <span className="text-muted-foreground">Fundo</span>
+      <div className="inline-flex rounded-lg border p-0.5">
+        {PRESENTATION_THEMES.map((option) => (
+          <button
+            key={option}
+            type="button"
+            aria-pressed={theme === option}
+            onClick={() => readerPreferencesStore.update({ presentationTheme: option })}
+            className="h-8 rounded-md px-3 font-medium aria-pressed:bg-primary aria-pressed:text-primary-foreground"
+          >
+            {THEME_LABELS[option]}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /** Só apresenta: de onde vêm os dados e o que fazer com o tom são decisões de quem o usa. */
 export function PresentationStage({
   content,
@@ -70,7 +98,8 @@ export function PresentationStage({
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [status, setStatus] = useState("");
-  const { fontSize, scrollSpeed } = useReaderPreferences();
+  const { fontSize, scrollSpeed, readingMode, presentationTheme } = useReaderPreferences();
+  const lyricsOnly = readingMode === "lyrics";
 
   const scroll = useAutoScroll(scrollerRef, scrollSpeed, () => setStatus(END_OF_SHEET));
   const fullscreen = useFullscreen();
@@ -120,7 +149,11 @@ export function PresentationStage({
       aria-modal="true"
       aria-labelledby={titleId}
       tabIndex={-1}
-      className="fixed inset-0 z-50 flex flex-col bg-background outline-none"
+      data-presentation-theme={presentationTheme}
+      className={cn(
+        "fixed inset-0 z-50 flex flex-col bg-background text-foreground outline-none",
+        presentationTheme === "dark" ? "presentation-dark" : "presentation-light",
+      )}
     >
       <header
         className={`flex items-center gap-2 border-b pt-[max(0.5rem,env(safe-area-inset-top))] pb-2 ${SAFE_SIDES}`}
@@ -137,7 +170,7 @@ export function PresentationStage({
           <p className="truncate text-xs text-muted-foreground">{content.artist}</p>
         </div>
 
-        {content.originalKey && (
+        {content.originalKey && !(lyricsOnly && chordPro) && (
           <p className="flex shrink-0 items-baseline gap-1 text-sm">
             <span aria-hidden className="text-muted-foreground">Tom</span>
             <KeyLabel musicalKey={transposeKey(content.originalKey, semitones)} />
@@ -160,7 +193,7 @@ export function PresentationStage({
       <div
         ref={scrollerRef}
         role="region"
-        aria-label="Cifra"
+        aria-label={lyricsOnly ? "Letra" : "Cifra"}
         tabIndex={0}
         className={`min-h-0 flex-1 overflow-auto overscroll-contain py-4 outline-none ${SAFE_SIDES}`}
       >
@@ -178,17 +211,24 @@ export function PresentationStage({
           {content.emptyMessage && !chordPro && (
             <p className="text-sm text-muted-foreground">{content.emptyMessage}</p>
           )}
-          {chordPro && <ChordSheet source={chordPro} semitones={semitones} fontSize={fontSize} />}
+          {chordPro && <ChordSheet source={chordPro} semitones={semitones} fontSize={fontSize} mode={readingMode} />}
         </div>
       </div>
 
       {settingsOpen && content.originalKey && chordPro && (
         <div className={`max-h-[45dvh] space-y-3 overflow-y-auto border-t py-3 ${SAFE_SIDES}`}>
-          <TransposeControls
-            originalKey={content.originalKey}
-            semitones={semitones}
-            onChange={onSemitonesChange}
-          />
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <ReadingModeToggle compact />
+            <PresentationThemeToggle theme={presentationTheme} />
+          </div>
+          {/* Na letra não há acordes: o tom fica guardado e volta igual ao retornar à cifra. */}
+          {!lyricsOnly && (
+            <TransposeControls
+              originalKey={content.originalKey}
+              semitones={semitones}
+              onChange={onSemitonesChange}
+            />
+          )}
           <FontSizeControls fontSize={fontSize} />
           <ScrollSpeedControls speed={scrollSpeed} onScrollToTop={handleScrollToTop} />
           <p className="text-xs text-muted-foreground">

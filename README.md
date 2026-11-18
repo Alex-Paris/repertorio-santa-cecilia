@@ -26,7 +26,8 @@ Este repositório está na **Etapa 2E.3**. O MongoDB é a única fonte editável
 - Transposição das cifras na leitura, de -11 a +11 semitons.
 - Tom e anotações próprios de cada música em cada repertório.
 - Biblioteca salva na conta, disponível em qualquer navegador.
-- Modo apresentação com rolagem automática, controle de fonte e navegação entre as músicas do repertório.
+- Modo apresentação com rolagem automática, controle de fonte e navegação entre as músicas do repertório, em fundo claro (pergaminho) por padrão.
+- Leitura em modo **Cifra** ou **Letra** (só a letra, sem acordes) e impressão pelo navegador, inclusive "Salvar como PDF": música com cifra ou só a letra, repertório só com as letras (contínuo) ou com as cifras (uma música por folha). Veja [docs/leitura-e-impressao.md](docs/leitura-e-impressao.md).
 - Exportação de backup em JSON e links públicos de repertórios.
 - Recuperação de bibliotecas antigas guardadas no navegador.
 - Modo claro e escuro, em layout para celular e computador, com as cores litúrgicas sempre acompanhadas do nome.
@@ -511,6 +512,7 @@ Nunca versione o `.env`, e use segredos diferentes em cada ambiente. O Compose u
 - Um backup exportado acima de 5 MB não pode ser reimportado pela ferramenta atual.
 - Atualizar a página durante o modo apresentação volta à leitura normal da música atual.
 - O suporte foi validado no Chrome, em computador e em emulação de celular. Safari, iOS e aparelhos físicos ainda não foram testados.
+- Impressão: as folhas de continuação não repetem o título da música, e não há escolha de papel, margens ou tamanho de letra. A paginação foi validada só no Chrome. Veja [docs/leitura-e-impressao.md](docs/leitura-e-impressao.md#limitações).
 - Como os dados são carregados no cliente, `/musicas/<id>` e `/repertorios/<id>` respondem HTTP 200, e a tela de "não encontrado" é decidida no cliente. Essas páginas têm `noindex`.
 
 ## Próximas etapas

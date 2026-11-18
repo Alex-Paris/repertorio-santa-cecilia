@@ -58,13 +58,16 @@ async function CatalogSongContent({ params, searchParams }: CatalogSongPageProps
   const massDate = isValidIsoDate(query.missa) ? query.missa : null;
   const repertoireId = isValidEntityId(query.repertorio) ? query.repertorio : null;
   return loaded.song ? (
-    <div data-layout="wide" className="grid gap-4 pt-4 pb-24 md:pt-6 xl:grid-cols-[minmax(0,1fr)_19.5rem] xl:pb-0">
-      <CatalogSongScreen
-        song={loaded.song}
-        back={massDate ? { href: `/preparar-missa?data=${massDate}`, label: "Preparar missa" } : undefined}
-        currentRepertoire={{ repertoireId }}
-      />
-      <CatalogRepertoireDock repertoireId={repertoireId} locationHref={`/catalogo/${encodeURIComponent(id)}`} addMore="catalog" />
+    // Sem Hero: o espaço sob o cabeçalho vem da regra comum do layout (`--page-top`).
+    <div data-layout="wide">
+      <div className="grid gap-4 pb-24 xl:grid-cols-[minmax(0,1fr)_19.5rem] xl:pb-0">
+        <CatalogSongScreen
+          song={loaded.song}
+          back={massDate ? { href: `/preparar-missa?data=${massDate}`, label: "Preparar missa" } : undefined}
+          currentRepertoire={{ repertoireId }}
+        />
+        <CatalogRepertoireDock repertoireId={repertoireId} locationHref={`/catalogo/${encodeURIComponent(id)}`} addMore="catalog" />
+      </div>
     </div>
   ) : (
     <EmptyState icon={SearchX} title="Música não encontrada" description="Esta música não está disponível no catálogo." />

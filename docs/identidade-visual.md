@@ -71,6 +71,14 @@ Tipografia: Fraunces (serifa, tamanho óptico 72, sem as formas "suaves") para t
 - **"Minhas músicas"** saiu da barra superior e foi para o menu "Conta" (e para "Conta" no celular).
 - **Ícone do cabeçalho:** o detalhe de Santa Cecília no lugar da lira genérica do mockup, como pede o briefing.
 
+## Hero, espaçamento e apresentação (Etapa 2F.2)
+
+- **Hero em dois containers:** o externo (`section[data-hero][data-bleed]`) vai de ponta a ponta da página; o interno limita conteúdo, ilustração e janela a 1448 px. A luz quente se estende 24rem além do conteúdo e se dissolve, sem as faixas laterais que apareciam em janelas largas (o fundo era cortado na borda do conteúdo). Sem `100vw`: só `overflow-x: clip` na seção.
+- **Páginas largas:** o `main` ocupa a tela toda e cada bloco fica em 1448 px (`[data-layout="wide"] > :not([data-bleed])`).
+- **Espaço sob o cabeçalho:** regra única `--page-top` (20/32/40 px); o Hero dá o próprio espaço. Vale também para páginas largas sem Hero, como a da música do catálogo.
+- **Apresentação:** superfície clara própria (`.presentation-light`: pergaminho `#fdf9f1`, letra `#22180f`, acordes `#2e5208`), independente do tema do site; a escura (`.presentation-dark`) é escolha de quem apresenta.
+- **Papel:** a impressão usa sempre branco e quase preto, em serifa, fora do tema do site. Detalhes em [leitura-e-impressao.md](leitura-e-impressao.md).
+
 ## Refinamento de usabilidade (Etapa 2E.4B)
 
 Mesma identidade; mudanças de densidade, navegação e prioridade de leitura. Nenhuma regra de negócio, dado ou contrato mudou.

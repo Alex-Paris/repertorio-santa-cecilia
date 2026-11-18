@@ -14,13 +14,15 @@ import { Toaster } from "./toaster";
 /**
  * Cabeçalho oliva com a marca, a navegação principal, a busca e a conta; no celular, barra
  * inferior. As páginas largas (início, missa, catálogo) marcam `data-layout="wide"` e usam
- * a largura das referências; as demais continuam em coluna de leitura.
+ * a largura das referências; as demais continuam em coluna de leitura. Nada disso vai para a
+ * impressão (`data-print-hide`).
  */
 export function AppShell({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-dvh flex-col">
+    <div data-print-shell className="flex min-h-dvh flex-col">
       <a
         data-app-chrome
+        data-print-hide
         href="#conteudo"
         className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-lg focus:bg-primary focus:px-3 focus:py-2 focus:text-sm focus:text-primary-foreground"
       >
@@ -30,6 +32,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       {/* Em telas baixas (zoom de 200%, celular deitado), o cabeçalho rola com a página para sobrar espaço. */}
       <header
         data-app-chrome
+        data-print-hide
         className="sticky top-0 z-30 bg-header text-header-foreground shadow-[0_1px_0_rgb(0_0_0/0.25)] [@media(max-height:520px)]:static"
       >
         <div className="mx-auto flex h-14 w-full max-w-[1448px] items-center gap-3 px-4 md:h-16 lg:h-[4.6rem] lg:gap-6 lg:px-6">
@@ -54,13 +57,16 @@ export function AppShell({ children }: { children: ReactNode }) {
       <main
         id="conteudo"
         tabIndex={-1}
-        className="mx-auto w-full max-w-3xl flex-1 px-4 pt-6 pb-10 md:px-8 md:pt-10 md:pb-12 has-[[data-layout=wide]]:max-w-[1448px] has-[[data-layout=wide]]:pt-0 md:has-[[data-layout=wide]]:px-4 lg:has-[[data-layout=wide]]:px-4"
+        // O espaço sob o cabeçalho vem de uma regra única (`--page-top`, em globals.css); páginas
+        // largas ocupam a tela toda e limitam cada bloco a 1448px, para o fundo do Hero não ser cortado.
+        className="mx-auto w-full max-w-3xl flex-1 px-4 pb-10 md:px-8 md:pb-12 has-[[data-layout=wide]]:max-w-none has-[[data-layout=wide]]:px-0 md:has-[[data-layout=wide]]:px-0"
       >
         {children}
       </main>
 
       <footer
         data-app-chrome
+        data-print-hide
         className="mx-auto w-full max-w-[1448px] px-4 pb-[calc(5rem+env(safe-area-inset-bottom))] text-center text-xs text-muted-foreground md:pb-6"
       >
         {SANTA_CECILIA_CREDIT}

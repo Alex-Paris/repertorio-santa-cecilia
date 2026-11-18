@@ -77,6 +77,51 @@
   --liturgy-roseo: oklch(0.8 0.1 0);
 }
 
+/*
+ * Modo apresentação (Etapa 2F.2): superfície própria, independente do tema do site. Clara por
+ * padrão, num pergaminho muito claro, com letra quase preta e acordes em oliva forte; a escura é
+ * escolha de quem apresenta. Os tokens valem só dentro da apresentação.
+ */
+.presentation-light {
+  color-scheme: light;
+  --background: #fdf9f1;
+  --foreground: #22180f;
+  --card: #fffdf8;
+  --popover: #fffdf8;
+  --popover-foreground: #22180f;
+  --primary: #4b562b;
+  --primary-foreground: #fffdf8;
+  --secondary: #f3e9d6;
+  --secondary-foreground: #3a2414;
+  --muted: #f2e8d6;
+  --muted-foreground: #5a4636;
+  --border: #e4d6bd;
+  --input: #cbb791;
+  --ring: #936d2b;
+  --chord: #2e5208;
+  --heading: #3a2414;
+}
+
+.presentation-dark {
+  color-scheme: dark;
+  --background: #12110c;
+  --foreground: #f4ead8;
+  --card: #1d1c14;
+  --popover: #1d1c14;
+  --popover-foreground: #f4ead8;
+  --primary: #d3c47e;
+  --primary-foreground: #12110c;
+  --secondary: #2a281d;
+  --secondary-foreground: #f4ead8;
+  --muted: #26241a;
+  --muted-foreground: #cdbfa6;
+  --border: #3a372a;
+  --input: #4d4936;
+  --ring: #dcb768;
+  --chord: #e2eb9f;
+  --heading: #f6e6c4;
+}
+
 /* Tela das referências visuais (1448px): colunas mais largas a partir de 1400px. */
 @theme {
   --breakpoint-hd: 87.5rem;
@@ -149,5 +194,146 @@
 
   main:focus-visible {
     outline: none;
+  }
+}
+
+/*
+ * Espaço sob o cabeçalho (Etapa 2F.2): uma regra só para todas as páginas. Sem Hero, o conteúdo
+ * começa a `--page-top` do cabeçalho; com Hero no topo, o próprio Hero dá esse espaço.
+ */
+:root {
+  --page-top: 1.25rem;
+}
+
+@media (min-width: 48rem) {
+  :root {
+    --page-top: 2rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  :root {
+    --page-top: 2.5rem;
+  }
+}
+
+main#conteudo {
+  padding-top: var(--page-top);
+}
+
+main#conteudo:has(> [data-layout="wide"] > [data-hero]:first-child) {
+  padding-top: 0;
+}
+
+/*
+ * Páginas largas: o `main` ocupa a tela toda e cada bloco fica na largura do site (1448px, com a
+ * mesma margem lateral de antes). Só faixas marcadas com `data-bleed` (o fundo do Hero) vão de
+ * ponta a ponta, sem `100vw`: a largura vem do próprio fluxo, sem barra de rolagem horizontal.
+ */
+[data-layout="wide"] > :not([data-bleed]) {
+  width: 100%;
+  max-width: 1448px;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+
+/*
+ * Impressão (Etapa 2F.2). O papel é sempre branco com texto quase preto, qualquer que seja o tema
+ * do site; a mesma folha aparece na pré-visualização da tela. Só o que está em `.print-paper` vai
+ * para a impressora: cabeçalho, navegação, botões e avisos ficam de fora.
+ */
+.print-paper {
+  color-scheme: light;
+  --foreground: #161616;
+  --heading: #111111;
+  --muted-foreground: #474747;
+  --border: #c9c9c9;
+  --chord: #0b3a00;
+  background: #ffffff;
+  color: var(--foreground);
+  font-family: var(--font-display);
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.print-paper .print-sheet {
+  font-size: 1em !important;
+}
+
+/* Estrofes mais juntas no papel; o refrão continua marcado. */
+.print-paper .print-sheet > [data-stanza] {
+  margin: 0 0 0.85em !important;
+}
+
+.print-paper [data-chord] {
+  font-weight: 700;
+  color: var(--chord);
+}
+
+/* Título (com o momento) preso ao início da música e estrofes inteiras na mesma página. */
+.print-paper .print-song-head {
+  break-after: avoid;
+  break-inside: avoid;
+}
+
+.print-paper [data-stanza] {
+  break-inside: avoid;
+}
+
+.print-paper[data-print-format="lyrics"] .print-song + .print-song {
+  margin-top: 1.4em;
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 16mm 15mm 16mm 15mm;
+  }
+
+  :root,
+  [data-theme="dark"] {
+    color-scheme: light;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+    background-image: none !important;
+    color: #161616 !important;
+  }
+
+  [data-print-hide],
+  nextjs-portal {
+    display: none !important;
+  }
+
+  [data-print-shell] {
+    display: block !important;
+    min-height: 0 !important;
+  }
+
+  main#conteudo {
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .print-paper {
+    border: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 11.5pt;
+  }
+
+  .print-paper[data-print-format="chords"] {
+    font-size: 12pt;
+  }
+
+  /* Repertório com cifras: cada música a partir da segunda começa numa nova folha. */
+  .print-paper .print-page-break {
+    break-before: page;
   }
 }

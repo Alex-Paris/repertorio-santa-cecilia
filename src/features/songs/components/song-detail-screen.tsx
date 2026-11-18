@@ -34,6 +34,9 @@ import {
   useSongSubmission,
 } from "@/features/contributions/components/song-submission-action";
 
+import { PrintMenu } from "@/features/printing/components/print-menu";
+
+import type { ReadingMode } from "../domain/reader-preferences";
 import type { MusicalSong, Song, SongId, SongSource } from "../domain/song";
 import { ChordSheet } from "./chord-sheet";
 import { ContentTypeBadge } from "./content-type-badge";
@@ -42,7 +45,7 @@ import { useReaderPreferences } from "../hooks/use-reader-preferences";
 import { ExternalSourceNotice } from "./external-source-notice";
 import { KeyLabel } from "./key-label";
 import { PresentationReader, type PresentationTarget } from "./presentation-reader";
-import { FontSizeControls } from "./reader-controls";
+import { FontSizeControls, ReadingModeToggle } from "./reader-controls";
 import { SongNotFound } from "./song-not-found";
 import { TransposeControls } from "./transpose-controls";
 
@@ -51,6 +54,7 @@ interface SongContentProps {
   source: SongSource;
   semitones: number;
   fontSize: number;
+  readingMode: ReadingMode;
   isPersisted: boolean;
   onSemitonesChange: (semitones: number) => void;
 }
@@ -60,6 +64,7 @@ function SongContent({
   source,
   semitones,
   fontSize,
+  readingMode,
   isPersisted,
   onSemitonesChange,
 }: SongContentProps) {
@@ -85,22 +90,28 @@ function SongContent({
 
   return (
     <>
-      <TransposeControls
-        className="mb-4"
-        originalKey={song.originalKey}
-        semitones={semitones}
-        onChange={onSemitonesChange}
-        hint={
-          isPersisted
-            ? "Ajuste salvo somente neste repertório."
-            : "Ajuste temporário: a música não é alterada."
-        }
-      />
+      <div className="mb-4">
+        <ReadingModeToggle />
+      </div>
+      {/* Na letra, a transposição some; o tom continua guardado e volta igual na cifra. */}
+      {readingMode === "chords" && (
+        <TransposeControls
+          className="mb-4"
+          originalKey={song.originalKey}
+          semitones={semitones}
+          onChange={onSemitonesChange}
+          hint={
+            isPersisted
+              ? "Ajuste salvo somente neste repertório."
+              : "Ajuste temporário: a música não é alterada."
+          }
+        />
+      )}
       <div className="mb-4">
         <FontSizeControls fontSize={fontSize} />
       </div>
       <article className="overflow-x-auto rounded-xl border bg-card p-5 md:p-8">
-        <ChordSheet source={song.chordPro} semitones={semitones} fontSize={fontSize} />
+        <ChordSheet source={song.chordPro} semitones={semitones} fontSize={fontSize} mode={readingMode} />
       </article>
     </>
   );
@@ -138,7 +149,7 @@ function SongDetail({
   useDocumentTitle(song.title);
 
   const router = useRouter();
-  const { fontSize } = useReaderPreferences();
+  const { fontSize, readingMode } = useReaderPreferences();
   const [temporarySemitones, setTemporarySemitones] = useState(0);
   const [presentationTarget, setPresentationTarget] = useState<PresentationTarget | null>(null);
   const itemSemitones = useItemSemitones(
@@ -227,6 +238,15 @@ function SongDetail({
                   Apresentar
                 </Button>
               )}
+              {/* Imprime no tom em que a música está sendo lida (o do item, num repertório). */}
+              {song.contentType !== "external-link" && Boolean(song.chordPro) && (
+                <PrintMenu
+                  options={(["chords", "lyrics"] as const).map((mode) => ({
+                    label: mode === "chords" ? "Com cifra" : "Somente letra",
+                    href: `${source === "catalog" ? "/catalogo" : "/musicas"}/${encodeURIComponent(song.id)}/imprimir?modo=${mode === "chords" ? "cifra" : "letra"}${semitones !== 0 ? `&tom=${semitones}` : ""}`,
+                  }))}
+                />
+              )}
               {personalSong && (
                 <>
               <Link
@@ -265,6 +285,7 @@ function SongDetail({
           source={source}
           semitones={semitones}
           fontSize={fontSize}
+          readingMode={readingMode}
           isPersisted={context !== null}
           onSemitonesChange={handleSemitonesChange}
         />

@@ -100,11 +100,15 @@ describe("página pública do repertório", () => {
   });
 
   it("não tem controles de edição nem links para áreas privadas", () => {
-    expect(screen.queryByRole("button")).toBeNull();
+    // O único botão é o menu de impressão (Etapa 2F.2), que leva só às páginas do próprio link.
+    expect(screen.getAllByRole("button").map((button) => button.textContent)).toEqual(["Imprimir"]);
+    fireEvent.click(screen.getByRole("button", { name: "Imprimir" }));
 
     for (const link of screen.getAllByRole("link")) {
       const href = link.getAttribute("href") ?? "";
-      expect(href.startsWith(`/s/${TOKEN}/musicas/`) || href.startsWith("https://example.com")).toBe(true);
+      expect(
+        href.startsWith(`/s/${TOKEN}/musicas/`) || href.startsWith(`/s/${TOKEN}/imprimir?`) || href.startsWith("https://example.com"),
+      ).toBe(true);
     }
   });
 });

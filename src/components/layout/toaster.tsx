@@ -15,6 +15,7 @@ export function Toaster() {
 
   return (
     <div
+      data-print-hide
       role="status"
       aria-live="polite"
       className="pointer-events-none fixed inset-x-4 bottom-[calc(5rem+env(safe-area-inset-bottom))] z-60 flex flex-col gap-2 md:right-6 md:bottom-6 md:left-auto md:w-80"

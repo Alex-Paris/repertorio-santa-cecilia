@@ -13,6 +13,7 @@ import {
   LoaderCircle,
   Minus,
   Plus,
+  Printer,
   Trash2,
 } from "lucide-react";
 import Link from "next/link";
@@ -284,9 +285,21 @@ function BuildingList({ library, repertoire, emptyText, addMore, onChange }: Bui
             </>
           )}
         </p>
-        <Button type="button" variant="ghost" size="sm" className="h-8 px-2 text-xs underline-offset-3 hover:underline" onClick={onChange}>
-          Trocar de repertório
-        </Button>
+        <span className="flex items-center gap-1">
+          {/* Impressão do repertório atual, já salvo na conta: pré-visualização com o formato. */}
+          {entries.length > 0 && (
+            <Link
+              href={`/repertorios/${repertoire.id}/imprimir`}
+              className="inline-flex h-8 items-center gap-1 rounded-md px-2 text-xs underline-offset-3 hover:underline"
+            >
+              <Printer className="size-3.5" aria-hidden />
+              Imprimir
+            </Link>
+          )}
+          <Button type="button" variant="ghost" size="sm" className="h-8 px-2 text-xs underline-offset-3 hover:underline" onClick={onChange}>
+            Trocar de repertório
+          </Button>
+        </span>
       </div>
     </div>
   );

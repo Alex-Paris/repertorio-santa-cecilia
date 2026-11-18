@@ -2,6 +2,7 @@ import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 
 import { PageHeader } from "@/components/layout/page-header";
+import { PrintMenu } from "@/features/printing/components/print-menu";
 import { formatLongDate } from "@/features/liturgy/domain/calendar";
 import { momentLabel } from "@/features/liturgy/domain/vocabulary";
 import { KeyLabel } from "@/features/songs/components/key-label";
@@ -34,6 +35,16 @@ export function PublicShareView({ token, share }: PublicShareViewProps) {
             {share.description && <p className="text-pretty">{share.description}</p>}
             <p className="mt-2 text-sm">{formatSongCount(share.items.length)}</p>
           </>
+        }
+        actions={
+          share.items.length > 0 ? (
+            <PrintMenu
+              options={[
+                { label: "Imprimir letras", href: `/s/${token}/imprimir?formato=letras` },
+                { label: "Imprimir cifras", href: `/s/${token}/imprimir?formato=cifras` },
+              ]}
+            />
+          ) : undefined
         }
       />
 

@@ -25,64 +25,70 @@ interface PageHeroProps {
 export function PageHero({ title, subtitle, align = "center", children, className }: PageHeroProps) {
   const centered = align === "center";
   return (
-    <section
-      aria-labelledby="titulo-da-pagina"
-      className={cn("relative isolate -mx-4 px-4", centered ? "pt-4 pb-4 md:pt-5" : "pt-3 pb-3", className)}
-    >
-      {/* Luz quente atrás da ilustração e da janela; sem imagem de fundo. */}
-      <div
-        aria-hidden
-        className="absolute inset-0 -z-10 bg-[radial-gradient(420px_300px_at_12%_38%,color-mix(in_oklab,var(--gold)_22%,transparent),transparent_70%),radial-gradient(360px_260px_at_92%_10%,color-mix(in_oklab,var(--card)_80%,transparent),transparent_70%)]"
-      />
-      <GothicWindow
-        className={cn("absolute top-0 right-3 -z-10 hidden opacity-45 xl:block", centered ? "h-[14rem] w-[12rem]" : "h-[8.5rem] w-[7.5rem]")}
-      />
-
-      <div className={cn("flex items-center gap-3", centered ? "md:items-start md:gap-0" : "md:gap-5")}>
-        <SantaCeciliaIllustration
-          eager
-          sizes={centered ? "(min-width: 1280px) 300px, (min-width: 768px) 220px, 84px" : "(min-width: 768px) 140px, 72px"}
-          className={cn(
-            "shrink-0",
-            centered ? "w-[5.25rem] md:absolute md:top-3 md:left-1 md:w-[12rem] xl:w-[15.25rem]" : "w-[4.5rem] md:w-[7rem] xl:w-[8.25rem]",
-          )}
-        />
+    // Container externo: o fundo vai de ponta a ponta da página (`data-bleed`), sem `100vw`.
+    <section data-hero data-bleed aria-labelledby="titulo-da-pagina" className={cn("relative isolate overflow-x-clip", className)}>
+      {/* Container interno: conteúdo, ilustração e janela na largura do site (1448px). */}
+      <div className={cn("relative mx-auto w-full max-w-[1448px] px-4", centered ? "pt-4 pb-4 md:pt-5" : "pt-3 pb-3")}>
+        {/*
+          Luz quente atrás da ilustração e da janela. A camada passa 24rem além do conteúdo dos dois
+          lados, com as mesmas posições de antes (12% e 92% da largura do conteúdo): os degradês somem
+          aos poucos em vez de serem cortados na borda do conteúdo. A seção corta só na horizontal
+          (`overflow-x: clip`), na borda da tela, sem esconder menus que abram para baixo.
+        */}
         <div
-          className={cn(
-            "min-w-0 flex-1",
-            centered
-              ? "md:pl-[13.5rem] md:text-center xl:pr-[9rem] xl:pl-[16rem]"
-              : "",
-          )}
-        >
-          <h1
-            id="titulo-da-pagina"
+          aria-hidden
+          className="absolute inset-y-0 -right-[24rem] -left-[24rem] -z-10 bg-[radial-gradient(420px_300px_at_calc(12%_+_18.24rem)_38%,color-mix(in_oklab,var(--gold)_22%,transparent),transparent_70%),radial-gradient(360px_260px_at_calc(92%_-_20.16rem)_10%,color-mix(in_oklab,var(--card)_80%,transparent),transparent_70%)]"
+        />
+        <GothicWindow
+          className={cn("absolute top-0 right-3 -z-10 hidden opacity-45 xl:block", centered ? "h-[14rem] w-[12rem]" : "h-[8.5rem] w-[7.5rem]")}
+        />
+
+        <div className={cn("flex items-center gap-3", centered ? "md:items-start md:gap-0" : "md:gap-5")}>
+          <SantaCeciliaIllustration
+            eager
+            sizes={centered ? "(min-width: 1280px) 300px, (min-width: 768px) 220px, 84px" : "(min-width: 768px) 140px, 72px"}
             className={cn(
-              "font-display font-semibold text-balance text-heading [font-variation-settings:'opsz'_72,'SOFT'_0,'WONK'_0]",
-              centered ? "text-[1.75rem] leading-tight md:text-[2.6rem] xl:text-[3.45rem]" : "text-[1.75rem] leading-tight md:text-[2.3rem] xl:text-[2.75rem]",
+              "shrink-0",
+              centered ? "w-[5.25rem] md:absolute md:top-3 md:left-1 md:w-[12rem] xl:w-[15.25rem]" : "w-[4.5rem] md:w-[7rem] xl:w-[8.25rem]",
+            )}
+          />
+          <div
+            className={cn(
+              "min-w-0 flex-1",
+              centered
+                ? "md:pl-[13.5rem] md:text-center xl:pr-[9rem] xl:pl-[16rem]"
+                : "",
             )}
           >
-            {title}
-          </h1>
-          {subtitle && (
-            <p
+            <h1
+              id="titulo-da-pagina"
               className={cn(
-                "mt-1 font-display text-[0.95rem] text-pretty text-foreground/90 italic",
-                centered ? "md:text-lg xl:text-[1.2rem]" : "md:text-base xl:text-[1.08rem]",
+                "font-display font-semibold text-balance text-heading [font-variation-settings:'opsz'_72,'SOFT'_0,'WONK'_0]",
+                centered ? "text-[1.75rem] leading-tight md:text-[2.6rem] xl:text-[3.45rem]" : "text-[1.75rem] leading-tight md:text-[2.3rem] xl:text-[2.75rem]",
               )}
             >
-              {subtitle}
-            </p>
-          )}
-          <CrossDivider className={cn("mt-2 hidden md:flex", centered ? "mx-auto max-w-sm" : "max-w-md")} />
+              {title}
+            </h1>
+            {subtitle && (
+              <p
+                className={cn(
+                  "mt-1 font-display text-[0.95rem] text-pretty text-foreground/90 italic",
+                  centered ? "md:text-lg xl:text-[1.2rem]" : "md:text-base xl:text-[1.08rem]",
+                )}
+              >
+                {subtitle}
+              </p>
+            )}
+            <CrossDivider className={cn("mt-2 hidden md:flex", centered ? "mx-auto max-w-sm" : "max-w-md")} />
+          </div>
         </div>
-      </div>
 
-      {children && (
-        <div className={cn("relative mt-4", centered && "md:pl-[12.5rem] xl:pl-[17.6rem]")}>
-          {children}
-        </div>
-      )}
+        {children && (
+          <div className={cn("relative mt-4", centered && "md:pl-[12.5rem] xl:pl-[17.6rem]")}>
+            {children}
+          </div>
+        )}
+      </div>
     </section>
   );
 }

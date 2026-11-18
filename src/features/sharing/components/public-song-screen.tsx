@@ -14,7 +14,7 @@ import { ChordSheet } from "@/features/songs/components/chord-sheet";
 import { ExternalSourceNotice } from "@/features/songs/components/external-source-notice";
 import { KeyLabel } from "@/features/songs/components/key-label";
 import { PresentationStage } from "@/features/songs/components/presentation-stage";
-import { FontSizeControls } from "@/features/songs/components/reader-controls";
+import { FontSizeControls, ReadingModeToggle } from "@/features/songs/components/reader-controls";
 import { TransposeControls } from "@/features/songs/components/transpose-controls";
 import { transposeKey } from "@/features/songs/domain/transposition";
 import { useReaderPreferences } from "@/features/songs/hooks/use-reader-preferences";
@@ -62,7 +62,7 @@ function PublicSongReader({ token, share, item }: PublicSongReaderProps) {
   useDocumentTitle(item.title);
 
   const router = useRouter();
-  const { fontSize } = useReaderPreferences();
+  const { fontSize, readingMode } = useReaderPreferences();
   // Só nesta tela e nesta visita: nada aqui chega à biblioteca de quem publicou.
   const [adjustments, setAdjustments] = useState<Record<string, number>>({});
   const [presentingId, setPresentingId] = useState<string | null>(null);
@@ -141,18 +141,23 @@ function PublicSongReader({ token, share, item }: PublicSongReaderProps) {
 
         {item.content.kind === "chordpro" && item.originalKey && (
           <>
-            <TransposeControls
-              className="mb-4"
-              originalKey={item.originalKey}
-              semitones={semitonesOf(item)}
-              onChange={(semitones) => adjust(item, semitones)}
-              hint="Ajuste temporário: a publicação não é alterada."
-            />
+            <div className="mb-4">
+              <ReadingModeToggle />
+            </div>
+            {readingMode === "chords" && (
+              <TransposeControls
+                className="mb-4"
+                originalKey={item.originalKey}
+                semitones={semitonesOf(item)}
+                onChange={(semitones) => adjust(item, semitones)}
+                hint="Ajuste temporário: a publicação não é alterada."
+              />
+            )}
             <div className="mb-4">
               <FontSizeControls fontSize={fontSize} />
             </div>
             <article className="overflow-x-auto rounded-xl border bg-card p-5 md:p-8">
-              <ChordSheet source={item.content.chordPro} semitones={semitonesOf(item)} fontSize={fontSize} />
+              <ChordSheet source={item.content.chordPro} semitones={semitonesOf(item)} fontSize={fontSize} mode={readingMode} />
             </article>
           </>
         )}

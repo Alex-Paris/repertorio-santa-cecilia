@@ -14,6 +14,7 @@ import { repertoireRepository } from "@/features/library/data/browser-library";
 import { LibraryGate } from "@/features/library/components/library-gate";
 import type { CatalogSongView } from "@/features/library/domain/library";
 import { MassCelebrationStatus } from "@/features/liturgy/components/mass-celebration-status";
+import { PrintMenu } from "@/features/printing/components/print-menu";
 import { formatLongDate } from "@/features/liturgy/domain/calendar";
 import { formatSongCount, type Song } from "@/features/songs/domain/song";
 import { showToast } from "@/lib/utils/toast";
@@ -70,6 +71,14 @@ function RepertoireDetail({ repertoire, songs, catalogSongs, onDelete }: Reperto
               <Share2 data-icon="inline-start" aria-hidden />
               Compartilhar repertório
             </Link>
+            {entries.length > 0 && (
+              <PrintMenu
+                options={[
+                  { label: "Imprimir letras", href: `/repertorios/${repertoire.id}/imprimir?formato=letras` },
+                  { label: "Imprimir cifras", href: `/repertorios/${repertoire.id}/imprimir?formato=cifras` },
+                ]}
+              />
+            )}
             <Link
               href={`/repertorios/${repertoire.id}/editar`}
               className={cn(buttonVariants({ variant: "outline", size: "lg" }))}

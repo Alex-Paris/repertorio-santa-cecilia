@@ -10,16 +10,31 @@ export const MAX_SCROLL_SPEED = 80;
 export const SCROLL_SPEED_STEP = 5;
 export const DEFAULT_SCROLL_SPEED = 30;
 
+/** Cifra (letra com acordes) ou só a letra. A cifra armazenada nunca muda. */
+export const READING_MODES = ["chords", "lyrics"] as const;
+export type ReadingMode = (typeof READING_MODES)[number];
+
+export const READING_MODE_LABELS: Record<ReadingMode, string> = { chords: "Cifra", lyrics: "Letra" };
+
+/** Fundo do modo apresentação: claro (pergaminho) por padrão, escuro por escolha. */
+export const PRESENTATION_THEMES = ["light", "dark"] as const;
+export type PresentationTheme = (typeof PRESENTATION_THEMES)[number];
+
 export interface ReaderPreferences {
   /** Tamanho base da cifra, em pixels. */
   fontSize: number;
   /** Velocidade da rolagem automática, em pixels por segundo. */
   scrollSpeed: number;
+  /** Modo de leitura, o mesmo no leitor e na apresentação. */
+  readingMode: ReadingMode;
+  presentationTheme: PresentationTheme;
 }
 
 export const DEFAULT_READER_PREFERENCES: ReaderPreferences = {
   fontSize: DEFAULT_FONT_SIZE,
   scrollSpeed: DEFAULT_SCROLL_SPEED,
+  readingMode: "chords",
+  presentationTheme: "light",
 };
 
 const readerPreferencesSchema: z.ZodType<ReaderPreferences> = z.object({
@@ -37,6 +52,9 @@ const readerPreferencesSchema: z.ZodType<ReaderPreferences> = z.object({
     .max(MAX_SCROLL_SPEED)
     .multipleOf(SCROLL_SPEED_STEP)
     .catch(DEFAULT_SCROLL_SPEED),
+  // Preferências antigas não têm estes campos: valem os padrões.
+  readingMode: z.enum(READING_MODES).catch("chords"),
+  presentationTheme: z.enum(PRESENTATION_THEMES).catch("light"),
 });
 
 /** Valida dados não confiáveis; cada campo inválido volta individualmente ao padrão. */

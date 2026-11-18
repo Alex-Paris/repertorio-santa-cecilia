@@ -21,7 +21,14 @@ describe("parseReaderPreferences", () => {
     expect(parseReaderPreferences({ fontSize: 24, scrollSpeed: 50 })).toEqual({
       fontSize: 24,
       scrollSpeed: 50,
+      // Preferências salvas antes da Etapa 2F.2 não têm estes campos: valem os padrões.
+      readingMode: "chords",
+      presentationTheme: "light",
     });
+    expect(
+      parseReaderPreferences({ fontSize: 24, scrollSpeed: 50, readingMode: "lyrics", presentationTheme: "dark" }),
+    ).toMatchObject({ readingMode: "lyrics", presentationTheme: "dark" });
+    expect(parseReaderPreferences({ readingMode: "karaoke", presentationTheme: "neon" })).toEqual(DEFAULT_READER_PREFERENCES);
   });
 
   it.each([null, "x", 3, [], undefined])("usa os padrões para %j", (value) => {
@@ -36,7 +43,7 @@ describe("parseReaderPreferences", () => {
     [{ fontSize: 24, scrollSpeed: 500 }, { fontSize: 24, scrollSpeed: 30 }],
     [{ fontSize: 24 }, { fontSize: 24, scrollSpeed: 30 }],
   ])("recupera campo a campo %j", (value, expected) => {
-    expect(parseReaderPreferences(value)).toEqual(expected);
+    expect(parseReaderPreferences(value)).toEqual({ ...expected, readingMode: "chords", presentationTheme: "light" });
   });
 
   it("limita os valores às faixas permitidas", () => {
@@ -67,16 +74,20 @@ describe("armazenamento das preferências", () => {
     expect(JSON.parse(storage.data.get(READER_PREFERENCES_KEY) ?? "")).toEqual({
       fontSize: 24,
       scrollSpeed: 30,
+      readingMode: "chords",
+      presentationTheme: "light",
     });
   });
 
   it("recupera o que foi salvo em uma nova sessão", () => {
     const { store, storage } = storeWith();
-    store.update({ fontSize: 26, scrollSpeed: 60 });
+    store.update({ fontSize: 26, scrollSpeed: 60, readingMode: "lyrics" });
 
     expect(createReaderPreferencesStore(() => storage).getSnapshot()).toEqual({
       fontSize: 26,
       scrollSpeed: 60,
+      readingMode: "lyrics",
+      presentationTheme: "light",
     });
   });
 
