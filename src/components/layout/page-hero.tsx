@@ -48,10 +48,10 @@ export function PageHero({ title, subtitle, align = "center", children, classNam
         <div className={cn("flex items-center gap-3", centered ? "md:items-start md:gap-0" : "md:gap-5")}>
           <SantaCeciliaIllustration
             eager
-            sizes={centered ? "(min-width: 1280px) 300px, (min-width: 768px) 220px, 84px" : "(min-width: 768px) 140px, 72px"}
+            sizes={centered ? "(min-width: 1280px) 196px, (min-width: 768px) 156px, 68px" : "(min-width: 1280px) 108px, (min-width: 768px) 92px, 60px"}
             className={cn(
               "shrink-0",
-              centered ? "w-[5.25rem] md:absolute md:top-3 md:left-1 md:w-[12rem] xl:w-[15.25rem]" : "w-[4.5rem] md:w-[7rem] xl:w-[8.25rem]",
+              centered ? "w-[4.25rem] md:absolute md:top-3 md:left-4 md:w-[9.75rem] xl:left-6 xl:w-[12.25rem]" : "w-[3.75rem] md:w-[5.75rem] xl:w-[6.75rem]",
             )}
           />
           <div

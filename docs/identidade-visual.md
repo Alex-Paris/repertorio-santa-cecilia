@@ -10,8 +10,8 @@ O site se chama **Repertório Santa Cecília** (`repertoriosantacecilia.com.br`)
 
 - Logotipo do Repertório Santa Cecília (Santa Cecília com auréola, manto verde e lira dourada, fundo transparente): o arquivo original fica fora do código. `src/assets/brand/santa-cecilia-marca.webp` é um recorte quadrado dele (auréola, rosto e lira), 192×192, sem redesenho, exibido no cabeçalho num círculo marfim fixo para manter as cores do desenho nos dois temas.
 - `src/app/icon.png` (192×192, cantos arredondados) e `src/app/apple-icon.png` (180×180, opaco) usam o mesmo recorte sobre marfim. Substituem o antigo `icon.svg` de notas musicais.
-- `src/assets/brand/santa-cecilia-ilustracao.webp`: recorte da ilustração do logotipo original (sem os textos), 620×640, com a transparência original. Usada no topo das páginas principais.
-- A ilustração do topo foi recortada e reduzidos do arquivo enviado, sem redesenho nem geração de imagem, mantendo as proporções. O crédito aparece no rodapé de todas as páginas: "Ilustração de Santa Cecília: Grupo de Canto Santa Cecília, Paróquia Menino Jesus de Praga e São Francisco Xavier."
+- `src/assets/brand/santa-cecilia-logo.webp`: o logotipo inteiro, só aparado nas bordas transparentes, 620×797, no topo das páginas principais. Assim o cabeçalho e o topo mostram o mesmo desenho. A ilustração em aquarela do Grupo de Canto Santa Cecília, usada até aqui no topo, saiu do código e continua no histórico do Git (`santa-cecilia-ilustracao.webp`, até o commit `2145dd0`).
+- Todos os recortes saem do arquivo enviado, sem redesenho nem geração de imagem, mantendo as proporções. O rodapé ainda traz o crédito da ilustração em aquarela: "Ilustração de Santa Cecília: Grupo de Canto Santa Cecília, Paróquia Menino Jesus de Praga e São Francisco Xavier."
 - A janela ogival do topo é um traço decorativo simples (`GothicWindow`), sem figura humana; some abaixo de 1280px.
 
 ## Tokens
