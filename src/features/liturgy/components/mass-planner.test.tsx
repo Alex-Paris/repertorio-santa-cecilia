@@ -131,11 +131,11 @@ describe("sugestões por momento", () => {
     ]);
   });
 
-  it("distingue a sugestão do Repertório Web da indicação com fonte oficial", () => {
+  it("distingue a sugestão do Repertório Santa Cecília da indicação com fonte oficial", () => {
     renderPlanner();
     const communion = openMoment("Comunhão");
 
-    expect(within(communion).getAllByText(/^Sugestão do Repertório Web · classificação/).length).toBeGreaterThan(0);
+    expect(within(communion).getAllByText(/^Sugestão do Repertório Santa Cecília · classificação/).length).toBeGreaterThan(0);
     expect(
       within(communion).getByText(/^Indicação fundamentada em fonte oficial: Documento oficial de exemplo · /),
     ).toBeDefined();
@@ -342,7 +342,7 @@ describe("contexto da celebração", () => {
     expect(screen.getByText("(confirmada em fonte)")).toBeDefined();
     expect(screen.getByText("Mt 25,31-46")).toBeDefined();
     expect(screen.getByText("Sl 22(23),1-2a.2b-3.5-6")).toBeDefined();
-    expect(screen.getByText(/leitura editorial do Repertório Web/)).toBeDefined();
+    expect(screen.getByText(/leitura editorial do Repertório Santa Cecília/)).toBeDefined();
     expect(screen.getByRole("link", { name: /Canção Nova/ }).getAttribute("href")).toContain("liturgia.cancaonova.com");
     expect(screen.getByText(/não é um calendário completo nem uma publicação oficial/)).toBeDefined();
   });

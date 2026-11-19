@@ -17,7 +17,7 @@ import { searchCelebrations } from "@/server/liturgy/liturgy-service";
 
 export const metadata: Metadata = {
   title: "Celebrações",
-  description: "Celebrações cadastradas na base editorial do Repertório Web, com o estado de revisão de cada uma.",
+  description: "Celebrações cadastradas na base editorial do Repertório Santa Cecília, com o estado de revisão de cada uma.",
 };
 
 interface CelebrationsPageProps {

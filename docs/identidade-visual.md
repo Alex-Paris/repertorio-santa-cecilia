@@ -2,11 +2,16 @@
 
 Redesign da Etapa 2E.4A, a partir das referências aprovadas (`referencia-01-inicio-preparar-missa.png`, `referencia-02-catalogo-leitor.png`) e do logotipo do Grupo de Canto Santa Cecília. A pasta `repertorio-redesign-referencias/`, com essas imagens, o logotipo original e o briefing, saiu do projeto depois da Etapa 2F.1 e continua no histórico do Git (commit `07e76bc`). Só a apresentação mudou: contratos HTTP, MongoDB, direitos, revisões (`If-Match`) e regras litúrgicas continuam os mesmos.
 
+## Nome
+
+O site se chama **Repertório Santa Cecília** (`repertoriosantacecilia.com.br`). O nome completo fica no título das abas (`Catálogo · Repertório Santa Cecília`), nos metadados e nos textos editoriais ("Sugestão do Repertório Santa Cecília"). No cabeçalho, ele aparece em duas linhas: "Repertório" em serifa e "Santa Cecília" em itálico dourado (`--header-accent`). Assim o nome inteiro cabe em todas as larguras, a partir de 360px, e a marca ficou mais estreita que a anterior (190px contra cerca de 213px no computador). O antigo lema "Música e liturgia católica" saiu do cabeçalho. Nome e endereço ficam em `src/lib/site.ts`.
+
 ## Santa Cecília
 
+- Logotipo do Repertório Santa Cecília (Santa Cecília com auréola, manto verde e lira dourada, fundo transparente): o arquivo original fica fora do código. `src/assets/brand/santa-cecilia-marca.webp` é um recorte quadrado dele (auréola, rosto e lira), 192×192, sem redesenho, exibido no cabeçalho num círculo marfim fixo para manter as cores do desenho nos dois temas.
+- `src/app/icon.png` (192×192, cantos arredondados) e `src/app/apple-icon.png` (180×180, opaco) usam o mesmo recorte sobre marfim. Substituem o antigo `icon.svg` de notas musicais.
 - `src/assets/brand/santa-cecilia-ilustracao.webp`: recorte da ilustração do logotipo original (sem os textos), 620×640, com a transparência original. Usada no topo das páginas principais.
-- `src/assets/brand/santa-cecilia-marca.webp`: detalhe do rosto e da lira do mesmo original, 192×192, exibido em círculo no cabeçalho.
-- Os dois foram recortados e reduzidos do arquivo enviado, sem redesenho nem geração de imagem, mantendo as proporções. O crédito aparece no rodapé de todas as páginas: "Ilustração de Santa Cecília: Grupo de Canto Santa Cecília, Paróquia Menino Jesus de Praga e São Francisco Xavier."
+- A ilustração do topo foi recortada e reduzidos do arquivo enviado, sem redesenho nem geração de imagem, mantendo as proporções. O crédito aparece no rodapé de todas as páginas: "Ilustração de Santa Cecília: Grupo de Canto Santa Cecília, Paróquia Menino Jesus de Praga e São Francisco Xavier."
 - A janela ogival do topo é um traço decorativo simples (`GothicWindow`), sem figura humana; some abaixo de 1280px.
 
 ## Tokens
@@ -19,13 +24,14 @@ Definidos em `src/app/globals.css`, com variante escura.
 | `--card` | `#fff9ef` | `#25241a` | Superfícies marfim |
 | `--foreground` | `#472d1b` | `#efe3cd` | Texto |
 | `--heading` | `#4a2c19` | `#f3e2c0` | Títulos em serifa |
-| `--primary` | `#4b562b` | `#c5b672` | Oliva: ações principais, abas ativas |
-| `--header` | `#3a4123` | `#13140c` | Cabeçalho e faixa do painel |
-| `--gold` / `--gold-strong` | `#b8893c` / `#87601f` | `#d2a452` / `#e3bd6b` | Ícones, divisores; o forte é legível como texto |
+| `--primary` | `#4f6126` | `#d0b96a` | Oliva: ações principais, abas ativas |
+| `--header` | `#384620` | `#13140c` | Cabeçalho e faixa do painel |
+| `--header-accent` | `#e3ad3c` | `#e3ad3c` | Dourado da lira: aba ativa e "Santa Cecília" no cabeçalho |
+| `--gold` / `--gold-strong` | `#bd8524` / `#855c12` | `#dca843` / `#e8bb55` | Ícones, divisores; o forte é legível como texto |
 | `--border` | `#e3d1b2` | `#3d3a2b` | Bordas bege suaves |
-| `--chord` | `#4e6524` | `#cdd68e` | Acordes |
+| `--chord` | `#4c6a1f` | `#cdd68e` | Acordes |
 
-Contraste (claro): texto secundário `#6b5543` sobre o fundo ≈ 5,8:1; dourado forte sobre marfim ≈ 5,4:1; oliva com texto marfim ≈ 7:1. As cores litúrgicas só tingem etiquetas e atalhos (`liturgicalTint`) e sempre vêm com o nome; o branco vira dourado claro para continuar visível.
+Ajuste com o logotipo: o oliva puxou levemente para o verde do manto e o dourado para o da lira e da auréola, sem mudar fundos, textos e bordas. Contraste (claro): texto secundário `#6b5543` sobre o fundo ≈ 5,8:1; dourado forte sobre o fundo ≈ 4,9:1 e sobre marfim ≈ 5,7:1; oliva com texto marfim ≈ 6,5:1; dourado do cabeçalho sobre o oliva ≈ 5:1. No escuro, o dourado sobre o fundo fica em ≈ 8:1. As cores litúrgicas só tingem etiquetas e atalhos (`liturgicalTint`) e sempre vêm com o nome; o branco vira dourado claro para continuar visível.
 
 Tipografia: Fraunces (serifa, tamanho óptico 72, sem as formas "suaves") para títulos, subtítulos em itálico e a letra da cifra no leitor do catálogo; Geist para a interface. Breakpoint extra `hd` (1400px) para as colunas largas das referências.
 

@@ -67,7 +67,7 @@ function isItemActive(item: NavItem, pathname: string | null): boolean {
 
 function TopLinks({ pathname }: { pathname: string | null }) {
   return (
-    <nav aria-label="Navegação principal" className="hidden min-w-0 md:block">
+    <nav aria-label="Navegação principal" className="hidden shrink-0 md:block">
       <ul className="flex items-stretch gap-1 lg:gap-3">
         {NAV_ITEMS.filter((item) => !item.mobileOnly).map((item) => {
           const active = isItemActive(item, pathname);

@@ -4,6 +4,7 @@ import { mongodbAdapter } from "@better-auth/mongo-adapter";
 import { betterAuth } from "better-auth";
 
 import { connectMongoClient, getMongoClient } from "@/server/database/mongodb-client";
+import { SITE_NAME } from "@/lib/site";
 import { getServerEnv } from "@/server/env";
 
 import { isSignUpEnabled } from "./sign-up-policy";
@@ -13,7 +14,7 @@ function createAuth() {
   const client = getMongoClient();
 
   return betterAuth({
-    appName: "Repertório",
+    appName: SITE_NAME,
     secret: env.BETTER_AUTH_SECRET,
     baseURL: env.BETTER_AUTH_URL,
     // Informar o `client` ativa transações, que exigem um replica set.

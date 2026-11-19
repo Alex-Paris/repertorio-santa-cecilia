@@ -434,7 +434,7 @@ export function CatalogExplore({ facets }: { facets: ExploreFacets }) {
           Explorar
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Pela classificação editorial do Repertório Web. Não é uma indicação oficial da Igreja.
+          Pela classificação editorial do Repertório Santa Cecília. Não é uma indicação oficial da Igreja.
         </p>
       </div>
       <ExploreGroup title="Momento da missa" param={FILTER_PARAMS.moment} entries={facets.moments} label={momentLabel} />

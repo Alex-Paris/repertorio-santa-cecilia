@@ -14,7 +14,7 @@ const querySchema = z.strictObject({
   moment: z.enum(LITURGICAL_MOMENT_IDS).optional(),
 });
 
-/** Sugestões do Repertório Web para a celebração, com o grau de segurança dos dados. */
+/** Sugestões do Repertório Santa Cecília para a celebração, com o grau de segurança dos dados. */
 export const GET = publicCatalogRoute(async ({ request }) => {
   const parsed = querySchema.safeParse(Object.fromEntries(new URL(request.url).searchParams));
   if (!parsed.success) {

@@ -177,7 +177,7 @@ export async function MassPreparation({ title, subtitle, searchParams, defaultTo
           <EmptyState
             icon={CalendarSearch}
             title="Ainda não temos esta data"
-            description={`Não há celebração cadastrada para ${formatLongDate(date)}. Nenhuma leitura é estimada: a base do Repertório Web cobre apenas algumas datas.`}
+            description={`Não há celebração cadastrada para ${formatLongDate(date)}. Nenhuma leitura é estimada: a base do Repertório Santa Cecília cobre apenas algumas datas.`}
             action={
               <ul className="flex flex-col items-center gap-2 text-sm">
                 <li>

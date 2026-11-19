@@ -68,7 +68,7 @@ export function ClassificationSummary({ liturgy }: { liturgy: PublicSongClassifi
         </p>
       )}
       <p className="mt-2 text-xs text-muted-foreground">
-        {reviewNote(liturgy)} Classificação editorial do Repertório Web. Não representa aprovação oficial da Igreja.
+        {reviewNote(liturgy)} Classificação editorial do Repertório Santa Cecília. Não representa aprovação oficial da Igreja.
       </p>
     </section>
   );

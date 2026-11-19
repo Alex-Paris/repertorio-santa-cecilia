@@ -1,6 +1,6 @@
-# Repertório
+# Repertório Santa Cecília
 
-> O nome "Repertório" é provisório.
+Endereço: [repertoriosantacecilia.com.br](https://repertoriosantacecilia.com.br). O nome e o endereço ficam em `src/lib/site.ts`.
 
 Plataforma de cifras católicas e de planejamento musical da Santa Missa. Músicos escolhem a celebração, veem as leituras do dia, encontram cantos para cada momento da missa e montam o repertório, em computadores, tablets e celulares.
 
@@ -8,7 +8,7 @@ Este repositório está na **Etapa 2E.3**. O MongoDB é a única fonte editável
 
 > **Gerenciar a biblioteca exige login.** A página inicial, a preparação da missa, o catálogo, login, cadastro e links públicos de repertórios são abertos.
 
-> **A base de celebrações é editorial e limitada.** Ela fica no MongoDB, cobre poucas datas e não é um calendário litúrgico completo. Cada celebração mostra se já foi revisada por uma pessoa da administração, em revisão, com divergência ou em atualização. As sugestões são do Repertório Web e não representam aprovação oficial da Igreja. Veja [docs/curadoria-liturgica.md](docs/curadoria-liturgica.md) e [docs/arquitetura-liturgica.md](docs/arquitetura-liturgica.md).
+> **A base de celebrações é editorial e limitada.** Ela fica no MongoDB, cobre poucas datas e não é um calendário litúrgico completo. Cada celebração mostra se já foi revisada por uma pessoa da administração, em revisão, com divergência ou em atualização. As sugestões são do Repertório Santa Cecília e não representam aprovação oficial da Igreja. Veja [docs/curadoria-liturgica.md](docs/curadoria-liturgica.md) e [docs/arquitetura-liturgica.md](docs/arquitetura-liturgica.md).
 
 > **Não há suporte offline nesta versão.** Sem conexão com o servidor, a biblioteca fica indisponível e nada é salvo. O plano futuro está em [docs/cache-offline-futuro.md](docs/cache-offline-futuro.md).
 

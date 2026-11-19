@@ -2,7 +2,7 @@
 
 Como o catálogo recebe músicas reais sem copiar conteúdo protegido: cadastro em etapas, músicas só com metadados, classificação com revisão humana, importação de metadados e diagnóstico das sugestões. Etapa 2E.4.
 
-> **Nada aqui é oficial.** A classificação é do Repertório Web. Subsídios da CNBB e de dioceses orientam a classificação, mas não são licença de reprodução. O catálogo não guarda letra, cifra, partitura nem gravação sem autorização registrada.
+> **Nada aqui é oficial.** A classificação é do Repertório Santa Cecília. Subsídios da CNBB e de dioceses orientam a classificação, mas não são licença de reprodução. O catálogo não guarda letra, cifra, partitura nem gravação sem autorização registrada.
 
 ## Cadastro em etapas
 

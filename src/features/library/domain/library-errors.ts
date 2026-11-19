@@ -81,7 +81,7 @@ const DEFAULT_MESSAGES: Record<LibraryErrorCode, string> = {
   "catalog-admin-required": "Esta área é restrita à administração do catálogo.",
   "rate-limited": "Muitas requisições em pouco tempo. Aguarde e tente de novo.",
   "celebration-not-covered":
-    "Esta data ainda não está na base de celebrações do Repertório Web. Nenhuma leitura é estimada.",
+    "Esta data ainda não está na base de celebrações do Repertório Santa Cecília. Nenhuma leitura é estimada.",
   "celebration-not-found": "Esta celebração não foi encontrada.",
   "submission-not-found": "Esta sugestão não foi encontrada.",
   "submission-active":

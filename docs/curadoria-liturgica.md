@@ -75,7 +75,7 @@ A tela pública lista o que não foi confirmado em fonte do Brasil ou universal 
 | Estado | Significado na tela pública |
 | --- | --- |
 | `pending_review` | "Dados em revisão": conferidos nas fontes, ainda sem revisão humana. |
-| `reviewed` | "Celebração revisada" pela equipe do Repertório Web, com data. Uma revisão editorial, não uma publicação oficial. |
+| `reviewed` | "Celebração revisada" pela equipe do Repertório Santa Cecília, com data. Uma revisão editorial, não uma publicação oficial. |
 | `disputed` | "Dados com divergência", com os campos em divergência. A nota é interna. |
 | `needs_update` | "Dados em atualização": revisada antes, precisa ser atualizada. |
 

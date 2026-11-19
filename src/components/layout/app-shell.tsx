@@ -39,7 +39,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <Brand />
           <span aria-hidden className="hidden h-10 w-px bg-header-foreground/20 lg:block" />
           <TopNav />
-          <HeaderSearch className="ml-auto hidden w-[min(24.5rem,30vw)] lg:block" />
+          <HeaderSearch className="ml-auto hidden max-w-[24.5rem] min-w-[11rem] flex-1 lg:block" />
           <AccountMenu className="ml-auto hidden md:block lg:ml-0" />
           <div className="ml-auto flex items-center gap-1 md:hidden">
             <Link

@@ -5,7 +5,8 @@
 /*
  * Identidade (Etapa 2E.4A): paleta derivada da ilustração de Santa Cecília do Grupo de Canto
  * Santa Cecília — pergaminho e marfim quentes, oliva profundo no cabeçalho e nas ações,
- * castanho nos títulos e dourado de apoio. As cores litúrgicas (--liturgy-*) informam o tempo
+ * castanho nos títulos e dourado de apoio. Com o logotipo do Repertório Santa Cecília, o oliva
+ * puxou levemente para o verde do manto e o dourado para o da lira e da auréola. As cores litúrgicas (--liturgy-*) informam o tempo
  * ou a celebração e sempre aparecem acompanhadas do nome da cor: nunca são só decoração.
  */
 :root {
@@ -15,7 +16,7 @@
   --card: #fff9ef;
   --popover: #fff9ef;
   --popover-foreground: #472d1b;
-  --primary: #4b562b;
+  --primary: #4f6126;
   --primary-foreground: #fff9ef;
   --secondary: #f1e5cf;
   --secondary-foreground: #3f2817;
@@ -24,17 +25,17 @@
   --destructive: #a3341f;
   --border: #e3d1b2;
   --input: #d3bb93;
-  --ring: #936d2b;
-  --accent: #b8893c;
-  --chord: #4e6524;
+  --ring: #9a6a1c;
+  --accent: #bd8524;
+  --chord: #4c6a1f;
   /* Títulos em castanho, cabeçalho em oliva escuro e dourado legível sobre marfim. */
   --heading: #4a2c19;
-  --gold: #b8893c;
-  --gold-strong: #87601f;
-  --header: #3a4123;
+  --gold: #bd8524;
+  --gold-strong: #855c12;
+  --header: #384620;
   --header-foreground: #f7eedd;
   --header-muted: #d8cba9;
-  --header-accent: #d9b261;
+  --header-accent: #e3ad3c;
   --surface-alt: #f1e3ca;
   --liturgy-verde: oklch(0.5 0.12 150);
   --liturgy-roxo: oklch(0.42 0.14 305);
@@ -50,7 +51,7 @@
   --card: #25241a;
   --popover: #2b2a1f;
   --popover-foreground: #efe3cd;
-  --primary: #c5b672;
+  --primary: #d0b96a;
   --primary-foreground: #1b1a12;
   --secondary: #302e22;
   --secondary-foreground: #efe3cd;
@@ -59,16 +60,16 @@
   --destructive: #f08c74;
   --border: #3d3a2b;
   --input: #4d4936;
-  --ring: #dcb768;
-  --accent: #d2a452;
+  --ring: #e2b357;
+  --accent: #dca843;
   --chord: #cdd68e;
   --heading: #f3e2c0;
-  --gold: #d2a452;
-  --gold-strong: #e3bd6b;
+  --gold: #dca843;
+  --gold-strong: #e8bb55;
   --header: #13140c;
   --header-foreground: #efe3cd;
   --header-muted: #b9ad8e;
-  --header-accent: #d9b261;
+  --header-accent: #e3ad3c;
   --surface-alt: #2c2a1f;
   --liturgy-verde: oklch(0.7 0.13 150);
   --liturgy-roxo: oklch(0.68 0.13 305);
@@ -89,7 +90,7 @@
   --card: #fffdf8;
   --popover: #fffdf8;
   --popover-foreground: #22180f;
-  --primary: #4b562b;
+  --primary: #4f6126;
   --primary-foreground: #fffdf8;
   --secondary: #f3e9d6;
   --secondary-foreground: #3a2414;
@@ -97,7 +98,7 @@
   --muted-foreground: #5a4636;
   --border: #e4d6bd;
   --input: #cbb791;
-  --ring: #936d2b;
+  --ring: #9a6a1c;
   --chord: #2e5208;
   --heading: #3a2414;
 }
@@ -117,7 +118,7 @@
   --muted-foreground: #cdbfa6;
   --border: #3a372a;
   --input: #4d4936;
-  --ring: #dcb768;
+  --ring: #e2b357;
   --chord: #e2eb9f;
   --heading: #f6e6c4;
 }

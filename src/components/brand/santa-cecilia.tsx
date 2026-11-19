@@ -5,9 +5,10 @@ import illustration from "@/assets/brand/santa-cecilia-ilustracao.webp";
 import mark from "@/assets/brand/santa-cecilia-marca.webp";
 
 /**
- * Identidade do Grupo de Canto Santa Cecília. Os dois arquivos são recortes do logotipo
- * original enviado pelo grupo (sem redesenho): a ilustração inteira, com o fundo em aquarela,
- * e um detalhe do rosto e da lira para a marca do cabeçalho. As proporções são preservadas.
+ * Identidade do Repertório Santa Cecília. A marca do cabeçalho é um recorte do logotipo (auréola,
+ * rosto e lira, sem redesenho, com fundo transparente) sobre um círculo marfim fixo, para manter as
+ * cores do desenho nos dois temas. O mesmo recorte gera `app/icon.png` e `app/apple-icon.png`. O
+ * topo das páginas continua com a ilustração em aquarela do Grupo de Canto Santa Cecília.
  */
 export const SANTA_CECILIA_CREDIT =
   "Ilustração de Santa Cecília: Grupo de Canto Santa Cecília, Paróquia Menino Jesus de Praga e São Francisco Xavier.";
@@ -16,7 +17,7 @@ export function SantaCeciliaMark({ className }: { className?: string }) {
   return (
     <span
       className={cn(
-        "relative block shrink-0 overflow-hidden rounded-full bg-card ring-2 ring-header-accent/70",
+        "relative block shrink-0 overflow-hidden rounded-full bg-[#fff9ef] ring-2 ring-header-accent/70",
         className,
       )}
     >

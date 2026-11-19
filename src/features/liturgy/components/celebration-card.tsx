@@ -33,7 +33,7 @@ export function ReviewNotice({ context }: { context: LiturgicalCelebrationContex
         <CircleCheck className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
         <span>
           <span className="font-medium">Celebração revisada</span>
-          {reviewedAt && ` em ${formatShortDate(reviewedAt.slice(0, 10))}`} pela equipe do Repertório Web, com base nas
+          {reviewedAt && ` em ${formatShortDate(reviewedAt.slice(0, 10))}`} pela equipe do Repertório Santa Cecília, com base nas
           fontes abaixo. É uma revisão editorial, não uma publicação oficial.
         </span>
       </p>
@@ -68,7 +68,7 @@ export function ReviewNotice({ context }: { context: LiturgicalCelebrationContex
 
 /** Situação editorial em poucas palavras, para a faixa única da preparação da missa. */
 const STATUS_SUMMARY = {
-  reviewed: { label: "Celebração revisada", text: "pela equipe do Repertório Web; revisão editorial, não oficial.", icon: CircleCheck, tone: "text-primary" },
+  reviewed: { label: "Celebração revisada", text: "pela equipe do Repertório Santa Cecília; revisão editorial, não oficial.", icon: CircleCheck, tone: "text-primary" },
   pending_review: { label: "Dados em revisão", text: "conferidos nas fontes, ainda sem revisão humana.", icon: Clock, tone: "text-gold-strong" },
   needs_update: { label: "Dados em atualização", text: "revisados antes, mas precisam ser conferidos de novo.", icon: Clock, tone: "text-gold-strong" },
   disputed: { label: "Dados com divergência", text: "os itens em divergência não são usados nas sugestões.", icon: CircleAlert, tone: "text-destructive" },
@@ -233,7 +233,7 @@ function CelebrationDetails({ context }: { context: LiturgicalCelebrationContext
             ))}
           </ul>
           <p className="mt-2 text-xs text-muted-foreground">
-            Os temas são uma leitura editorial do Repertório Web a partir das leituras; não vêm das fontes.
+            Os temas são uma leitura editorial do Repertório Santa Cecília a partir das leituras; não vêm das fontes.
           </p>
         </>
       )}

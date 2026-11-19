@@ -179,7 +179,7 @@ export interface LiturgicalCelebrationContext {
   unverifiedReadings: ReadingRole[];
   /** Celebrações do vocabulário a que esta data corresponde, para cantos próprios. */
   celebrations: LiturgicalCelebrationId[];
-  /** Interpretação editorial do Repertório Web, a partir das leituras. Não vem da fonte. */
+  /** Interpretação editorial do Repertório Santa Cecília, a partir das leituras. Não vem da fonte. */
   biblicalThemes: BiblicalThemeId[];
   /** Observações editoriais. */
   notes: string[];

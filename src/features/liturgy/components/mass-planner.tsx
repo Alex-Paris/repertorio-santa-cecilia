@@ -175,7 +175,7 @@ export function MassPlanner({
             Sugestões por momento da Missa
           </h2>
           <p className="mt-0.5 text-sm text-muted-foreground">
-            Sugestões do Repertório Web, a partir da classificação do catálogo. Não representam aprovação oficial da Igreja.
+            Sugestões do Repertório Santa Cecília, a partir da classificação do catálogo. Não representam aprovação oficial da Igreja.
           </p>
 
           <div className="relative mt-3">
@@ -497,7 +497,7 @@ function SuggestionCard({ layout, suggestion, moment, date, included, busy, onAd
     <p className="text-xs text-muted-foreground">
       {suggestion.basis === "official"
         ? `Indicação fundamentada em fonte oficial: ${suggestion.officialReference}`
-        : "Sugestão do Repertório Web"}
+        : "Sugestão do Repertório Santa Cecília"}
       {" · "}
       {suggestion.classification === "reviewed" ? "classificação conferida pela equipe" : "classificação ainda não conferida"}
       {!song.hasChordPro && (song.contentType === "external-link" ? " · cifra na fonte original" : " · cifra ainda não disponível")}

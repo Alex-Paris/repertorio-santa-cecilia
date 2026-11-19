@@ -1,17 +1,17 @@
 # Arquitetura litúrgica
 
-Etapa 2E.2. Este documento descreve como o Repertório Web passou a organizar cantos pela celebração: a classificação das músicas, a base de celebrações, as sugestões e o repertório da missa.
+Etapa 2E.2. Este documento descreve como o Repertório Santa Cecília passou a organizar cantos pela celebração: a classificação das músicas, a base de celebrações, as sugestões e o repertório da missa.
 
 > **Etapa 2E.3:** as celebrações saíram do código e passaram a ser dados editoriais no MongoDB (`liturgical_celebrations`), com estado de revisão, proveniência por fato, histórico e administração em `/admin/liturgia`. O modelo, o processo de revisão, a cobertura atual e a viabilidade de uma fonte automatizada estão em [curadoria-liturgica.md](curadoria-liturgica.md). As seções abaixo sobre a base editorial descrevem a Etapa 2E.2; onde algo mudou, há uma nota.
 
 ## Direção do produto
 
-O Repertório Web é uma plataforma de cifras católicas e de planejamento musical da Santa Missa. A pergunta que organiza a experiência é **"Qual missa você vai preparar?"**.
+O Repertório Santa Cecília é uma plataforma de cifras católicas e de planejamento musical da Santa Missa. A pergunta que organiza a experiência é **"Qual missa você vai preparar?"**.
 
 - A página inicial e `/preparar-missa` são públicas. Login só é pedido para ações privadas, como salvar um repertório.
 - A consulta parte da celebração: data, contexto litúrgico, momentos da missa e sugestões para cada um.
 - O catálogo, os repertórios, o leitor, a transposição, o modo apresentação, os links públicos e a administração das etapas anteriores continuam os mesmos.
-- A classificação e as sugestões são **editoriais do Repertório Web**. Elas não são aprovação oficial da Igreja, e a interface diz isso onde aparecem.
+- A classificação e as sugestões são **editoriais do Repertório Santa Cecília**. Elas não são aprovação oficial da Igreja, e a interface diz isso onde aparecem.
 
 ### Identidade visual
 
@@ -156,7 +156,7 @@ Regras da base:
 - **Data não cadastrada:** `getByDate` devolve `null`. A tela informa a limitação, não mostra leituras, e oferece a liturgia do dia em fonte externa e a busca por momento, tempo e celebração. Nada é calculado nem estimado.
 - **Leitura não conferida:** fica em `unverifiedReadings` e aparece como "Não conferido nesta base", com link para a fonte externa. Sem salmo conferido, nenhuma música é sugerida para o salmo.
 - **Cor litúrgica:** `basis: "source"` quando conferida na fonte da data; `basis: "rule"` quando vem da regra geral da IGMR 346 para o tempo ou o grau. A tela mostra qual é o caso.
-- **Fonte e interpretação:** título, grau, tempo, leituras e cor vêm das fontes. Os temas (`biblicalThemes`) são leitura editorial do Repertório Web, e a tela os identifica assim.
+- **Fonte e interpretação:** título, grau, tempo, leituras e cor vêm das fontes. Os temas (`biblicalThemes`) são leitura editorial do Repertório Santa Cecília, e a tela os identifica assim.
 - **Calendário:** `rito-romano-brasil`, idioma `pt-BR`. Um pedido em outro idioma não recebe esses dados por aproximação. As diferenças próprias do Brasil (Epifania e Ascensão no domingo, Corpus Christi na quinta-feira, Nossa Senhora Aparecida) ainda não aparecem porque nenhuma dessas datas está na cobertura.
 - **Textos:** só as referências são guardadas. Nenhum texto de leitura é copiado.
 
@@ -194,7 +194,7 @@ O desempate é pelo título e depois pelo ID. Coincidência de palavras no títu
 
 Cada sugestão mostra por que apareceu, sempre a partir da classificação cadastrada: "Adequada à Comunhão", "Associada à celebração: Cristo Rei", "Relacionada ao salmo responsorial (Sl 22(23),1-2a.2b-3.5-6)", "Indicada para o Advento", "Relacionada ao tema: misericórdia".
 
-- Sem `officialReference`, a sugestão aparece como **"Sugestão do Repertório Web"**.
+- Sem `officialReference`, a sugestão aparece como **"Sugestão do Repertório Santa Cecília"**.
 - Com `officialReference`, aparece como **"Indicação fundamentada em fonte oficial"**, seguida da fonte informada pela administração.
 - Sem música pertinente, o momento informa a ausência de sugestões e oferece a busca manual. Nenhuma música é inventada.
 

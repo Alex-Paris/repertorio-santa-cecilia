@@ -226,7 +226,7 @@ export function CatalogClassificationEditor({ api, song, onSaved }: CatalogClass
         />
         <span className="block text-xs font-normal text-muted-foreground">
           Preencha somente com evidência específica. Com este campo, a sugestão aparece como “Indicação fundamentada em
-          fonte oficial”; sem ele, como “Sugestão do Repertório Web”.
+          fonte oficial”; sem ele, como “Sugestão do Repertório Santa Cecília”.
         </span>
       </label>
 

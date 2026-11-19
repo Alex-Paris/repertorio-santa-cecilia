@@ -401,7 +401,7 @@ export function CelebrationEditor({ initial, submitLabel, pending, error, onSubm
       <section className="space-y-4">
         <h2 className="font-display text-lg font-semibold">Leitura editorial</h2>
         <p className="text-sm text-muted-foreground">
-          Interpretação do Repertório Web, mostrada como tal. Não vem das fontes.
+          Interpretação do Repertório Santa Cecília, mostrada como tal. Não vem das fontes.
         </p>
         <ChoiceGroup
           legend="Celebrações do vocabulário"

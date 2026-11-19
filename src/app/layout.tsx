@@ -3,6 +3,7 @@ import { Fraunces, Geist, Geist_Mono } from "next/font/google";
 import type { ReactNode } from "react";
 
 import { ThemeScript } from "@/components/layout/theme-script";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 
 import "./globals.css";
 
@@ -29,8 +30,11 @@ const displaySerif = Fraunces({
 });
 
 export const metadata: Metadata = {
-  title: { default: "Repertório", template: "%s · Repertório" },
-  description: "Cifras católicas e planejamento musical da Santa Missa.",
+  metadataBase: new URL(SITE_URL),
+  applicationName: SITE_NAME,
+  title: { default: SITE_NAME, template: `%s · ${SITE_NAME}` },
+  description: SITE_DESCRIPTION,
+  openGraph: { siteName: SITE_NAME, locale: "pt_BR", type: "website" },
 };
 
 export const viewport: Viewport = {
