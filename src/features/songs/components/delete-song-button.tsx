@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { ConfirmDialog } from "@/components/layout/confirm-dialog";
+import { MENU_ITEM_CLASS } from "@/components/layout/more-actions-menu";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -20,14 +21,22 @@ import type { Repertoire } from "@/features/repertoires/domain/repertoire";
 
 import type { Song } from "../domain/song";
 
-const trigger = (
-  <Button variant="outline" size="lg">
-    <Trash2 data-icon="inline-start" aria-hidden />
-    Excluir
-  </Button>
-);
+/** Botão comum ou item do menu "Mais"; o nome acessível é o mesmo nos dois. */
+function deleteTrigger(asMenuItem: boolean) {
+  return asMenuItem ? (
+    <button type="button" className={MENU_ITEM_CLASS}>
+      <Trash2 aria-hidden />
+      Excluir
+    </button>
+  ) : (
+    <Button variant="outline" size="lg">
+      <Trash2 data-icon="inline-start" aria-hidden />
+      Excluir
+    </Button>
+  );
+}
 
-function SongInUseDialog({ song, usedBy }: { song: Song; usedBy: readonly Repertoire[] }) {
+function SongInUseDialog({ song, usedBy, trigger }: { song: Song; usedBy: readonly Repertoire[]; trigger: ReturnType<typeof deleteTrigger> }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -68,11 +77,14 @@ interface DeleteSongButtonProps {
   onConfirm: () => Promise<void>;
   /** Aviso sobre uma sugestão ao catálogo feita a partir desta música. */
   contributionNotice?: string;
+  /** Dentro do menu "Mais" da página da música. */
+  asMenuItem?: boolean;
 }
 
-export function DeleteSongButton({ song, usedBy, onConfirm, contributionNotice }: DeleteSongButtonProps) {
+export function DeleteSongButton({ song, usedBy, onConfirm, contributionNotice, asMenuItem = false }: DeleteSongButtonProps) {
+  const trigger = deleteTrigger(asMenuItem);
   if (usedBy.length > 0) {
-    return <SongInUseDialog song={song} usedBy={usedBy} />;
+    return <SongInUseDialog song={song} usedBy={usedBy} trigger={trigger} />;
   }
 
   return (

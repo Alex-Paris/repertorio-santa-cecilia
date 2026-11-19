@@ -1,15 +1,15 @@
 "use client";
 
-import { cn } from "cn";
 import { FileMusic, MonitorPlay, Pencil } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { startTransition, useState } from "react";
 
 import { EmptyState } from "@/components/layout/empty-state";
+import { MENU_ITEM_CLASS, MoreActionsMenu } from "@/components/layout/more-actions-menu";
 import { PageHeader } from "@/components/layout/page-header";
 import { PageSkeleton } from "@/components/layout/page-skeleton";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { songRepository } from "@/features/library/data/browser-library";
 import { LibraryGate } from "@/features/library/components/library-gate";
 import type { Library } from "@/features/library/domain/library";
@@ -248,20 +248,19 @@ function SongDetail({
                   }))}
                 />
               )}
+              {/* Ações de manutenção num menu "Mais": à vista ficam apresentar e imprimir. */}
               {personalSong && (
-                <>
-              <Link
-                href={getSongEditHref(song.id, context)}
-                className={cn(buttonVariants({ variant: "outline", size: "lg" }))}
-              >
-                <Pencil data-icon="inline-start" aria-hidden />
+                <MoreActionsMenu label="Mais ações da música">
+              <Link href={getSongEditHref(song.id, context)} className={MENU_ITEM_CLASS}>
+                <Pencil aria-hidden />
                 Editar
               </Link>
-              {accountId && <SongSubmissionAction songId={song.id} submission={submission} />}
+              {accountId && <SongSubmissionAction songId={song.id} submission={submission} asMenuItem />}
               <DeleteSongButton
                 song={personalSong}
                 usedBy={usedBy}
                 onConfirm={onDelete}
+                asMenuItem
                 contributionNotice={
                   isActiveSubmission(submission)
                     ? "Esta música tem uma sugestão em andamento para o catálogo. A sugestão guarda a própria cópia e continua em análise; se preferir, retire-a em Minhas sugestões."
@@ -270,7 +269,7 @@ function SongDetail({
                       : undefined
                 }
               />
-                </>
+                </MoreActionsMenu>
               )}
             </>
           }

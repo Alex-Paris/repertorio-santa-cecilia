@@ -758,6 +758,7 @@ describe("contexto preservado na edição", () => {
   it("o link de edição carrega o contexto validado", async () => {
     await openSong("song-caminhos", FIRST);
 
+    fireEvent.click(screen.getByRole("button", { name: "Mais ações da música" }));
     expect(screen.getByRole("link", { name: "Editar" }).getAttribute("href")).toBe(
       `/musicas/song-caminhos/editar?repertoireId=${SARAU}&itemId=item-sarau-caminhos`,
     );
@@ -765,6 +766,7 @@ describe("contexto preservado na edição", () => {
 
   it("sem contexto, o link de edição é o normal", async () => {
     await openSong("song-caminhos");
+    fireEvent.click(screen.getByRole("button", { name: "Mais ações da música" }));
     expect(screen.getByRole("link", { name: "Editar" }).getAttribute("href")).toBe(
       "/musicas/song-caminhos/editar",
     );
@@ -772,6 +774,7 @@ describe("contexto preservado na edição", () => {
 
   it("contexto inválido não entra no link de edição", async () => {
     await openSong("song-caminhos", SECOND);
+    fireEvent.click(screen.getByRole("button", { name: "Mais ações da música" }));
     expect(screen.getByRole("link", { name: "Editar" }).getAttribute("href")).toBe(
       "/musicas/song-caminhos/editar",
     );

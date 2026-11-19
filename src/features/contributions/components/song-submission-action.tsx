@@ -5,6 +5,7 @@ import { Send } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import { MENU_ITEM_CLASS } from "@/components/layout/more-actions-menu";
 import { buttonVariants } from "@/components/ui/button";
 import { accountLibrary } from "@/features/library/data/browser-library";
 
@@ -45,20 +46,27 @@ export function isActiveSubmission(submission: SubmissionSummary | null): boolea
 }
 
 /** Ação na página da música particular. Só para quem está na própria conta. */
-export function SongSubmissionAction({ songId, submission }: { songId: string; submission: SubmissionSummary | null }) {
+export function SongSubmissionAction({
+  songId,
+  submission,
+  asMenuItem = false,
+}: {
+  songId: string;
+  submission: SubmissionSummary | null;
+  /** Dentro do menu "Mais" da página da música. */
+  asMenuItem?: boolean;
+}) {
+  const className = asMenuItem ? MENU_ITEM_CLASS : cn(buttonVariants({ variant: "outline", size: "lg" }));
   if (submission && isActiveSubmission(submission)) {
     return (
-      <Link
-        href={`/conta/sugestoes/${encodeURIComponent(submission.id)}`}
-        className={cn(buttonVariants({ variant: "outline", size: "lg" }))}
-      >
+      <Link href={`/conta/sugestoes/${encodeURIComponent(submission.id)}`} className={className}>
         <Send data-icon="inline-start" aria-hidden />
         Sugestão: {SUBMISSION_STATUS_LABELS[submission.status].toLowerCase()}
       </Link>
     );
   }
   return (
-    <Link href={`/musicas/${encodeURIComponent(songId)}/sugerir`} className={cn(buttonVariants({ variant: "outline", size: "lg" }))}>
+    <Link href={`/musicas/${encodeURIComponent(songId)}/sugerir`} className={className}>
       <Send data-icon="inline-start" aria-hidden />
       Sugerir para o catálogo
     </Link>

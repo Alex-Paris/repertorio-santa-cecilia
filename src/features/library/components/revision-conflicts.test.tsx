@@ -284,6 +284,7 @@ describe("exclusão com versão antiga", () => {
     const input = { title: "Mudou", artist: song.artist, originalKey: song.originalKey, contentType: "external-link", sourceUrl: "https://example.com/x" } as const;
     await fakeAccount.otherDevice().songs.update(song.id, input, song.revision);
 
+    fireEvent.click(screen.getByRole("button", { name: "Mais ações da música" }));
     fireEvent.click(screen.getByRole("button", { name: "Excluir" }));
     const dialog = within(await screen.findByRole("alertdialog"));
     await act(async () => {

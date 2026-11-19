@@ -174,6 +174,8 @@ describe("edição de música", () => {
 
 describe("exclusão de música", () => {
   async function requestDeletion(): Promise<ReturnType<typeof within>> {
+    // Excluir fica no menu "Mais" da página da música.
+    fireEvent.click(await screen.findByRole("button", { name: "Mais ações da música" }));
     fireEvent.click(await screen.findByRole("button", { name: "Excluir" }));
     return within(await screen.findByRole("alertdialog"));
   }

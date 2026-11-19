@@ -87,7 +87,8 @@ Análise das telas com conta e dados de teste, a 1448px e 390px. O que pesava: o
 - **Catálogo:** sem o cartão "Dica"; as etiquetas da música aberta não ficam mais sob os botões (quebram de linha antes de encolher).
 - **Música da biblioteca:** cifra ou letra, tom e tamanho numa barra só, presa sob o cabeçalho, igual à do catálogo. Os botões de restaurar tom e tamanho só aparecem quando há o que restaurar.
 - **Repertório:** a lista de músicas vem primeiro, com o título "Músicas" e a quantidade; a busca para adicionar abre em "Adicionar músicas" (aberta de início no repertório vazio). Celebração e data numa linha.
-- **Lista de repertórios:** cada cartão mostra a data e a celebração da missa junto da quantidade de músicas.
+- **Lista de repertórios:** cada cartão mostra a data e a celebração da missa junto da quantidade de músicas. As próximas missas (de hoje em diante) vêm primeiro, da mais próxima para a mais distante; os demais seguem do editado mais recentemente (`groupRepertoiresForList`). Os títulos "Próximas missas" e "Outros repertórios" só aparecem quando há os dois grupos.
+- **Menu "Mais" (`MoreActionsMenu`):** na música da biblioteca ficam à vista só "Apresentar" e "Imprimir"; "Editar", "Sugerir para o catálogo" (ou o estado da sugestão) e "Excluir" ficam em "Mais". É um painel simples (não um menu com setas): os itens são links e botões na ordem do Tab, fecha com Esc, com clique fora e ao seguir um link, e continua montado quando fechado, para o diálogo de exclusão funcionar a partir dele e devolver o foco.
 
 ## Hero, espaçamento e apresentação (Etapa 2F.2)
 

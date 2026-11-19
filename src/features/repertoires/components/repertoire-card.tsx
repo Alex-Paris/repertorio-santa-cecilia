@@ -22,15 +22,15 @@ export function RepertoireCard({ repertoire }: { repertoire: Repertoire }) {
           {repertoire.description && (
             <p className="mt-0.5 truncate text-sm text-muted-foreground">{repertoire.description}</p>
           )}
-          <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs font-medium text-muted-foreground">
+          <p className="mt-1.5 flex flex-wrap items-start gap-x-4 gap-y-0.5 text-xs font-medium text-muted-foreground">
             {repertoire.mass && (
-              <>
-                <span className="inline-flex items-center gap-1">
-                  <CalendarDays className="size-3.5 text-gold-strong" aria-hidden />
+              <span className="inline-flex items-start gap-1">
+                <CalendarDays className="mt-px size-3.5 shrink-0 text-gold-strong" aria-hidden />
+                <span>
                   {formatShortDate(repertoire.mass.date)} · {repertoire.mass.title}
+                  <span className="sr-only">.</span>
                 </span>
-                <span aria-hidden>·</span>
-              </>
+              </span>
             )}
             <span>{formatSongCount(repertoire.items.length)}</span>
           </p>
