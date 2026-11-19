@@ -37,8 +37,9 @@ Tipografia: Fraunces (serifa, tamanho óptico 72, sem as formas "suaves") para t
 | Topo com ilustração | `components/layout/page-hero.tsx`, `components/brand/*` | Título, subtítulo e cruz |
 | Escolha da missa | `features/liturgy/components/celebration-chooser.tsx` (`CelebrationChooser`) | Cartão "Data da missa · Celebração · Tempo · Cor" |
 | Sugestões em abas | `features/liturgy/components/mass-planner.tsx` | Abas de momentos e cartões |
-| Atalhos de exploração | `celebration-chooser.tsx` (`MassExplore`) | "Explorar por celebração / por tempo litúrgico" |
-| Preparação da missa (servidor) | `features/liturgy/components/mass-preparation.tsx` | Início e `/preparar-missa` |
+| Atalhos de exploração | `celebration-chooser.tsx` (`MassExplore`) | "Explorar por celebração / por tempo litúrgico" (lado a lado na missa; um sob o outro no início, `stacked`) |
+| Início | `features/liturgy/components/home-start.tsx` (`HomeMassStart`, `HomeStart`) | Próxima celebração, outra data, atalhos e "Seus repertórios" |
+| Preparação da missa (servidor) | `features/liturgy/components/mass-preparation.tsx` | `/preparar-missa` |
 | Repertório em construção / atual | `features/repertoires/components/repertoire-builder.tsx`, `features/catalog/components/catalog-repertoire-dock.tsx` | Painel oliva da direita |
 | Busca, filtros rápidos e lista | `features/catalog/components/catalog-results.tsx` | Zona esquerda do catálogo |
 | Música aberta | `features/catalog/components/catalog-song-detail.tsx` | Zona central do catálogo |
@@ -54,7 +55,7 @@ Tipografia: Fraunces (serifa, tamanho óptico 72, sem as formas "suaves") para t
 ## Dados e honestidade
 
 - Nada dos mockups virou dado: títulos, autores, leituras, contagens e vídeos vêm do MongoDB pelas rotas e serviços de antes.
-- O Início abre a próxima celebração cadastrada (a mesma busca de "Próximas celebrações"). Sem base, mostra a escolha da data e um aviso; sem banco, "Calendário indisponível".
+- O Início só escolhe a missa: destaca a próxima celebração cadastrada (a mesma busca de "Próximas celebrações") com o botão "Preparar esta missa", oferece "Outra data" e os atalhos por celebração e por tempo litúrgico, com "Seus repertórios" ao lado. Sugestões por momento, as músicas sugeridas e o repertório em construção ficam só em `/preparar-missa`, que, aberta sem data, já vem com a próxima celebração escolhida (a data continua editável no topo). Sem base, o Início mostra a escolha da data e um aviso; sem banco, avisa que o calendário está indisponível.
 - O estado editorial da celebração fica sempre à vista; leituras, temas e fontes estão em "Leituras, temas e fontes".
 - Partitura, PDF, áudio, favoritos e o botão de tocar não existem no produto e não aparecem.
 - Vídeo: sem vídeo aprovado, só o aviso "Sem vídeo de referência"; com vídeo aprovado numa contribuição (Etapa 2F.1: provedor e identificador do YouTube), o player sem cookies (`youtube-nocookie.com`) só carrega depois do clique e nunca toca sozinho; "Abrir no YouTube" leva ao vídeo em outra aba.

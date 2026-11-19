@@ -10,7 +10,7 @@ import { HomeOverview } from "./home-overview";
 import { useLibrary } from "./use-library";
 
 /**
- * Parte pessoal da página inicial. A consulta é pública: quem não entrou vê só um convite
+ * Parte pessoal da página inicial, no painel "Seus repertórios". A consulta é pública: quem não entrou vê só um convite
  * discreto, e nada da conta aparece antes do login.
  */
 export function HomePersonal() {
@@ -22,7 +22,7 @@ export function HomePersonal() {
 
   if (status === "signed-out") {
     return (
-      <div className="rounded-2xl border bg-card p-5">
+      <div>
         <p className="text-sm text-pretty">
           Entre para salvar repertórios, escolher o tom de cada música e compartilhar com o grupo. Consultar
           celebrações e cifras não exige conta.

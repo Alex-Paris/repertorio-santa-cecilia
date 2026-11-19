@@ -21,7 +21,8 @@ const SUBTITLE = "Escolha a data e a celebração, veja sugestões de cantos e m
 async function Planner({ searchParams }: PrepareMassPageProps) {
   // Sem cache: uma revisão editorial ou uma despublicação vale na próxima leitura.
   await connection();
-  return <MassPreparation title={TITLE} subtitle={SUBTITLE} searchParams={await searchParams} />;
+  // Sem data no endereço, a página já abre a próxima celebração; a data continua editável no topo.
+  return <MassPreparation title={TITLE} subtitle={SUBTITLE} searchParams={await searchParams} defaultToNext />;
 }
 
 export default function PrepareMassPage({ searchParams }: PrepareMassPageProps) {

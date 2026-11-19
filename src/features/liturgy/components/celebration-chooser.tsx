@@ -142,13 +142,18 @@ interface MassExploreProps {
   /** Celebração e tempo em tela, destacados. */
   selectedId?: string;
   season?: LiturgicalCelebrationContext["season"];
+  /** Complemento, para leitores de tela, do tempo destacado. */
+  seasonNote?: string;
+  /** Um grupo sob o outro, com mais largura para os nomes (página inicial). */
+  stacked?: boolean;
+  className?: string;
 }
 
-/** Atalhos compactos sob as sugestões: celebrações que existem na base e tempos litúrgicos. */
-export function MassExplore({ upcoming, selectedId, season }: MassExploreProps) {
+/** Atalhos compactos: celebrações que existem na base e tempos litúrgicos. */
+export function MassExplore({ upcoming, selectedId, season, seasonNote = "tempo da celebração em tela", stacked = false, className }: MassExploreProps) {
   return (
-    <div className="grid gap-6 border-t border-gold/25 pt-5 lg:grid-cols-2 lg:gap-0">
-      <section aria-labelledby="explorar-celebracao" className="lg:border-r lg:border-gold/25 lg:pr-5">
+    <div className={cn("grid gap-6 border-t border-gold/25 pt-5", !stacked && "lg:grid-cols-2 lg:gap-0", className)}>
+      <section aria-labelledby="explorar-celebracao" className={cn(!stacked && "lg:border-r lg:border-gold/25 lg:pr-5")}>
         <h2 id="explorar-celebracao" className="flex items-center gap-2.5 font-display text-[1.25rem] font-semibold text-heading md:text-[1.45rem]">
           <CalendarDays className="size-6 text-gold" aria-hidden />
           Explorar por celebração
@@ -167,7 +172,7 @@ export function MassExplore({ upcoming, selectedId, season }: MassExploreProps) 
                   className={cn(TILE, current && "border-primary ring-1 ring-primary")}
                 >
                   <Icon className="size-5 text-gold-strong" aria-hidden />
-                  <span className="line-clamp-2 wrap-break-word">{celebrationDisplayTitle(entry)}</span>
+                  <span className={cn("wrap-break-word", stacked ? "line-clamp-3" : "line-clamp-2")}>{celebrationDisplayTitle(entry)}</span>
                   <span className="text-[0.7rem] font-normal text-muted-foreground">{tileDate(entry.date)}</span>
                   <span className="sr-only">
                     , {CELEBRATION_RANK_LABELS[entry.rank]}. <ReviewStatusBadge status={entry.reviewStatus} />
@@ -185,7 +190,7 @@ export function MassExplore({ upcoming, selectedId, season }: MassExploreProps) 
         </ul>
       </section>
 
-      <section aria-labelledby="explorar-tempo" className="lg:pl-5">
+      <section aria-labelledby="explorar-tempo" className={cn(!stacked && "lg:pl-5")}>
         <h2 id="explorar-tempo" className="flex items-center gap-2.5 font-display text-[1.25rem] font-semibold text-heading md:text-[1.45rem]">
           <LeafIcon />
           Explorar por tempo litúrgico
@@ -204,7 +209,7 @@ export function MassExplore({ upcoming, selectedId, season }: MassExploreProps) 
                 >
                   <Icon className="size-5 text-gold-strong" aria-hidden />
                   {entry.label}
-                  <span className="sr-only">: celebrações deste tempo{current ? " (tempo da celebração em tela)" : ""}</span>
+                  <span className="sr-only">: celebrações deste tempo{current ? ` (${seasonNote})` : ""}</span>
                 </Link>
               </li>
             );

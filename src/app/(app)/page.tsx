@@ -3,15 +3,28 @@ import { Suspense } from "react";
 
 import { PageHero } from "@/components/layout/page-hero";
 import { ContentSkeleton } from "@/components/layout/page-skeleton";
-import { MassPreparation } from "@/features/liturgy/components/mass-preparation";
+import { HomeMassStart, HomeStart } from "@/features/liturgy/components/home-start";
+import { upcoming } from "@/features/liturgy/components/mass-preparation";
 
 const TITLE = "Qual missa você vai preparar?";
-const SUBTITLE = "Escolha a data e a celebração, veja sugestões de músicas e monte o repertório da Santa Missa.";
+const SUBTITLE = "Escolha a celebração e, na página da missa, veja sugestões de cantos por momento e monte o repertório.";
 
-/** O início já abre a próxima celebração da base, com as sugestões à vista. */
-async function NextMass() {
+/**
+ * O início escolhe a missa e leva à página dela; não repete as sugestões por momento nem o
+ * repertório em construção, que ficam em /preparar-missa.
+ */
+async function Home() {
+  // Sem cache: uma revisão editorial vale na próxima leitura.
   await connection();
-  return <MassPreparation title={TITLE} subtitle={SUBTITLE} searchParams={{}} defaultToNext />;
+  const next = await upcoming();
+  return (
+    <>
+      <PageHero title={TITLE} subtitle={SUBTITLE}>
+        <HomeMassStart next={next} />
+      </PageHero>
+      <HomeStart next={next} />
+    </>
+  );
 }
 
 export default function HomePage() {
@@ -24,7 +37,7 @@ export default function HomePage() {
           </PageHero>
         }
       >
-        <NextMass />
+        <Home />
       </Suspense>
     </div>
   );

@@ -4,7 +4,6 @@ import Link from "next/link";
 
 import { EmptyState } from "@/components/layout/empty-state";
 import { PageHero } from "@/components/layout/page-hero";
-import { HomePersonal } from "@/features/library/components/home-personal";
 import { isValidEntityId } from "@/server/repositories/persistence";
 import {
   getCelebrationSuggestions,
@@ -45,7 +44,7 @@ function parseMoment(value: unknown): LiturgicalMomentId | null {
   return LITURGICAL_MOMENT_IDS.find((moment) => moment === value) ?? null;
 }
 
-async function upcoming(): Promise<CelebrationSummary[] | null> {
+export async function upcoming(): Promise<CelebrationSummary[] | null> {
   const page = await settle(searchCelebrations({ from: todayInBrazil(), page: 1, pageSize: UPCOMING }));
   return page?.celebrations ?? null;
 }
@@ -122,11 +121,10 @@ function VideoComingSoon() {
 }
 
 interface MassPreparationProps {
-  /** Título do topo: o início pergunta; a página da missa nomeia a tarefa. */
   title: string;
   subtitle: string;
   searchParams: MassSearchParams;
-  /** No início, sem data escolhida, abre a próxima celebração da base. */
+  /** Sem data no endereço, abre a próxima celebração da base, com a data já escolhida no topo. */
   defaultToNext?: boolean;
 }
 
@@ -152,35 +150,7 @@ export async function MassPreparation({ title, subtitle, searchParams, defaultTo
         <PageHero title={title} subtitle={subtitle}>
           <CelebrationChooser error={rawDate ? "Informe uma data válida." : undefined} />
         </PageHero>
-        {defaultToNext ? (
-          <div className="mt-6 space-y-8">
-            {next === null ? (
-              <CalendarUnavailable />
-            ) : (
-              <EmptyState
-                icon={CalendarSearch}
-                title="Nenhuma celebração cadastrada a partir de hoje"
-                description="A base de celebrações é editorial e cobre poucas datas. Escolha uma data acima ou busque cantos no catálogo."
-                action={
-                  <Link href="/catalogo" className="text-sm font-medium underline underline-offset-3">
-                    Buscar cantos no catálogo
-                  </Link>
-                }
-              />
-            )}
-            <MassExplore upcoming={next ?? []} />
-            <section aria-labelledby="pessoal" className="mx-auto max-w-3xl">
-              <h2 id="pessoal" className="font-display text-xl font-semibold tracking-tight text-heading">
-                Seus repertórios
-              </h2>
-              <div className="mt-3">
-                <HomePersonal />
-              </div>
-            </section>
-          </div>
-        ) : (
-          <Upcoming celebrations={next} />
-        )}
+        {next === null ? <CalendarUnavailable /> : <Upcoming celebrations={next} />}
       </>
     );
   }
