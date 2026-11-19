@@ -174,9 +174,13 @@ describe("transposição no leitor da música", () => {
     expect(screen.getByRole("button", { name: "Diminuir um semitom" }).getAttribute("aria-disabled")).toBe("true");
   });
 
-  it("desativa a restauração quando já está no tom original", async () => {
+  it("só oferece a restauração quando o tom foi alterado", async () => {
+    // Barra compacta do leitor: no tom original não há o que restaurar, e o botão não aparece.
     await openSong("song-caminhos");
-    expect(screen.getByRole("button", { name: "Restaurar tom original" }).getAttribute("aria-disabled")).toBe("true");
+    expect(screen.queryByRole("button", { name: "Restaurar tom original" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Aumentar um semitom" }));
+    fireEvent.click(screen.getByRole("button", { name: "Restaurar tom original" }));
+    expect(screen.queryByRole("button", { name: "Restaurar tom original" })).toBeNull();
   });
 
   it("não oferece transposição em música sem cifra", async () => {

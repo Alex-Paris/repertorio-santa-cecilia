@@ -101,7 +101,7 @@ export function CatalogSongDetail({
         {/* Etiquetas da classificação e, na mesma linha, as ações sobre a música. */}
         <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-2">
           {liturgy && (liturgy.moments.length > 0 || liturgy.seasons.length > 0 || themes.length > 0) && (
-            <ul aria-label="Classificação litúrgica" className="flex min-w-0 flex-1 flex-wrap gap-1.5">
+            <ul aria-label="Classificação litúrgica" className="flex min-w-[min(100%,14rem)] flex-[1_1_14rem] flex-wrap gap-1.5">
               {liturgy.moments.map((moment) => (
                 <li key={moment}>
                   <MomentTag moment={moment} />

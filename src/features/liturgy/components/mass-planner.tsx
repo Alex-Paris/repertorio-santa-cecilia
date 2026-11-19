@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "cn";
-import { ChevronLeft, ChevronRight, FileMusic, Info, Leaf, Music2, Plus, SearchX } from "lucide-react";
+import { ChevronLeft, ChevronRight, FileMusic, Leaf, Music2, Plus, SearchX } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useId, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode } from "react";
@@ -175,7 +175,7 @@ export function MassPlanner({
             Sugestões por momento da Missa
           </h2>
           <p className="mt-0.5 text-sm text-muted-foreground">
-            Sugestões do Repertório Santa Cecília, a partir da classificação do catálogo. Não representam aprovação oficial da Igreja.
+            Sugestões editoriais, a partir da classificação do catálogo. Não representam aprovação oficial da Igreja.
           </p>
 
           <div className="relative mt-3">
@@ -402,11 +402,7 @@ function MomentPanel({
         <h3 id={`momento-${entry.moment}`} className="font-display text-[1.2rem] font-semibold tracking-tight text-heading md:text-[1.45rem]">
           Músicas sugeridas para {moment ? forMoment(moment.to) : label}
         </h3>
-        <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
-          <Info className="size-4" aria-hidden />
-          Sugestões para {celebration.title}
-          {moment && <span className="sr-only">. {MOMENT_KIND_LABELS[moment.kind]}</span>}
-        </p>
+        {moment && <p className="sr-only">{MOMENT_KIND_LABELS[moment.kind]}</p>}
       </div>
 
       {entry.guidance.note && (

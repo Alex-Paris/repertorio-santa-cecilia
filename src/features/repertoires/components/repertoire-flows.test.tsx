@@ -102,7 +102,9 @@ describe("edição de repertório", () => {
 });
 
 // Desde a Etapa 2E.1 o catálogo é a origem padrão; músicas particulares ficam em "Minhas músicas".
+// Com músicas na lista, a busca para adicionar abre pelo botão "Adicionar músicas".
 function choosePersonalSongs(): void {
+  fireEvent.click(screen.getByRole("button", { name: "Adicionar músicas" }));
   fireEvent.click(screen.getByRole("radio", { name: "Minhas músicas" }));
 }
 

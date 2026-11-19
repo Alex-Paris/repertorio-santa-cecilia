@@ -98,6 +98,8 @@ describe("adicionar a partir do repertório", () => {
       const items = snapshot.library.repertoires.flatMap((repertoire) => repertoire.items);
       unresolved += items.filter((item) => item.source === "catalog" && !catalogIds.has(item.songId)).length;
     });
+    // A lista vem primeiro; a busca para adicionar abre pelo botão.
+    fireEvent.click(screen.getByRole("button", { name: "Adicionar músicas" }));
     expect(screen.getByRole("radio", { name: "Catálogo" }).getAttribute("aria-checked")).toBe("true");
     fireEvent.change(screen.getByLabelText("Buscar no catálogo"), { target: { value: "estrada" } });
     fireEvent.click(screen.getByRole("button", { name: "Buscar" }));
@@ -118,6 +120,7 @@ describe("adicionar a partir do repertório", () => {
     render(<RepertoireDetailScreen repertoireId={ENSAIO} />);
     await screen.findByRole("heading", { level: 1, name: "Ensaio Acústico" });
 
+    fireEvent.click(screen.getByRole("button", { name: "Adicionar músicas" }));
     fireEvent.change(screen.getByLabelText("Buscar no catálogo"), { target: { value: "zzz" } });
     fireEvent.click(screen.getByRole("button", { name: "Buscar" }));
 

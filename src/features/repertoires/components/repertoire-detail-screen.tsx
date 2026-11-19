@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "cn";
-import { Pencil, Share2, Trash2 } from "lucide-react";
+import { Pencil, Plus, Share2, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -37,6 +37,8 @@ function RepertoireDetail({ repertoire, songs, catalogSongs, onDelete }: Reperto
   useDocumentTitle(repertoire.name);
 
   const entries = buildRepertoireEntries(repertoire.items, songs, catalogSongs);
+  // A lista vem primeiro; a busca para adicionar abre a pedido (aberta de início no repertório vazio).
+  const [adding, setAdding] = useState(entries.length === 0);
 
   return (
     <>
@@ -48,7 +50,10 @@ function RepertoireDetail({ repertoire, songs, catalogSongs, onDelete }: Reperto
             {repertoire.mass && (
               <p className="text-pretty">
                 <span className="font-medium text-foreground">{repertoire.mass.title}</span>
-                <span className="block text-sm first-letter:uppercase">{formatLongDate(repertoire.mass.date)}</span>
+                {/* No computador, celebração e data numa linha; no celular, a data desce. */}
+                <span aria-hidden className="hidden text-sm sm:inline"> · </span>
+                <span className="block text-sm first-letter:uppercase sm:inline-block">{formatLongDate(repertoire.mass.date)}</span>
+                <br className="hidden sm:inline" />
                 <Link
                   href={`/preparar-missa?data=${repertoire.mass.date}${repertoire.mass.celebrationId ? `&celebracao=${encodeURIComponent(repertoire.mass.celebrationId)}` : ""}&repertorio=${repertoire.id}`}
                   className="mt-1 inline-block text-sm font-medium text-foreground underline underline-offset-3"
@@ -59,7 +64,6 @@ function RepertoireDetail({ repertoire, songs, catalogSongs, onDelete }: Reperto
             )}
             {repertoire.mass && <MassCelebrationStatus mass={repertoire.mass} repertoireId={repertoire.id} />}
             {repertoire.description && <p className="text-pretty">{repertoire.description}</p>}
-            <p className="mt-2 text-sm">{formatSongCount(entries.length)}</p>
           </>
         }
         actions={
@@ -102,13 +106,39 @@ function RepertoireDetail({ repertoire, songs, catalogSongs, onDelete }: Reperto
         }
       />
 
-      <AddSongToRepertoire repertoire={repertoire} songs={songs} />
-      <RepertoireEntryList
-        repertoireId={repertoire.id}
-        revision={repertoire.revision}
-        entries={entries}
-        forMass={repertoire.mass !== undefined}
-      />
+      <section aria-labelledby="musicas-do-repertorio">
+        <h2 id="musicas-do-repertorio" className="mb-2 flex items-baseline gap-2 font-display text-lg font-semibold text-heading">
+          Músicas
+          <span className="font-sans text-sm font-normal text-muted-foreground">{formatSongCount(entries.length)}</span>
+        </h2>
+        <RepertoireEntryList
+          repertoireId={repertoire.id}
+          revision={repertoire.revision}
+          entries={entries}
+          forMass={repertoire.mass !== undefined}
+        />
+      </section>
+
+      <div className="mt-4">
+        {adding ? (
+          <div className="rounded-xl border bg-card p-4">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <h2 className="font-display text-lg font-semibold text-heading">Adicionar músicas</h2>
+              {entries.length > 0 && (
+                <Button variant="ghost" size="sm" onClick={() => setAdding(false)}>
+                  Concluir
+                </Button>
+              )}
+            </div>
+            <AddSongToRepertoire repertoire={repertoire} songs={songs} />
+          </div>
+        ) : (
+          <Button variant="outline" size="lg" className="w-full gap-2 sm:w-auto" onClick={() => setAdding(true)}>
+            <Plus aria-hidden />
+            Adicionar músicas
+          </Button>
+        )}
+      </div>
     </>
   );
 }

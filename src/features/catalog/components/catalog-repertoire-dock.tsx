@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "cn";
-import { Lightbulb, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -63,18 +63,6 @@ export function CatalogRepertoireDock({ repertoireId, locationHref, addMore }: C
       emptyText="Ainda sem músicas. Escolha uma música no catálogo e use “Adicionar ao repertório”."
       onChangeRepertoire={() => setChoosing(true)}
       addMore={current ? (addMore === "search" ? { onClick: focusSearch } : { href: withRepertoire("/catalogo", current.id) }) : undefined}
-      aside={
-        <aside aria-labelledby="dica-catalogo" className="rounded-2xl border bg-card/80 p-4 text-sm">
-          <h2 id="dica-catalogo" className="flex items-center gap-2 font-display text-lg font-semibold text-heading">
-            <Lightbulb className="size-5 text-gold" aria-hidden />
-            Dica
-          </h2>
-          <p className="mt-1 text-pretty text-muted-foreground">
-            Abra uma música e use “Adicionar ao repertório”: ela entra no repertório atual, com o momento e o tom que você
-            escolher. Tudo fica salvo na sua conta.
-          </p>
-        </aside>
-      }
     />
   );
 }

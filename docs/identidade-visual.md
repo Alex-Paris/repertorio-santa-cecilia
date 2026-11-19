@@ -43,7 +43,7 @@ Tipografia: Fraunces (serifa, tamanho óptico 72, sem as formas "suaves") para t
 | Topo com ilustração | `components/layout/page-hero.tsx`, `components/brand/*` | Título, subtítulo e cruz |
 | Escolha da missa | `features/liturgy/components/celebration-chooser.tsx` (`CelebrationChooser`) | Cartão "Data da missa · Celebração · Tempo · Cor" |
 | Sugestões em abas | `features/liturgy/components/mass-planner.tsx` | Abas de momentos e cartões |
-| Atalhos de exploração | `celebration-chooser.tsx` (`MassExplore`) | "Explorar por celebração / por tempo litúrgico" (lado a lado na missa; um sob o outro no início, `stacked`) |
+| Atalhos de exploração | `celebration-chooser.tsx` (`MassExplore`) | "Explorar por celebração / por tempo litúrgico", só no início (`stacked`) |
 | Início | `features/liturgy/components/home-start.tsx` (`HomeMassStart`, `HomeStart`) | Próxima celebração, outra data, atalhos e "Seus repertórios" |
 | Preparação da missa (servidor) | `features/liturgy/components/mass-preparation.tsx` | `/preparar-missa` |
 | Repertório em construção / atual | `features/repertoires/components/repertoire-builder.tsx`, `features/catalog/components/catalog-repertoire-dock.tsx` | Painel oliva da direita |
@@ -77,6 +77,17 @@ Tipografia: Fraunces (serifa, tamanho óptico 72, sem as formas "suaves") para t
 - **Busca do cabeçalho:** "Buscar músicas ou autores…", porque ela consulta o catálogo; celebrações têm a sua própria busca no menu "Conta".
 - **"Minhas músicas"** saiu da barra superior e foi para o menu "Conta" (e para "Conta" no celular).
 - **Ícone do cabeçalho:** o detalhe de Santa Cecília no lugar da lira genérica do mockup, como pede o briefing.
+
+## Telas mais práticas (remodelagem)
+
+Análise das telas com conta e dados de teste, a 1448px e 390px. O que pesava: o topo com ilustração repetido em todas as telas de trabalho, textos de apoio duplicados, atalhos repetidos do início na página da missa e controles empilhados. Princípios aplicados: um assunto e uma ação principal por tela, detalhes a pedido (revelação progressiva) e, na leitura, uma barra única com cifra ou letra, tom e tamanho, como nos leitores de cifra para palco.
+
+- **Topo:** o logotipo grande fica só no início (`PageHero` padrão). Missa e catálogo usam `align="compact"`: título e uma linha de apoio, sem ilustração, com o mesmo espaço sob o cabeçalho (`--page-top`). No celular, a página da missa caiu de cerca de 1990px para 1235px de altura.
+- **Missa:** sem os atalhos de exploração (ficam no início) e sem o aviso de vídeos "em breve"; um link "Ver outras celebrações" sob a escolha da data. O aviso de que as sugestões não são aprovação oficial da Igreja continua, em uma linha; a frase repetida "Sugestões para (celebração)" saiu, porque a celebração já está no topo. Motivos e procedência de cada sugestão continuam no cartão.
+- **Catálogo:** sem o cartão "Dica"; as etiquetas da música aberta não ficam mais sob os botões (quebram de linha antes de encolher).
+- **Música da biblioteca:** cifra ou letra, tom e tamanho numa barra só, presa sob o cabeçalho, igual à do catálogo. Os botões de restaurar tom e tamanho só aparecem quando há o que restaurar.
+- **Repertório:** a lista de músicas vem primeiro, com o título "Músicas" e a quantidade; a busca para adicionar abre em "Adicionar músicas" (aberta de início no repertório vazio). Celebração e data numa linha.
+- **Lista de repertórios:** cada cartão mostra a data e a celebração da missa junto da quantidade de músicas.
 
 ## Hero, espaçamento e apresentação (Etapa 2F.2)
 

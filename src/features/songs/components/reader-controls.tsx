@@ -98,6 +98,12 @@ export function FontSizeControls({ fontSize, compact = false }: { fontSize: numb
         >
           <Plus aria-hidden />
         </Button>
+        {/* Só aparece quando há o que restaurar, como a restauração do tom na mesma barra. */}
+        {fontSize !== DEFAULT_FONT_SIZE && (
+          <Button variant="ghost" size="icon-lg" className="size-9" aria-label="Restaurar tamanho padrão" onClick={() => change(DEFAULT_FONT_SIZE)}>
+            <RotateCcw aria-hidden />
+          </Button>
+        )}
       </div>
     );
   }

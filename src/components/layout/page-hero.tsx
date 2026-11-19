@@ -8,10 +8,11 @@ interface PageHeroProps {
   title: string;
   subtitle?: ReactNode;
   /**
-   * `center`: início e missa. `start`: catálogo, compacto (Etapa 2E.4B), com a ilustração menor
-   * ao lado do título para a lista de músicas aparecer logo.
+   * `center`: o início, com o logotipo grande. `compact`: telas de trabalho (missa, catálogo), só
+   * com o título e uma linha de apoio, sem ilustração: o logotipo já está no cabeçalho e o conteúdo
+   * aparece logo. `start`: título ao lado de uma ilustração menor.
    */
-  align?: "center" | "start";
+  align?: "center" | "start" | "compact";
   /** Conteúdo sob o título (o cartão de escolha da missa, por exemplo). */
   children?: ReactNode;
   className?: string;
@@ -23,6 +24,22 @@ interface PageHeroProps {
  * abaixo, sem rolagem, no computador.
  */
 export function PageHero({ title, subtitle, align = "center", children, className }: PageHeroProps) {
+  if (align === "compact") {
+    return (
+      <section data-hero data-bleed aria-labelledby="titulo-da-pagina" className={cn("relative isolate", className)}>
+        <div className="relative mx-auto w-full max-w-[1448px] px-4 pt-[var(--page-top)] pb-2">
+          <h1
+            id="titulo-da-pagina"
+            className="font-display text-[1.6rem] leading-tight font-semibold text-balance text-heading [font-variation-settings:'opsz'_72,'SOFT'_0,'WONK'_0] md:text-[2rem]"
+          >
+            {title}
+          </h1>
+          {subtitle && <p className="mt-0.5 hidden text-sm text-pretty text-muted-foreground sm:block md:text-[0.95rem]">{subtitle}</p>}
+          {children && <div className="relative mt-3">{children}</div>}
+        </div>
+      </section>
+    );
+  }
   const centered = align === "center";
   return (
     // Container externo: o fundo vai de ponta a ponta da página (`data-bleed`), sem `100vw`.

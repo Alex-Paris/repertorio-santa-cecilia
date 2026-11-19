@@ -16,7 +16,7 @@ interface PrepareMassPageProps {
 }
 
 const TITLE = "Preparar missa";
-const SUBTITLE = "Escolha a data e a celebração, veja sugestões de cantos e monte o repertório da Santa Missa.";
+const SUBTITLE = "Escolha a data, veja as sugestões por momento e monte o repertório.";
 
 async function Planner({ searchParams }: PrepareMassPageProps) {
   // Sem cache: uma revisão editorial ou uma despublicação vale na próxima leitura.
@@ -30,7 +30,7 @@ export default function PrepareMassPage({ searchParams }: PrepareMassPageProps) 
     <div data-layout="wide">
       <Suspense
         fallback={
-          <PageHero title={TITLE} subtitle={SUBTITLE}>
+          <PageHero align="compact" title={TITLE} subtitle={SUBTITLE}>
             <ContentSkeleton />
           </PageHero>
         }

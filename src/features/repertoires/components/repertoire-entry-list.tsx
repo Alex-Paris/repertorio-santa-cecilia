@@ -87,7 +87,7 @@ export function RepertoireEntryList({ repertoireId, revision, entries, forMass =
       <EmptyState
         icon={ListMusic}
         title="Nenhuma música neste repertório"
-        description="Use o campo acima para adicionar músicas da sua biblioteca."
+        description="Busque no catálogo ou escolha uma das suas músicas, logo abaixo."
       />
     );
   }

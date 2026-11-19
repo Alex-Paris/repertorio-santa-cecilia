@@ -1,5 +1,5 @@
 import { cn } from "cn";
-import { CalendarSearch, CloudOff, Film } from "lucide-react";
+import { CalendarSearch, CloudOff } from "lucide-react";
 import Link from "next/link";
 
 import { EmptyState } from "@/components/layout/empty-state";
@@ -24,7 +24,7 @@ import {
 import type { CelebrationRecommendation } from "../domain/recommendation";
 import { LITURGICAL_MOMENT_IDS, type LiturgicalMomentId } from "../domain/vocabulary";
 import { CelebrationNotice } from "./celebration-card";
-import { CelebrationChooser, MassExplore } from "./celebration-chooser";
+import { CelebrationChooser } from "./celebration-chooser";
 import { CelebrationList } from "./celebration-picker";
 import { MassPlanner } from "./mass-planner";
 
@@ -105,18 +105,14 @@ function VariantPicker({ celebrations, selected }: { celebrations: LiturgicalCel
   );
 }
 
-/** Reserva honesta para mídia: não há vídeo nem miniatura até existir um link autorizado. */
-function VideoComingSoon() {
+/** Outras datas: a busca de celebrações, sem repetir aqui os atalhos do início. */
+function OtherCelebrationsLink() {
   return (
-    <aside aria-labelledby="videos-em-breve" className="mt-6 flex items-start gap-2 text-sm text-muted-foreground">
-      <Film className="mt-0.5 size-4 shrink-0 text-gold" aria-hidden />
-      <p>
-        <span id="videos-em-breve" className="font-medium text-heading">
-          Referências em vídeo (em breve):
-        </span>{" "}
-        aparecerão junto de cada música quando houver um link autorizado, sem reprodução automática.
-      </p>
-    </aside>
+    <p className="mt-2 text-right text-sm">
+      <Link href="/celebracoes" className="font-medium text-heading underline underline-offset-3">
+        Ver outras celebrações
+      </Link>
+    </p>
   );
 }
 
@@ -129,8 +125,8 @@ interface MassPreparationProps {
 }
 
 /**
- * Preparação da missa, como na referência: topo com a escolha da celebração, sugestões por
- * momento, repertório em construção ao lado e atalhos de exploração. Sem banco, sem cobertura
+ * Preparação da missa: topo compacto com a escolha da celebração, sugestões por momento e o
+ * repertório em construção ao lado. Os atalhos de exploração ficam no início. Sem banco, sem cobertura
  * ou sem data, cada caso tem o seu aviso; nada é estimado.
  */
 export async function MassPreparation({ title, subtitle, searchParams, defaultToNext = false }: MassPreparationProps) {
@@ -147,7 +143,7 @@ export async function MassPreparation({ title, subtitle, searchParams, defaultTo
   if (!date || !isValidIsoDate(date)) {
     return (
       <>
-        <PageHero title={title} subtitle={subtitle}>
+        <PageHero align="compact" title={title} subtitle={subtitle}>
           <CelebrationChooser error={rawDate ? "Informe uma data válida." : undefined} />
         </PageHero>
         {next === null ? <CalendarUnavailable /> : <Upcoming celebrations={next} />}
@@ -159,7 +155,7 @@ export async function MassPreparation({ title, subtitle, searchParams, defaultTo
   if (celebrations === null) {
     return (
       <>
-        <PageHero title={title} subtitle={subtitle}>
+        <PageHero align="compact" title={title} subtitle={subtitle}>
           <CelebrationChooser date={date} />
         </PageHero>
         <CalendarUnavailable />
@@ -170,7 +166,7 @@ export async function MassPreparation({ title, subtitle, searchParams, defaultTo
   if (celebrations.length === 0) {
     return (
       <>
-        <PageHero title={title} subtitle={subtitle}>
+        <PageHero align="compact" title={title} subtitle={subtitle}>
           <CelebrationChooser date={date} />
         </PageHero>
         <div className="mx-auto mt-6 max-w-3xl">
@@ -213,9 +209,10 @@ export async function MassPreparation({ title, subtitle, searchParams, defaultTo
 
   return (
     <>
-      <PageHero title={title} subtitle={subtitle}>
+      <PageHero align="compact" title={title} subtitle={subtitle}>
         <CelebrationChooser date={date} context={context} />
         {celebrations.length > 1 && <VariantPicker celebrations={celebrations} selected={context.celebrationId} />}
+        <OtherCelebrationsLink />
       </PageHero>
       <MassPlanner
         celebration={{
@@ -233,10 +230,7 @@ export async function MassPreparation({ title, subtitle, searchParams, defaultTo
         catalog={recommendation?.catalog}
         activeMoment={moment}
         repertoireId={repertoireId}
-      >
-        <MassExplore upcoming={next ?? []} selectedId={context.celebrationId} season={context.season} />
-      </MassPlanner>
-      <VideoComingSoon />
+      />
     </>
   );
 }

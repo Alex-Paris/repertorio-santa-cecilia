@@ -158,7 +158,7 @@ export default function CatalogPage({ searchParams }: CatalogPageProps) {
   return (
     <div data-layout="wide">
       <PageHero
-        align="start"
+        align="compact"
         title="Catálogo de músicas"
         subtitle="Encontre cantos litúrgicos, veja cifras, letras e a classificação de cada música."
       />

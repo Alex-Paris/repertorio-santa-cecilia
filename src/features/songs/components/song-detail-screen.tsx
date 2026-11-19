@@ -90,25 +90,26 @@ function SongContent({
 
   return (
     <>
-      <div className="mb-4">
-        <ReadingModeToggle />
-      </div>
-      {/* Na letra, a transposição some; o tom continua guardado e volta igual na cifra. */}
-      {readingMode === "chords" && (
-        <TransposeControls
-          className="mb-4"
-          originalKey={song.originalKey}
-          semitones={semitones}
-          onChange={onSemitonesChange}
-          hint={
-            isPersisted
-              ? "Ajuste salvo somente neste repertório."
-              : "Ajuste temporário: a música não é alterada."
-          }
-        />
-      )}
-      <div className="mb-4">
-        <FontSizeControls fontSize={fontSize} />
+      {/*
+        Uma barra só, presa sob o cabeçalho enquanto a cifra rola: cifra ou letra, tom e tamanho,
+        como no catálogo. Na letra, a transposição some; o tom continua guardado e volta na cifra.
+      */}
+      <div
+        role="group"
+        aria-label="Controles da cifra"
+        className="sticky top-14 z-10 mb-3 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border bg-card/95 px-3 py-2 backdrop-blur md:top-16 lg:top-[4.6rem] [@media(max-height:520px)]:top-0"
+      >
+        <ReadingModeToggle compact />
+        {readingMode === "chords" && (
+          <TransposeControls
+            originalKey={song.originalKey}
+            semitones={semitones}
+            onChange={onSemitonesChange}
+            hint={isPersisted ? "Ajuste salvo somente neste repertório." : "Ajuste temporário: a música não é alterada."}
+            compact
+          />
+        )}
+        <FontSizeControls fontSize={fontSize} compact />
       </div>
       <article className="overflow-x-auto rounded-xl border bg-card p-5 md:p-8">
         <ChordSheet source={song.chordPro} semitones={semitones} fontSize={fontSize} mode={readingMode} />
