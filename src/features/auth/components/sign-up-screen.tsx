@@ -18,12 +18,12 @@ export async function SignUpScreen() {
     redirect("/conta");
   }
 
-  if (!isSignUpEnabled(process.env.NODE_ENV, process.env.AUTH_ALLOW_DEV_SIGNUP)) {
+  if (!isSignUpEnabled(process.env)) {
     return (
       <EmptyState
         icon={UserRoundX}
         title="Novos cadastros estão desativados"
-        description="A criação de contas ficará disponível quando a verificação de e-mail e a recuperação de senha estiverem prontas."
+        description="A criação de contas está temporariamente indisponível. Tente novamente mais tarde."
         action={
           <Link href="/entrar" className={cn(buttonVariants({ variant: "outline", size: "lg" }))}>
             Ir para o login

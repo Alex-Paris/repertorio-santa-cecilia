@@ -83,7 +83,19 @@ O resultado esperado é `[ 'PRIMARY' ]`. O banco fica exposto apenas em `127.0.0
 
 ### Contas de desenvolvimento
 
-Com `AUTH_ALLOW_DEV_SIGNUP=true` no `.env`, crie contas em `/cadastro`. Nenhum e-mail é enviado. Em produção, o cadastro permanece fechado, mesmo com essa variável.
+Com `AUTH_ALLOW_DEV_SIGNUP=true` no `.env`, crie contas em `/cadastro`. Nenhum e-mail é enviado nesse modo local. Essa variável nunca abre o cadastro em produção.
+
+### Cadastro público na Vercel
+
+O login (`/entrar`) oferece **Ainda não tem uma conta? Criar conta**, com acesso a `/cadastro`. A página e o formulário já existiam; uma política intencional fechava o cadastro em produção enquanto não havia verificação de e-mail. Agora o fluxo público reutiliza o Better Auth e exige confirmação pelo Resend.
+
+Nas variáveis do projeto na Vercel, configure `AUTH_ALLOW_SIGNUP=true`, `RESEND_API_KEY` e `AUTH_EMAIL_FROM` (somente o endereço de e-mail, de um domínio verificado no Resend). Mantenha `BETTER_AUTH_URL` igual à origem HTTPS pública, além de `BETTER_AUTH_SECRET`, `MONGODB_URI` e `MONGODB_DB_NAME` já utilizados pela aplicação. Preview e produção devem usar suas próprias configurações e bancos. As alterações só entram em vigor após uma publicação feita pelo responsável.
+
+Sem a autorização explícita, o provedor configurado e HTTPS, a criação de contas permanece indisponível. O link no login continua visível. Ao cadastrar, o visitante vai para `/entrar?cadastro=verificar`; o link enviado expira em uma hora e retorna a `/entrar?email=confirmado`. O visitante entra após confirmar. Links inválidos ou expirados permitem pedir novo envio pelo login. Em produção, contas anteriores ainda sem confirmação também precisam verificar o e-mail; uma tentativa com a senha correta envia a confirmação. Configure o Resend antes de publicar, inclusive se optar por manter novos cadastros fechados: desativar `AUTH_ALLOW_SIGNUP` não dispensa a confirmação no login.
+
+O envio é aguardado dentro da requisição, sem tarefas abandonadas após a resposta na Vercel. O limite de tentativas do Better Auth usa o MongoDB compartilhado entre funções: cinco cadastros por minuto por IP e três reenvios por minuto por IP, além dos limites de login da biblioteca. Na Vercel, o IP vem apenas de `x-forwarded-for`, sobrescrito pela plataforma. Fora dela, os contadores são compartilhados por rota sem confiar em cabeçalhos arbitrários. Usuários comuns não recebem privilégios administrativos. E-mails repetidos recebem uma resposta genérica, sem nova conta ou sessão.
+
+Referências: [verificação no Better Auth](https://better-auth.com/docs/concepts/email), [limites no Better Auth](https://better-auth.com/docs/concepts/rate-limit), [envio no Resend](https://resend.com/docs/api-reference/emails/send-email) e [cabeçalhos da Vercel](https://vercel.com/docs/headers/request-headers).
 
 ## Variáveis de ambiente
 
@@ -96,6 +108,9 @@ Com `AUTH_ALLOW_DEV_SIGNUP=true` no `.env`, crie contas em `/cadastro`. Nenhum e
 | `SHARE_LINK_SECRET`     | Assina os links públicos, com pelo menos 32 caracteres      |
 | `BETTER_AUTH_URL`       | Endereço público da aplicação, usado como origem confiável  |
 | `AUTH_ALLOW_DEV_SIGNUP` | Permite cadastro fora de produção                           |
+| `AUTH_ALLOW_SIGNUP` | Autoriza cadastro público com confirmação de e-mail; padrão: desativado |
+| `RESEND_API_KEY` | Chave privada de envio do Resend, somente no servidor |
+| `AUTH_EMAIL_FROM` | Endereço remetente de um domínio verificado no Resend |
 | `CONTRIBUTION_MAX_PENDING`, `CONTRIBUTION_MAX_PER_DAY`, `CONTRIBUTION_MAX_CHORDPRO_LENGTH` | Limites das contribuições ao catálogo. Padrão: 5 em andamento, 10 novas por dia, 50 mil caracteres |
 | `APP_PORT`, `MONGO_PORT`, `MONGO_ROOT_USERNAME`, `MONGO_ROOT_PASSWORD` | Somente para o Docker Compose |
 
@@ -489,10 +504,9 @@ Nunca versione o `.env`, e use segredos diferentes em cada ambiente. O Compose u
 
 **A plataforma não está pronta para produção.** Antes disso, são necessários:
 
-- Verificação de e-mail, com um provedor real.
+- Configurar o Resend e o domínio remetente para a verificação de e-mail do cadastro público.
 - Recuperação de senha.
-- Proteção contra abuso e revisão do cadastro público.
-- Rate limiting com armazenamento compartilhado. O padrão fica em memória e depende de um IP confiável (`trustedProxies`).
+- Monitorar abuso e ajustar os limites do cadastro público conforme o uso. O rate limiting de autenticação já usa armazenamento compartilhado no MongoDB.
 - Domínio com HTTPS e `BETTER_AUTH_URL` correspondente.
 - Gestão operacional de segredos e imagem Docker de produção.
 

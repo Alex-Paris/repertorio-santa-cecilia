@@ -5,6 +5,8 @@ import { collectFieldErrors } from "@/lib/utils/collect-field-errors";
 const MIN_PASSWORD_LENGTH = 8;
 const MAX_PASSWORD_LENGTH = 128;
 
+export const VERIFICATION_CALLBACK_URL = "/entrar?email=confirmado";
+
 const email = z.email("Informe um e-mail válido.").max(254, "Informe um e-mail válido.");
 
 const signInSchema = z.object({
@@ -44,6 +46,10 @@ export function parseSignIn(values: SignInValues): FormResult<SignInValues, Sign
     : { success: false, errors: collectFieldErrors(result.error.issues, ["email", "password"]) };
 }
 
+export function parseVerificationEmail(value: string) {
+  return email.safeParse(value);
+}
+
 export function parseSignUp(values: SignUpValues): FormResult<SignUpValues, SignUpErrors> {
   const result = signUpSchema.safeParse(values);
   return result.success
@@ -67,6 +73,8 @@ const AUTH_ERROR_MESSAGES: Record<string, string> = {
   PASSWORD_TOO_SHORT: "A senha é curta demais.",
   PASSWORD_TOO_LONG: "A senha é longa demais.",
   INVALID_EMAIL: "Informe um e-mail válido.",
+  EMAIL_NOT_VERIFIED: "Confirme seu e-mail antes de entrar. Enviamos um novo link de confirmação; confira também a caixa de spam.",
+  TOO_MANY_REQUESTS: "Muitas tentativas. Aguarde um minuto e tente novamente.",
 };
 
 const GENERIC_AUTH_ERROR = "Não foi possível concluir agora. Tente novamente.";

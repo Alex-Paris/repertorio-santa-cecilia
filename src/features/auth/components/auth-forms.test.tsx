@@ -9,13 +9,15 @@ import { SignOutButton } from "./sign-out-button";
 import { SignUpForm } from "./sign-up-form";
 
 const router = vi.hoisted(() => ({ replace: vi.fn(), refresh: vi.fn() }));
+const query = vi.hoisted(() => ({ value: "" }));
 const authClient = vi.hoisted(() => ({
   signIn: { email: vi.fn() },
   signUp: { email: vi.fn() },
   signOut: vi.fn(),
+  sendVerificationEmail: vi.fn(),
 }));
 
-vi.mock("next/navigation", () => ({ useRouter: () => router }));
+vi.mock("next/navigation", () => ({ useRouter: () => router, useSearchParams: () => new URLSearchParams(query.value) }));
 vi.mock("../auth-client", () => ({ authClient }));
 
 function type(label: string, value: string): void {
@@ -25,9 +27,11 @@ function type(label: string, value: string): void {
 beforeEach(() => {
   vi.clearAllMocks();
   localStorage.clear();
+  query.value = "";
   authClient.signIn.email.mockResolvedValue({ error: null });
-  authClient.signUp.email.mockResolvedValue({ error: null });
+  authClient.signUp.email.mockResolvedValue({ data: { token: "sessao-de-teste" }, error: null });
   authClient.signOut.mockResolvedValue({ error: null });
+  authClient.sendVerificationEmail.mockResolvedValue({ error: null });
 });
 
 afterEach(() => vi.unstubAllGlobals());
@@ -38,7 +42,7 @@ describe("login", () => {
   }
 
   it("valida os campos em português, sem chamar o servidor", () => {
-    render(<SignInForm signUpEnabled />);
+    render(<SignInForm />);
 
     submit();
 
@@ -48,7 +52,7 @@ describe("login", () => {
   });
 
   it("entra, limpa a senha e abre a conta", async () => {
-    render(<SignInForm signUpEnabled />);
+    render(<SignInForm />);
     type("E-mail", "ana@exemplo.test");
     type("Senha", "senha-123456");
 
@@ -61,7 +65,7 @@ describe("login", () => {
 
   it("mostra erro de credenciais em português", async () => {
     authClient.signIn.email.mockResolvedValue({ error: { code: "INVALID_EMAIL_OR_PASSWORD", message: "Invalid" } });
-    render(<SignInForm signUpEnabled />);
+    render(<SignInForm />);
     type("E-mail", "ana@exemplo.test");
     type("Senha", "errada-123456");
 
@@ -73,7 +77,7 @@ describe("login", () => {
 
   it("trata falha de rede", async () => {
     authClient.signIn.email.mockRejectedValue(new Error("rede"));
-    render(<SignInForm signUpEnabled />);
+    render(<SignInForm />);
     type("E-mail", "ana@exemplo.test");
     type("Senha", "senha-123456");
 
@@ -82,12 +86,44 @@ describe("login", () => {
     expect((await screen.findByRole("alert")).textContent).toContain("Tente novamente");
   });
 
-  it("só oferece cadastro quando permitido", () => {
-    const { rerender } = render(<SignInForm signUpEnabled />);
-    expect(screen.getByRole("link", { name: "Criar conta" })).toBeDefined();
+  it("sempre oferece um link público para criar conta", () => {
+    render(<SignInForm />);
+    expect(screen.getByText(/Ainda não tem uma conta/)).toBeDefined();
+    expect(screen.getByRole("link", { name: "Criar conta" }).getAttribute("href")).toBe("/cadastro");
+  });
 
-    rerender(<SignInForm signUpEnabled={false} />);
-    expect(screen.queryByRole("link", { name: "Criar conta" })).toBeNull();
+  it("orienta a confirmação e permite reenviar sem exigir a senha", async () => {
+    query.value = "cadastro=verificar";
+    render(<SignInForm />);
+    expect(screen.getByRole("status").textContent).toContain("Confira seu e-mail");
+    type("E-mail", "ana@exemplo.test");
+
+    fireEvent.click(screen.getByRole("button", { name: "Reenviar confirmação" }));
+
+    await waitFor(() => expect(authClient.sendVerificationEmail).toHaveBeenCalledWith({
+      email: "ana@exemplo.test", callbackURL: "/entrar?email=confirmado",
+    }));
+    expect((await screen.findByText(/Se houver uma conta aguardando confirmação/)).textContent).toContain("novo link");
+  });
+
+  it("trata link expirado sem anunciar confirmação", () => {
+    query.value = "email=confirmado&error=TOKEN_EXPIRED";
+    render(<SignInForm />);
+    expect(screen.getByRole("alert").textContent).toContain("expirou");
+    expect(screen.queryByText(/E-mail confirmado/)).toBeNull();
+    expect(screen.getByRole("button", { name: "Reenviar confirmação" })).toBeDefined();
+  });
+
+  it("não permite login sem confirmação e oferece reenvio", async () => {
+    authClient.signIn.email.mockResolvedValue({ error: { code: "EMAIL_NOT_VERIFIED" } });
+    render(<SignInForm />);
+    type("E-mail", "ana@exemplo.test");
+    type("Senha", "senha-123456");
+    submit();
+
+    expect((await screen.findByRole("alert")).textContent).toContain("Confirme seu e-mail");
+    expect(screen.getByRole("button", { name: "Reenviar confirmação" })).toBeDefined();
+    expect(router.replace).not.toHaveBeenCalled();
   });
 });
 
@@ -103,6 +139,40 @@ describe("cadastro", () => {
     fireEvent.click(screen.getByRole("button", { name: "Criar conta" }));
   }
 
+  it("redireciona para confirmar o e-mail quando o Better Auth não abre sessão", async () => {
+    authClient.signUp.email.mockResolvedValue({ data: { token: null }, error: null });
+    render(<SignUpForm />);
+    fill();
+    submit();
+
+    await waitFor(() => expect(router.replace).toHaveBeenCalledWith("/entrar?cadastro=verificar"));
+    expect(router.refresh).toHaveBeenCalled();
+    expect(screen.getByRole("link", { name: "Já tenho uma conta" }).getAttribute("href")).toBe("/entrar");
+  });
+
+  it("indica envio e bloqueia novo clique até a resposta", async () => {
+    let finish!: (result: { data: { token: null }; error: null }) => void;
+    authClient.signUp.email.mockReturnValue(new Promise((resolve) => { finish = resolve; }));
+    render(<SignUpForm />);
+    fill();
+    submit();
+
+    expect((screen.getByRole("button", { name: "Criando…" }) as HTMLButtonElement).disabled).toBe(true);
+    expect(router.replace).not.toHaveBeenCalled();
+    finish({ data: { token: null }, error: null });
+    await waitFor(() => expect(router.replace).toHaveBeenCalledWith("/entrar?cadastro=verificar"));
+  });
+
+  it("explica limite de tentativas sem expor a resposta do servidor", async () => {
+    authClient.signUp.email.mockResolvedValue({ error: { status: 429, message: "Too many requests" } });
+    render(<SignUpForm />);
+    fill();
+    submit();
+
+    expect((await screen.findByRole("alert")).textContent).toContain("Aguarde um minuto");
+    expect(router.replace).not.toHaveBeenCalled();
+  });
+
   it("cria a conta sem enviar a confirmação", async () => {
     render(<SignUpForm />);
     fill();
@@ -114,7 +184,10 @@ describe("cadastro", () => {
       name: "Ana",
       email: "ana@exemplo.test",
       password: "senha-123456",
+      callbackURL: "/entrar?email=confirmado",
     });
+    expect((screen.getByLabelText("Senha") as HTMLInputElement).value).toBe("");
+    expect((screen.getByLabelText("Confirmar senha") as HTMLInputElement).value).toBe("");
   });
 
   it("valida nome, e-mail e tamanho da senha", () => {

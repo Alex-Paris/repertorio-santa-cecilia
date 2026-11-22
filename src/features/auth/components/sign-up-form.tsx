@@ -15,6 +15,7 @@ import { authClient } from "../auth-client";
 import {
   getAuthErrorMessage,
   parseSignUp,
+  VERIFICATION_CALLBACK_URL,
   type SignUpErrors,
   type SignUpValues,
 } from "../services/auth-form";
@@ -35,6 +36,7 @@ export function SignUpForm() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
+    if (submitting) return;
     setFormError(null);
 
     const parsed = parseSignUp(values);
@@ -47,14 +49,20 @@ export function SignUpForm() {
     setSubmitting(true);
     try {
       const { name, email, password } = parsed.data;
-      const { error } = await authClient.signUp.email({ name, email, password });
+      const { data, error } = await authClient.signUp.email({
+        name, email, password, callbackURL: VERIFICATION_CALLBACK_URL,
+      });
       if (error) {
-        setFormError(getAuthErrorMessage(error.code));
+        setFormError(getAuthErrorMessage(error.status === 429 ? "TOO_MANY_REQUESTS" : error.code));
         return;
       }
       setValues(EMPTY_VALUES);
-      void accountLibrary.checkSession();
-      router.replace("/");
+      if (data?.token) {
+        void accountLibrary.checkSession();
+        router.replace("/");
+      } else {
+        router.replace("/entrar?cadastro=verificar");
+      }
       router.refresh();
     } catch {
       setFormError(getAuthErrorMessage(undefined));
@@ -64,7 +72,7 @@ export function SignUpForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="max-w-sm space-y-5">
+    <form onSubmit={handleSubmit} noValidate aria-busy={submitting} className="w-full max-w-sm space-y-5">
       <FormField id="signup-name" label="Nome" error={errors.name}>
         <Input
           {...getFieldA11yProps("signup-name", errors.name)}
@@ -124,9 +132,8 @@ export function SignUpForm() {
       </Button>
 
       <p className="text-sm text-muted-foreground">
-        Já tem conta?{" "}
         <Link href="/entrar" className="text-foreground underline underline-offset-3">
-          Entrar
+          Já tenho uma conta
         </Link>
       </p>
     </form>

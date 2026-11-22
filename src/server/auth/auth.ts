@@ -7,7 +7,8 @@ import { connectMongoClient, getMongoClient } from "@/server/database/mongodb-cl
 import { SITE_NAME } from "@/lib/site";
 import { getServerEnv } from "@/server/env";
 
-import { isSignUpEnabled } from "./sign-up-policy";
+import { isSignUpEnabled, requiresEmailVerification } from "./sign-up-policy";
+import { sendVerificationEmail } from "./verification-email";
 
 function createAuth() {
   const env = getServerEnv();
@@ -21,13 +22,33 @@ function createAuth() {
     database: mongodbAdapter(client.db(env.MONGODB_DB_NAME), { client }),
     emailAndPassword: {
       enabled: true,
-      disableSignUp: !isSignUpEnabled(process.env.NODE_ENV, env.AUTH_ALLOW_DEV_SIGNUP),
+      disableSignUp: !isSignUpEnabled(process.env),
+      requireEmailVerification: requiresEmailVerification(process.env),
       minPasswordLength: 8,
       maxPasswordLength: 128,
     },
+    emailVerification: requiresEmailVerification(process.env) ? {
+      sendOnSignUp: true,
+      sendOnSignIn: true,
+      autoSignInAfterVerification: false,
+      expiresIn: 3600,
+      sendVerificationEmail: ({ user, url }) => sendVerificationEmail({ to: user.email, url }),
+    } : undefined,
+    rateLimit: {
+      enabled: process.env.NODE_ENV === "production",
+      storage: "database",
+      customRules: {
+        "/sign-up/email": { window: 60, max: 5 },
+        "/send-verification-email": { window: 60, max: 3 },
+      },
+    },
     telemetry: { enabled: false },
     // Sem isto, a biblioteca desliga a checagem de origem ao detectar ambiente de teste.
-    advanced: { disableOriginCheck: false },
+    advanced: {
+      disableOriginCheck: false,
+      // A Vercel sobrescreve este cabeçalho; fora dela, não confiar em IP enviado pelo cliente.
+      ipAddress: { ipAddressHeaders: process.env.VERCEL === "1" ? ["x-forwarded-for"] : [] },
+    },
   });
 }
 
