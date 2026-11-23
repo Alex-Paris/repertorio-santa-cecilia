@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LIBRARY_STORAGE_KEY } from "@/features/library/data/library-storage";
 
-import { getAuthErrorMessage, parseSignUp } from "../services/auth-form";
+import { getAuthErrorMessage, getFacebookAuthErrorMessage, parseSignUp } from "../services/auth-form";
 import { SignInForm } from "./sign-in-form";
 import { SignOutButton } from "./sign-out-button";
 import { SignUpForm } from "./sign-up-form";
@@ -235,6 +235,36 @@ describe("cadastro", () => {
 });
 
 describe("mensagens de erro", () => {
+  it.each([
+    ["access_denied", "cancelado"],
+    ["email_not_found", "não informou seu e-mail"],
+    ["account_not_linked", "método usado no cadastro"],
+    ["signup_disabled", "desativados"],
+    ["state_mismatch", "validar o retorno"],
+  ])("explica o retorno do Facebook %s", (code, message) => {
+    query.value = `social=facebook&error=${code}`;
+    render(<SignInForm />);
+    expect(screen.getByRole("alert").textContent).toContain(message);
+  });
+
+  it("permite reenviar a confirmação exigida após o cadastro pelo Facebook", () => {
+    query.value = "social=facebook&error=email_not_verified";
+    render(<SignInForm />);
+    expect(screen.getByRole("alert").textContent).toContain("Continuar com Facebook");
+    expect(screen.getByRole("button", { name: "Reenviar confirmação" })).toBeDefined();
+  });
+
+  it("não mostra descrições externas ou detalhes de erros desconhecidos", () => {
+    expect(getFacebookAuthErrorMessage("erro-desconhecido")).not.toContain("erro-desconhecido");
+    query.value = "social=facebook&error=erro-desconhecido&error_description=segredo-da-meta";
+    render(<SignInForm />);
+    expect(screen.getByRole("alert").textContent).not.toContain("segredo-da-meta");
+  });
+
+  it.each(["constructor", "toString", "__proto__"])("trata o código de URL %s como desconhecido", (code) => {
+    expect(getFacebookAuthErrorMessage(code)).toBe("Não foi possível entrar com o Facebook. Tente novamente ou use seu e-mail e senha.");
+  });
+
   it("nunca devolve o texto original de um erro desconhecido", () => {
     expect(getAuthErrorMessage("ERRO_INTERNO_XYZ")).toBe("Não foi possível concluir agora. Tente novamente.");
     expect(getAuthErrorMessage(undefined)).toBe("Não foi possível concluir agora. Tente novamente.");

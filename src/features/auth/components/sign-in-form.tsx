@@ -13,7 +13,7 @@ import { accountLibrary } from "@/features/library/data/browser-library";
 
 import { authClient } from "../auth-client";
 import {
-  getAuthErrorMessage, parseSignIn, parseVerificationEmail, VERIFICATION_CALLBACK_URL, type SignInErrors,
+  getAuthErrorMessage, getFacebookAuthErrorMessage, parseSignIn, parseVerificationEmail, VERIFICATION_CALLBACK_URL, type SignInErrors,
 } from "../services/auth-form";
 
 export function SignInForm() {
@@ -29,6 +29,8 @@ export function SignInForm() {
   const [needsVerification, setNeedsVerification] = useState(false);
   const awaitingVerification = searchParams.get("cadastro") === "verificar";
   const verificationError = ["TOKEN_EXPIRED", "INVALID_TOKEN", "token_expired", "invalid_token"].includes(searchParams.get("error") ?? "");
+  const facebookError = searchParams.get("social") === "facebook" ? searchParams.get("error") : null;
+  const facebookNeedsVerification = facebookError === "email_not_verified";
 
   async function resendVerification(): Promise<void> {
     if (submitting || resending) return;
@@ -101,6 +103,7 @@ export function SignInForm() {
         <p role="status" className="text-sm text-muted-foreground">E-mail confirmado. Entre para acessar sua conta.</p>
       )}
       {verificationError && <FormError message="O link de confirmação é inválido ou expirou. Informe seu e-mail e solicite outro link." />}
+      {facebookError && <FormError message={getFacebookAuthErrorMessage(facebookError)} />}
       <FormField id="signin-email" label="E-mail" error={errors.email}>
         <Input
           {...getFieldA11yProps("signin-email", errors.email)}
@@ -136,7 +139,7 @@ export function SignInForm() {
         {submitting ? "Entrando…" : "Entrar"}
       </Button>
 
-      {(awaitingVerification || verificationError || needsVerification) && (
+      {(awaitingVerification || verificationError || needsVerification || facebookNeedsVerification) && (
         <Button type="button" variant="outline" disabled={submitting || resending} onClick={() => void resendVerification()}>
           {resending ? "Reenviando…" : "Reenviar confirmação"}
         </Button>

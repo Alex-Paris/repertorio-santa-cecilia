@@ -8,8 +8,10 @@ import { EmptyState } from "@/components/layout/empty-state";
 import { buttonVariants } from "@/components/ui/button";
 import { lookupSession } from "@/server/auth/session";
 import { isSignUpEnabled } from "@/server/auth/sign-up-policy";
+import { getFacebookConfig } from "@/server/auth/facebook-config";
 
 import { SignUpForm } from "./sign-up-form";
+import { FacebookAuthButton } from "./facebook-auth-button";
 
 export async function SignUpScreen() {
   const lookup = await lookupSession(await headers());
@@ -35,6 +37,7 @@ export async function SignUpScreen() {
 
   return (
     <div className="space-y-5">
+      {getFacebookConfig(process.env) && <FacebookAuthButton />}
       <SignUpForm />
     </div>
   );

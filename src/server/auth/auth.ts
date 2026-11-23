@@ -9,10 +9,12 @@ import { getServerEnv } from "@/server/env";
 
 import { isSignUpEnabled, requiresEmailVerification } from "./sign-up-policy";
 import { sendVerificationEmail } from "./verification-email";
+import { getFacebookConfig } from "./facebook-config";
 
 function createAuth() {
   const env = getServerEnv();
   const client = getMongoClient();
+  const facebook = getFacebookConfig(process.env);
 
   return betterAuth({
     appName: SITE_NAME,
@@ -20,6 +22,15 @@ function createAuth() {
     baseURL: env.BETTER_AUTH_URL,
     // Informar o `client` ativa transações, que exigem um replica set.
     database: mongodbAdapter(client.db(env.MONGODB_DB_NAME), { client }),
+    socialProviders: facebook ? { facebook } : {},
+    account: {
+      encryptOAuthTokens: true,
+      accountLinking: {
+        // E-mail coincidente não basta para associar um Facebook a uma conta existente.
+        disableImplicitLinking: true,
+        allowDifferentEmails: false,
+      },
+    },
     emailAndPassword: {
       enabled: true,
       disableSignUp: !isSignUpEnabled(process.env),
@@ -43,6 +54,7 @@ function createAuth() {
       },
     },
     telemetry: { enabled: false },
+    onAPIError: { errorURL: "/entrar?social=facebook" },
     // Sem isto, a biblioteca desliga a checagem de origem ao detectar ambiente de teste.
     advanced: {
       disableOriginCheck: false,

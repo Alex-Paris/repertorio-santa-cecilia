@@ -7,6 +7,7 @@ import { SANTA_CECILIA_CREDIT } from "@/components/brand/santa-cecilia";
 import { AccountMenu } from "./account-menu";
 import { Brand } from "./brand";
 import { HeaderSearch } from "./header-search";
+import { LegalLinks } from "./legal-links";
 import { BottomNav, TopNav } from "./navigation";
 import { ThemeToggle } from "./theme-toggle";
 import { Toaster } from "./toaster";
@@ -69,7 +70,8 @@ export function AppShell({ children }: { children: ReactNode }) {
         data-print-hide
         className="mx-auto w-full max-w-[1448px] px-4 pb-[calc(5rem+env(safe-area-inset-bottom))] text-center text-xs text-muted-foreground md:pb-6"
       >
-        {SANTA_CECILIA_CREDIT}
+        <LegalLinks />
+        <p className="mt-2">{SANTA_CECILIA_CREDIT}</p>
       </footer>
 
       <BottomNav />

@@ -313,6 +313,16 @@ describe("login", () => {
 });
 
 describe("sessão", () => {
+  it("mantém a exclusão automática desabilitada sem apagar a conta ou a sessão", async () => {
+    const { id, email, cookie } = await createTestUser("exclusao-manual");
+
+    const response = await authRequest("delete-user", {}, cookie);
+
+    expect(response.status).toBe(404);
+    expect(await database().collection("user").countDocuments({ email })).toBe(1);
+    await expect(getSessionFromHeaders(new Headers({ cookie }))).resolves.toMatchObject({ user: { id } });
+  });
+
   it("é ausente sem cookie", async () => {
     await expect(getSessionFromHeaders(new Headers())).resolves.toBeNull();
   });

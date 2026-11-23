@@ -97,6 +97,31 @@ O envio é aguardado dentro da requisição, sem tarefas abandonadas após a res
 
 Referências: [verificação no Better Auth](https://better-auth.com/docs/concepts/email), [limites no Better Auth](https://better-auth.com/docs/concepts/rate-limit), [envio no Resend](https://resend.com/docs/api-reference/emails/send-email) e [cabeçalhos da Vercel](https://vercel.com/docs/headers/request-headers).
 
+### Entrar ou criar conta com Facebook
+
+O botão **Continuar com Facebook** aparece em `/entrar` e `/cadastro` quando `FACEBOOK_CLIENT_ID` e `FACEBOOK_CLIENT_SECRET` estão configurados corretamente no servidor. Sem essas credenciais, o login por e-mail permanece disponível. O Facebook usa o mesmo Better Auth, banco, sessões e regras de autorização; não há autenticação paralela. O cadastro social respeita `AUTH_ALLOW_SIGNUP` e, em desenvolvimento, a exceção `AUTH_ALLOW_DEV_SIGNUP`.
+
+Para configurar pela primeira vez:
+
+1. Acesse o [Meta for Developers](https://developers.facebook.com/apps/) e crie um aplicativo com o caso de uso de autenticação por Facebook Login. Informe nome, contato e domínio do Santa Cecília conforme solicitado no painel.
+2. Nas configurações básicas do aplicativo, obtenha **App ID** e **App Secret**. Na Vercel, salve-os em `FACEBOOK_CLIENT_ID` e `FACEBOOK_CLIENT_SECRET`, respectivamente, no ambiente correspondente. O segredo fica somente no servidor; não use `NEXT_PUBLIC_`.
+3. Nas configurações do Facebook Login, habilite o fluxo OAuth web e registre como **Valid OAuth Redirect URI** exatamente `https://SEU-DOMINIO/api/auth/callback/facebook`. `BETTER_AUTH_URL` deve ser `https://SEU-DOMINIO`, a mesma origem pública da aplicação. Para testes locais, registre separadamente `http://localhost:3000/api/auth/callback/facebook` (ou a porta usada em `BETTER_AUTH_URL`).
+4. Solicite apenas `email` e `public_profile`, as duas permissões utilizadas pelo código. O fluxo usa redirecionamento OAuth no servidor, sem SDK JavaScript do Facebook ou solicitação de senha do Facebook dentro do site.
+5. Complete os requisitos de publicação exibidos pela Meta. As páginas `/privacidade`, `/termos-de-uso` e `/exclusao-de-dados` estão preparadas no código e passam a ficar disponíveis com a publicação da versão. A exclusão é solicitada por e-mail e atendida manualmente; não há callback automático de exclusão da Meta. Teste com os usuários autorizados no aplicativo e libere o acesso público conforme o painel da Meta. Aprovações e verificações dependem do aplicativo e dos requisitos apresentados pela Meta.
+6. Publique a configuração e o código na Vercel pelo procedimento habitual. O código não cria o aplicativo Meta, não configura credenciais externas e não faz deploy automaticamente.
+
+No primeiro acesso, o Better Auth cria uma conta comum com nome e e-mail recebidos do Facebook. Se o provedor não informar um e-mail, o cadastro é recusado com orientação para autorizar o compartilhamento ou usar e-mail e senha. Nenhum e-mail fictício é criado. Em produção, se o e-mail não vier verificado pelo provedor, o Resend envia a confirmação e o visitante volta ao login, onde pode reenviar o link. Depois de confirmar, deve escolher **Continuar com Facebook** novamente; uma conta criada apenas por Facebook não recebe senha local automaticamente.
+
+Contas já existentes com o mesmo e-mail não são associadas automaticamente ao Facebook: o visitante deve entrar pelo método original. Isso preserva a identidade, a biblioteca e as permissões da conta, inclusive da administração. Não há interface de vinculação nesta implementação. Novas contas Facebook não recebem papel administrativo; o comando `catalog:admin grant` continua sendo o procedimento de concessão. Tokens OAuth são criptografados no banco pelo Better Auth. Cancelamentos, falta de e-mail, confirmação pendente, cadastro fechado e retornos inválidos recebem mensagens em português, sem expor detalhes da Meta.
+
+Os testes usam somente MongoDB local descartável, Meta e Resend simulados. O fluxo real depende do aplicativo e das credenciais configuradas na Meta. Referências: [Facebook no Better Auth](https://better-auth.com/docs/authentication/facebook), [OAuth no Better Auth](https://better-auth.com/docs/concepts/oauth) e [Facebook Login na Meta](https://developers.facebook.com/documentation/facebook-login/web).
+
+### Privacidade, termos e exclusão de dados
+
+As três páginas públicas estão ligadas pelo rodapé, inclusive nos repertórios compartilhados. Seus textos refletem o cadastro, Facebook Login, biblioteca, contribuições, cookies e publicações atualmente implementados. O canal informado pelo responsável é **Alex de Lima Paris — me@alexparis.dev**; essas informações públicas ficam em `src/lib/site.ts`.
+
+`/exclusao-de-dados` contém instruções para enviar um pedido por e-mail. Abrir a página ou preparar a mensagem não exclui dados nem cria um protocolo automático. A exclusão de usuário do Better Auth permanece desabilitada: não existe limpeza integral de conta/biblioteca/contribuições. O procedimento operacional humano, o inventário de dados e as informações de retenção e infraestrutura ainda a confirmar estão em [docs/privacidade-e-operacao.md](docs/privacidade-e-operacao.md). Não configure a página de instruções como um endpoint de callback Meta.
+
 ## Variáveis de ambiente
 
 | Variável                | Função                                                      |
@@ -111,6 +136,8 @@ Referências: [verificação no Better Auth](https://better-auth.com/docs/concep
 | `AUTH_ALLOW_SIGNUP` | Autoriza cadastro público com confirmação de e-mail; padrão: desativado |
 | `RESEND_API_KEY` | Chave privada de envio do Resend, somente no servidor |
 | `AUTH_EMAIL_FROM` | Endereço remetente de um domínio verificado no Resend |
+| `FACEBOOK_CLIENT_ID` | App ID do aplicativo Facebook Login; opcional |
+| `FACEBOOK_CLIENT_SECRET` | App Secret do Facebook Login, somente no servidor; opcional |
 | `CONTRIBUTION_MAX_PENDING`, `CONTRIBUTION_MAX_PER_DAY`, `CONTRIBUTION_MAX_CHORDPRO_LENGTH` | Limites das contribuições ao catálogo. Padrão: 5 em andamento, 10 novas por dia, 50 mil caracteres |
 | `APP_PORT`, `MONGO_PORT`, `MONGO_ROOT_USERNAME`, `MONGO_ROOT_PASSWORD` | Somente para o Docker Compose |
 

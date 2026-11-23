@@ -18,3 +18,6 @@ process.env.BETTER_AUTH_URL = "http://localhost:3000";
 process.env.AUTH_ALLOW_DEV_SIGNUP = "true";
 // Nunca enviar e-mail real nos testes; o fluxo público configura um provedor simulado.
 process.env.AUTH_ALLOW_SIGNUP = "false";
+// OAuth só é habilitado na suíte específica, com credenciais e respostas simuladas.
+delete process.env.FACEBOOK_CLIENT_ID;
+delete process.env.FACEBOOK_CLIENT_SECRET;

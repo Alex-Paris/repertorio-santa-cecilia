@@ -6,6 +6,23 @@ const MIN_PASSWORD_LENGTH = 8;
 const MAX_PASSWORD_LENGTH = 128;
 
 export const VERIFICATION_CALLBACK_URL = "/entrar?email=confirmado";
+export const FACEBOOK_ERROR_CALLBACK_URL = "/entrar?social=facebook";
+
+const FACEBOOK_ERROR_MESSAGES: Record<string, string> = {
+  access_denied: "O acesso pelo Facebook foi cancelado. Você pode tentar novamente.",
+  email_not_found: "O Facebook não informou seu e-mail. Autorize o compartilhamento do e-mail no Facebook ou cadastre-se com e-mail e senha.",
+  email_not_verified: "Confirme seu e-mail para concluir o acesso pelo Facebook. Confira sua caixa de entrada e a caixa de spam; depois volte e escolha Continuar com Facebook.",
+  account_not_linked: "Já existe uma conta com esse e-mail. Entre pelo método usado no cadastro para acessar sua biblioteca.",
+  signup_disabled: "Novos cadastros estão desativados. Se já tem uma conta, entre pelo método usado no cadastro.",
+  state_mismatch: "Não foi possível validar o retorno do Facebook. Tente entrar novamente.",
+  state_not_found: "O acesso pelo Facebook expirou. Tente entrar novamente.",
+};
+
+export function getFacebookAuthErrorMessage(code: string): string {
+  return Object.hasOwn(FACEBOOK_ERROR_MESSAGES, code)
+    ? FACEBOOK_ERROR_MESSAGES[code]
+    : "Não foi possível entrar com o Facebook. Tente novamente ou use seu e-mail e senha.";
+}
 
 const email = z.email("Informe um e-mail válido.").max(254, "Informe um e-mail válido.");
 
