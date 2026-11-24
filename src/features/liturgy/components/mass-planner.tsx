@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "cn";
-import { ChevronLeft, ChevronRight, FileMusic, Leaf, Music2, Plus, SearchX } from "lucide-react";
+import { ChevronLeft, ChevronRight, FileMusic, Music2, Plus, SearchX } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useId, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode } from "react";
@@ -486,22 +486,11 @@ interface SuggestionCardProps {
 }
 
 function SuggestionCard({ layout, suggestion, moment, date, included, busy, onAdd }: SuggestionCardProps) {
-  const { song, reasons } = suggestion;
+  const { song } = suggestion;
   const wide = layout === "wide";
 
-  const meta = (
-    <p className="text-xs text-muted-foreground">
-      {suggestion.basis === "official"
-        ? `Indicação fundamentada em fonte oficial: ${suggestion.officialReference}`
-        : "Sugestão do Repertório Santa Cecília"}
-      {" · "}
-      {suggestion.classification === "reviewed" ? "classificação conferida pela equipe" : "classificação ainda não conferida"}
-      {!song.hasChordPro && (song.contentType === "external-link" ? " · cifra na fonte original" : " · cifra ainda não disponível")}
-    </p>
-  );
-
   const actions = (
-    <div className={cn("flex flex-wrap items-center gap-2", wide ? "@3xl:flex-col @3xl:items-stretch" : "justify-between")}>
+    <div className={cn("flex flex-wrap items-center gap-2", wide ? "@3xl:justify-end" : "justify-between")}>
       <Link
         href={`/catalogo/${encodeURIComponent(song.id)}?missa=${date}`}
         className="inline-flex h-9 items-center gap-1.5 rounded-lg px-1 text-sm font-medium text-heading underline-offset-3 hover:underline"
@@ -531,7 +520,7 @@ function SuggestionCard({ layout, suggestion, moment, date, included, busy, onAd
         wide ? "flex-col gap-3 p-4 @3xl:flex-row @3xl:items-center @3xl:gap-5" : "flex-col p-3",
       )}
     >
-      <div className={cn("flex items-start gap-2.5", wide && "@3xl:w-64 @3xl:shrink-0")}>
+      <div className={cn("flex min-w-0 items-start gap-2.5", wide && "@3xl:flex-1")}>
         <span aria-hidden className="flex size-9 shrink-0 items-center justify-center rounded-full bg-surface-alt text-gold-strong">
           <Music2 className="size-5" />
         </span>
@@ -548,22 +537,6 @@ function SuggestionCard({ layout, suggestion, moment, date, included, busy, onAd
             )}
           </p>
         </div>
-      </div>
-
-      <div className={cn("min-w-0", wide ? "space-y-1.5 @3xl:flex-1" : "mt-2 flex-1 space-y-1.5")}>
-        <ul aria-label={`Por que ${song.title} foi sugerida`} className="flex flex-wrap gap-1.5">
-          {reasons.map((reason) => (
-            <li
-              key={reason.text}
-              className="inline-flex items-center gap-1.5 rounded-full border border-primary/15 bg-secondary px-2.5 py-0.5 text-xs text-secondary-foreground"
-            >
-              <Leaf className="size-3 shrink-0 text-primary" aria-hidden />
-              {reason.text}
-            </li>
-          ))}
-        </ul>
-        {meta}
-        {suggestion.suitabilityNotes && <p className="text-xs text-muted-foreground">{suggestion.suitabilityNotes}</p>}
       </div>
 
       <div className={cn(!wide && "mt-auto pt-2.5")}>{actions}</div>

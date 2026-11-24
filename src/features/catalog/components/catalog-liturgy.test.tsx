@@ -173,6 +173,10 @@ describe("classificação na leitura pública", () => {
     expect(within(section).getByText("Para a procissão da comunhão.")).toBeDefined();
     expect(within(section).getByText(/Não representa aprovação oficial da Igreja/)).toBeDefined();
     expect(section.textContent).not.toContain("JUSTIFICATIVA INTERNA");
+    // A observação fica nos detalhes recolhidos, sem ocupar o painel de leitura.
+    expect(screen.getAllByText("Para a procissão da comunhão.")).toHaveLength(1);
+    expect(section.closest("details")).not.toBeNull();
+    expect(section.closest("details")?.open).toBe(false);
   });
 
   it("canto devocional é identificado como fora das sugestões para a missa", () => {

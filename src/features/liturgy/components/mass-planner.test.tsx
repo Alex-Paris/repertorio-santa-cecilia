@@ -118,27 +118,22 @@ beforeEach(async () => {
 });
 
 describe("sugestões por momento", () => {
-  it("mostra a justificativa de cada sugestão, a partir da classificação", () => {
+  it("mostra cartões compactos sem repetir o momento ou a justificativa da seleção", () => {
     renderPlanner();
     openMoment("Comunhão");
 
-    const reasons = screen.getByRole("list", { name: "Por que Pastor que Reina foi sugerida" });
-    expect(within(reasons).getAllByRole("listitem").map((entry) => entry.textContent)).toEqual([
-      "Adequada à Comunhão",
-      "Associada à celebração: Cristo Rei",
-      "Relacionada ao salmo responsorial (Sl 22(23),1-2a.2b-3.5-6)",
-      "Relacionada ao tema: bom pastor",
-    ]);
+    expect(screen.getByText("Pastor que Reina")).toBeDefined();
+    expect(screen.queryByRole("list", { name: "Por que Pastor que Reina foi sugerida" })).toBeNull();
+    expect(screen.queryByText("Adequada à Comunhão")).toBeNull();
+    expect(screen.queryByText("Associada à celebração: Cristo Rei")).toBeNull();
   });
 
-  it("distingue a sugestão do Repertório Santa Cecília da indicação com fonte oficial", () => {
+  it("mantém a orientação geral sem repetir mensagens de indicação em cada música", () => {
     renderPlanner();
     const communion = openMoment("Comunhão");
 
-    expect(within(communion).getAllByText(/^Sugestão do Repertório Santa Cecília · classificação/).length).toBeGreaterThan(0);
-    expect(
-      within(communion).getByText(/^Indicação fundamentada em fonte oficial: Documento oficial de exemplo · /),
-    ).toBeDefined();
+    expect(within(communion).queryByText(/^Sugestão do Repertório Santa Cecília/)).toBeNull();
+    expect(within(communion).queryByText(/^Indicação fundamentada em fonte oficial/)).toBeNull();
     expect(screen.getByText(/Não representam aprovação oficial da Igreja/)).toBeDefined();
   });
 
@@ -390,14 +385,14 @@ describe("ausência de sugestões explicada", () => {
     expect(within(entrance).getByRole("link", { name: "Buscar no catálogo" }).getAttribute("href")).toBe("/catalogo?momento=entrada");
   });
 
-  it("cada sugestão informa se a classificação foi conferida e se há cifra", () => {
+  it("o texto da ação permite abrir músicas com ou sem cifra, sem indicadores extras", () => {
     const reviewed = { ...PASTOR, liturgy: { ...PASTOR.liturgy, reviewStatus: "reviewed" as const } };
     const metadataOnly = { ...MESA, hasChordPro: false, contentType: "metadata-only" as const, originalKey: undefined };
     renderWith([reviewed, metadataOnly], { published: 2, classified: 2, classifiedForMass: 2 });
 
     const communion = openMoment("Comunhão");
-    expect(within(communion).getByText(/classificação conferida pela equipe/)).toBeDefined();
-    expect(within(communion).getByText(/classificação ainda não conferida · cifra ainda não disponível/)).toBeDefined();
+    expect(within(communion).queryByText(/classificação conferida pela equipe/)).toBeNull();
+    expect(within(communion).queryByText(/cifra ainda não disponível/)).toBeNull();
     expect(within(communion).getByRole("link", { name: "Abrir a cifra de Mesa do Caminho" }).textContent).toBe("Abrir música");
   });
 });

@@ -21,6 +21,7 @@ import {
   parseSearchQuery,
 } from "@/features/catalog/domain/catalog-search";
 import { catalogSongInputSchema, publicationProblems } from "@/features/catalog/domain/catalog-song";
+import { catalogVideoUpdateSchema, type CatalogVideoInput } from "@/features/catalog/domain/catalog-video";
 import {
   assessCatalogSong,
   assessReadiness,
@@ -42,6 +43,7 @@ import type {
   LiturgicalSeasonId,
 } from "@/features/liturgy/domain/vocabulary";
 import { LibraryError } from "@/features/library/domain/library-errors";
+import { parseYouTubeId } from "@/features/songs/domain/video-reference";
 import { createId } from "@/lib/utils/create-id";
 import { CatalogAdminModel } from "@/server/database/models/catalog-admin-model";
 import {
@@ -343,6 +345,7 @@ export interface CatalogAdminService {
   get(id: string): Promise<CatalogSong>;
   create(input: CatalogSongInput): Promise<CatalogSong>;
   update(id: string, input: CatalogSongInput, expectedRevision: number): Promise<CatalogSong>;
+  updateVideo(id: string, video: CatalogVideoInput | null, expectedRevision: number): Promise<CatalogSong>;
   publish(id: string, expectedRevision: number): Promise<CatalogSong>;
   unpublish(id: string, expectedRevision: number): Promise<CatalogSong>;
   /** Grava ou remove (`null`) a classificação litúrgica. Não toca em direitos nem em status. */
@@ -515,6 +518,38 @@ export function createCatalogAdminService(adminUserId: string): CatalogAdminServ
           // Direitos inalterados mantêm o registro original da aprovação.
           $set: { ...set, rights: sameRights(current.rights, rights) ? current.rights : rights },
           $unset: unset,
+        });
+      });
+    },
+
+    updateVideo: async (id, video, expectedRevision) => {
+      const parsed = catalogVideoUpdateSchema.safeParse({ video });
+      if (!parsed.success) {
+        throw new LibraryError("invalid-data", parsed.error.issues[0]?.message);
+      }
+      const input = parsed.data.video;
+      return runPersistence(async () => {
+        const current = await loadForWrite(id, expectedRevision);
+        if (input === null) {
+          return writeWithRevision(id, expectedRevision, { $set: {}, $unset: { video: 1 } });
+        }
+        const videoId = parseYouTubeId(input.url)!;
+        const title = input.title || undefined;
+        // Regravar o mesmo vídeo mantém a procedência e o registro da aprovação anterior.
+        const unchanged = current.video?.videoId === videoId && current.video.title === title;
+        const sameVideo = current.video?.videoId === videoId ? current.video : undefined;
+        return writeWithRevision(id, expectedRevision, {
+          $set: {
+            video: unchanged ? current.video : {
+              provider: "youtube",
+              videoId,
+              ...(title ? { title } : {}),
+              kind: sameVideo?.kind ?? "reference",
+              ...(sameVideo?.submissionId ? { submissionId: sameVideo.submissionId } : {}),
+              approvedBy: adminUserId,
+              approvedAt: new Date(),
+            },
+          },
         });
       });
     },

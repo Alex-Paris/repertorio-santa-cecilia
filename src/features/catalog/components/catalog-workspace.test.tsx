@@ -168,4 +168,18 @@ describe("música aberta no painel central", () => {
     expect(document.querySelector("iframe, img[src*='ytimg']")).toBeNull();
     expect(screen.queryByText(/Partitura|PDF/)).toBeNull();
   });
+
+  it("trocar a referência fecha o player anterior e exige novo clique para carregar", () => {
+    const { rerender } = render(<CatalogSongDetail song={{ ...A, video: { provider: "youtube", videoId: "abcdefghijk" } }} />);
+    fireEvent.click(screen.getByRole("button", { name: "Referência em vídeo" }));
+    fireEvent.click(screen.getByRole("button", { name: "Carregar vídeo de Canto Fictício A" }));
+    expect(document.querySelector("iframe")).not.toBeNull();
+
+    rerender(<CatalogSongDetail song={{ ...A, video: { provider: "youtube", videoId: "lmnopqrstuv" } }} />);
+    expect(document.querySelector("iframe")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Referência em vídeo" }));
+    expect(document.querySelector("iframe")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Carregar vídeo de Canto Fictício A" }));
+    expect(document.querySelector("iframe")?.src).toContain("/embed/lmnopqrstuv");
+  });
 });

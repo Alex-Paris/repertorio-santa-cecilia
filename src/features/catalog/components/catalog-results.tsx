@@ -1,5 +1,5 @@
 import { cn } from "cn";
-import { Check, ChevronRight, FileMusic, Link2, Search, SlidersHorizontal, X } from "lucide-react";
+import { Check, ChevronRight, Search, SlidersHorizontal, X } from "lucide-react";
 import Link from "next/link";
 
 import { EmptyState } from "@/components/layout/empty-state";
@@ -243,26 +243,6 @@ interface CatalogResultsProps {
   repertoireId?: string | null;
 }
 
-function ChordStatus({ song }: { song: CatalogSearchResult["songs"][number] }) {
-  return (
-    <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-      {song.contentType === "external-link" ? (
-        <>
-          <Link2 className="size-3" aria-hidden />
-          Consultar cifra na fonte original
-        </>
-      ) : song.hasChordPro ? (
-        <>
-          <FileMusic className="size-3" aria-hidden />
-          Cifra disponível
-        </>
-      ) : (
-        "Cifra ainda não disponível"
-      )}
-    </span>
-  );
-}
-
 /** Lista compacta da zona esquerda. Escolher uma música abre o painel central, sem sair da lista. */
 export function CatalogResults({ query, filters = {}, result, selectedId, repertoireId }: CatalogResultsProps) {
   const active = describeFilters(filters);
@@ -312,7 +292,7 @@ export function CatalogResults({ query, filters = {}, result, selectedId, repert
           )}
         </p>
       </div>
-      {/* Lista compacta: uma linha de título e autoria, outra de classificação e cifra. */}
+      {/* Lista compacta: identificação e classificação, sem repetir o conteúdo do painel de leitura. */}
       <ul className="mt-2 divide-y overflow-hidden rounded-xl border bg-card">
         {result.songs.map((song) => {
           const current = song.id === selectedId;
@@ -331,14 +311,13 @@ export function CatalogResults({ query, filters = {}, result, selectedId, repert
                     <span className="font-display text-[1rem] leading-snug font-semibold wrap-break-word text-heading">{song.title}</span>
                     <span className="text-[0.8rem] text-muted-foreground wrap-break-word">{song.artist || "Autoria não informada"}</span>
                   </span>
-                  <span className="mt-1 flex flex-wrap items-center gap-1.5">
-                    {((song.moments && song.moments.length > 0) || (song.seasons && song.seasons.length > 0)) && (
+                  {((song.moments && song.moments.length > 0) || (song.seasons && song.seasons.length > 0)) && (
+                    <span className="mt-1 flex flex-wrap items-center gap-1.5">
                       <span className="sr-only">Classificação: </span>
-                    )}
-                    {song.moments?.slice(0, 2).map((moment) => <MomentTag key={moment} moment={moment} className="py-0 text-[0.72rem]" />)}
-                    {song.seasons?.slice(0, 1).map((season) => <SeasonTag key={season} season={season} className="py-0 text-[0.72rem]" />)}
-                    <ChordStatus song={song} />
-                  </span>
+                      {song.moments?.slice(0, 2).map((moment) => <MomentTag key={moment} moment={moment} className="py-0 text-[0.72rem]" />)}
+                      {song.seasons?.slice(0, 1).map((season) => <SeasonTag key={season} season={season} className="py-0 text-[0.72rem]" />)}
+                    </span>
+                  )}
                 </span>
                 <ChevronRight
                   aria-hidden

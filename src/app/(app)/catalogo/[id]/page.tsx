@@ -15,6 +15,7 @@ import {
 } from "@/features/repertoires/services/repertoire-reading-context";
 import { SongDetailScreen } from "@/features/songs/components/song-detail-screen";
 import { getPublishedCatalogSong } from "@/server/catalog/catalog-service";
+import { CatalogVideoAction } from "@/server/catalog/catalog-video-action";
 import { isValidEntityId } from "@/server/repositories/persistence";
 
 export const metadata: Metadata = { title: "Catálogo" };
@@ -65,6 +66,7 @@ async function CatalogSongContent({ params, searchParams }: CatalogSongPageProps
           song={loaded.song}
           back={massDate ? { href: `/preparar-missa?data=${massDate}`, label: "Preparar missa" } : undefined}
           currentRepertoire={{ repertoireId }}
+          videoAction={<Suspense fallback={null}><CatalogVideoAction songId={loaded.song.id} /></Suspense>}
         />
         <CatalogRepertoireDock repertoireId={repertoireId} locationHref={`/catalogo/${encodeURIComponent(id)}`} addMore="catalog" />
       </div>

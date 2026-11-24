@@ -335,15 +335,14 @@ describe("resultados da busca", () => {
     totalPages: 3,
   };
 
-  it("mostra indicadores, links e paginação com a busca preservada", () => {
+  it("mostra identificação, links e paginação sem indicadores de disponibilidade de cifra", () => {
     render(<CatalogResults query="ca" result={result} />);
 
     const rows = within(screen.getByRole("list")).getAllByRole("listitem");
     expect(rows).toHaveLength(4);
-    expect(within(rows[0]).getByText("Cifra disponível")).toBeDefined();
-    expect(within(rows[1]).getByText("Cifra ainda não disponível")).toBeDefined();
-    expect(within(rows[2]).getByText("Consultar cifra na fonte original")).toBeDefined();
-    expect(within(rows[3]).getByText("Cifra ainda não disponível")).toBeDefined();
+    expect(screen.queryByText("Cifra disponível")).toBeNull();
+    expect(screen.queryByText("Cifra ainda não disponível")).toBeNull();
+    expect(screen.queryByText("Consultar cifra na fonte original")).toBeNull();
     expect(within(rows[3]).getByText("Autoria não informada")).toBeDefined();
     // Escolher uma música abre o painel central, mantendo a busca e a página no endereço.
     expect(within(rows[0]).getByRole("link").getAttribute("href")).toBe("/catalogo?q=ca&page=2&musica=a");

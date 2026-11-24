@@ -3,7 +3,7 @@
 import { cn } from "cn";
 import { ArrowLeft, ChevronDown, FileMusic, MonitorPlay, Music2 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 
 import { EmptyState } from "@/components/layout/empty-state";
 import { Button } from "@/components/ui/button";
@@ -35,6 +35,8 @@ interface CatalogSongDetailProps {
   currentRepertoire?: { repertoireId: string | null };
   /** No painel central do catálogo, que rola por conta própria (a barra de controles se prende ao topo dele). */
   contained?: boolean;
+  /** Ação administrativa autorizada no servidor, sem afetar a leitura pública. */
+  videoAction?: ReactNode;
   className?: string;
 }
 
@@ -49,6 +51,7 @@ export function CatalogSongDetail({
   back,
   currentRepertoire,
   contained = false,
+  videoAction,
   className,
 }: CatalogSongDetailProps) {
   const { fontSize, readingMode } = useReaderPreferences();
@@ -149,7 +152,6 @@ export function CatalogSongDetail({
             />
           </div>
         </div>
-        {liturgy?.suitabilityNotes && <p className="mt-2 text-sm text-pretty">{liturgy.suitabilityNotes}</p>}
 
         {/*
           Barra de controles presa ao topo enquanto a cifra rola: no catálogo (zona central com
@@ -192,8 +194,9 @@ export function CatalogSongDetail({
               <FileMusic className="size-4 text-gold-strong" aria-hidden />
               Letra e cifra
             </h3>
-            <VideoReference videoId={song.video?.videoId} videoTitle={song.video?.title} title={song.title} />
+            <VideoReference key={song.video?.videoId ?? "none"} videoId={song.video?.videoId} videoTitle={song.video?.title} title={song.title} />
           </div>
+          {videoAction && <div className="mt-2">{videoAction}</div>}
 
           <div className="mt-2">
             {song.contentType === "external-link" && <ExternalSourceNotice sourceUrl={song.sourceUrl} />}

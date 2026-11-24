@@ -26,6 +26,7 @@ import {
 } from "@/features/catalog/domain/catalog-song";
 import type { CatalogSongView } from "@/features/library/domain/library";
 import { getCatalogExploreFacets, getPublishedCatalogSong, searchCatalog } from "@/server/catalog/catalog-service";
+import { CatalogVideoAction } from "@/server/catalog/catalog-video-action";
 import { isValidEntityId } from "@/server/repositories/persistence";
 
 export const metadata: Metadata = { title: "Catálogo" };
@@ -141,7 +142,7 @@ async function CatalogContent({ searchParams }: CatalogPageProps) {
             <EmptyState icon={CloudOff} title="Catálogo indisponível" description="Não foi possível consultar o catálogo agora. Tente novamente em instantes." />
           </div>
         ) : selected.song ? (
-          <CatalogSongDetail song={selected.song} headingLevel={2} currentRepertoire={{ repertoireId }} contained />
+          <CatalogSongDetail song={selected.song} headingLevel={2} currentRepertoire={{ repertoireId }} contained videoAction={<Suspense fallback={null}><CatalogVideoAction songId={selected.song.id} /></Suspense>} />
         ) : (
           <div className="rounded-2xl border bg-card p-6">
             <EmptyState icon={SearchX} title="Música não encontrada" description="Esta música não está disponível no catálogo." />
