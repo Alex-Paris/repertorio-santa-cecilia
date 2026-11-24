@@ -116,6 +116,7 @@ Nada de sessão, e-mail ou dados de conta além do ID. O conteúdo por revisão 
 
 - **Lista:** busca por título e por período, filtros por situação e tempo litúrgico, paginada.
 - **Nova celebração:** formulário completo. A celebração nasce em revisão.
+- **Começar pela data:** em `/admin/liturgia/nova`, escolher uma celebração preparada e clicar em **Preencher formulário** carrega identificação, referências bíblicas, trechos estruturados e fontes. Não consulta sites externos, não grava e não aprova. Os dados continuam editáveis, e o botão **Criar celebração** usa a mesma rota administrativa, validações, proteção de duplicatas e histórico. Alterações não salvas só são substituídas após confirmação.
 - **Edição:**
   - Identificação, calendário e leituras (registrada, não conferida ou não se aplica, com trechos estruturados).
   - Leitura editorial (celebrações do vocabulário, temas e observações).
@@ -129,6 +130,18 @@ Nada de sessão, e-mail ou dados de conta além do ID. O conteúdo por revisão 
 - **Qualidade do catálogo** (`/admin/catalogo/qualidade`): músicas sem classificação, sem momento, sem justificativa, com classificação contraditória ou publicadas sem condição de receber sugestões. Só aponta: nada é preenchido automaticamente, e os direitos não mudam.
 
 ## Importação editorial
+
+### Preenchimento pela interface
+
+O seletor da nova celebração reaproveita as nove entradas da base inicial e acrescenta **30/11/2026 — Santo André, Apóstolo**, totalizando dez opções preparadas. É uma alternativa para evitar digitação na administração em produção: não requer executar o importador nem modificar seu bloqueio para produção. A base original e seus identificadores permanecem intactos. Nada é cadastrado ao abrir a tela ou ao carregar o formulário.
+
+Os dados adicionais ficam em `src/features/liturgy/data/celebration-presets.ts`. A consulta ao Vatican News em 24/11/2026 confirma título, grau, 1ª leitura (`Rm 10,9-18`) e Evangelho (`Mt 4,18-22`) de 30/11. O salmo (`Sl 18(19A),2-3.4-5`, resposta 5a) foi comparado com o Lecionário do Secretariado Nacional de Liturgia de Portugal, pp. 364–366. A fonte portuguesa confirma somente referências; não confirma calendário nem redação do Lecionário do Brasil. Cor vermelha pela regra geral da IGMR 346b, tempo e ciclo ficam como inferências a conferir. Fontes e ressalvas acompanham o preenchimento; nenhuma conferência humana ou aprovação é presumida.
+
+Para essa missa: **Administração → Liturgia → Nova celebração → 30 de novembro de 2026 — Santo André, Apóstolo → Preencher formulário**. Conferir, ajustar se necessário e clicar em **Criar celebração**. Depois de salvar, a consulta pública é `/preparar-missa?data=2026-11-30`, com o aviso de dados em revisão até a aprovação. A data é segunda-feira; o domingo dessa semana é 29/11, 1º Domingo do Advento, já incluído nas opções.
+
+O seletor cobre apenas essas datas específicas. Não gera leituras para outros dias ou anos e não substitui uma integração licenciada com um calendário brasileiro. Os salmos não conferidos da base original continuam não conferidos. Ao salvar, a celebração nasce em revisão; a aprovação humana continua uma ação separada.
+
+### Importador de desenvolvimento
 
 As nove celebrações da Etapa 2E.2 estão em `src/features/liturgy/data/editorial-celebrations.json`, validadas pelos testes unitários com as regras do domínio.
 

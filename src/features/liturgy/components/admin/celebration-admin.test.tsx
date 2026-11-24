@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { editorialRecord } from "@/test/liturgy-fixtures";
 
-import type { CelebrationRecord } from "../../domain/celebration-record";
+import type { CelebrationInput, CelebrationRecord } from "../../domain/celebration-record";
 import { CelebrationAdminScreen, CelebrationCreateScreen } from "./celebration-admin";
 
 const router = vi.hoisted(() => ({ push: vi.fn(), replace: vi.fn(), bfcacheId: "teste" }));
@@ -166,6 +166,78 @@ describe("revisão editorial", () => {
 });
 
 describe("nova celebração", () => {
+  function choosePrepared(id = "2026-11-30-santo-andre-apostolo"): void {
+    fireEvent.change(screen.getByRole("combobox", { name: "Escolha uma celebração preparada" }), { target: { value: id } });
+    fireEvent.click(screen.getByRole("button", { name: "Preencher formulário" }));
+  }
+
+  it("preenche 30 de novembro com referências e fontes, salvando só quando solicitado", async () => {
+    render(<CelebrationCreateScreen userId="admin-1" />);
+    choosePrepared();
+
+    expect(screen.getByRole("status").textContent).toContain("Santo André, Apóstolo");
+    expect((screen.getByLabelText(/^Data/) as HTMLInputElement).value).toBe("2026-11-30");
+    expect((screen.getByRole("textbox", { name: "Título" }) as HTMLInputElement).value).toBe("Santo André, Apóstolo");
+    expect((screen.getByLabelText(/^Citação: Evangelho/) as HTMLInputElement).value).toBe("Mt 4,18-22");
+    expect((screen.getByLabelText("Situação: 2ª leitura") as HTMLSelectElement).value).toBe("absent");
+    expect(writes()).toEqual([]);
+
+    fireEvent.change(screen.getByRole("textbox", { name: "Título" }), { target: { value: "Santo André, Apóstolo — comunidade" } });
+    writeResponse = () => json({ celebration: { ...record, id: "santo-andre-criado" } }, 201);
+    fireEvent.click(screen.getByRole("button", { name: "Criar celebração" }));
+
+    await waitFor(() => expect(router.replace).toHaveBeenCalledWith("/admin/liturgia/santo-andre-criado"));
+    const { celebration } = writes()[0].body as { celebration: CelebrationInput };
+    expect(celebration).toMatchObject({
+      date: "2026-11-30", title: "Santo André, Apóstolo — comunidade",
+      readings: [
+        { role: "first", citation: "Rm 10,9-18" },
+        { role: "psalm", ranges: [{ book: "sl", chapter: 19, verseStart: 2, verseEnd: 5 }] },
+        { role: "gospel", citation: "Mt 4,18-22" },
+      ],
+      sources: [
+        { id: "vatican-news", verificationStatus: "automated-comparison" },
+        { id: "liturgia-portugal", jurisdiction: "other-country", verificationStatus: "automated-comparison" },
+      ],
+    });
+    expect(celebration).not.toHaveProperty("approval");
+    expect(celebration).not.toHaveProperty("reviewStatus");
+  });
+
+  it("preserva alterações ao cancelar e só as substitui após confirmação", async () => {
+    render(<CelebrationCreateScreen userId="admin-1" />);
+    fireEvent.change(screen.getByRole("textbox", { name: "Título" }), { target: { value: "Minha celebração" } });
+    choosePrepared();
+
+    expect(screen.getByRole("alert").textContent).toContain("Há alterações não salvas");
+    expect((screen.getByRole("textbox", { name: "Título" }) as HTMLInputElement).value).toBe("Minha celebração");
+    fireEvent.click(screen.getByRole("button", { name: "Manter alterações" }));
+    expect(screen.queryByRole("alert")).toBeNull();
+    expect((screen.getByRole("textbox", { name: "Título" }) as HTMLInputElement).value).toBe("Minha celebração");
+
+    choosePrepared();
+    fireEvent.click(screen.getByRole("button", { name: "Substituir preenchimento" }));
+    expect((screen.getByRole("textbox", { name: "Título" }) as HTMLInputElement).value).toBe("Santo André, Apóstolo");
+    expect(writes()).toEqual([]);
+
+    choosePrepared("2026-12-25-natal-missa-da-noite");
+    expect(screen.queryByRole("alert")).toBeNull();
+    expect((screen.getByLabelText("Formulário da missa") as HTMLSelectElement).value).toBe("noite");
+    expect((screen.getByLabelText("Situação: Salmo responsorial") as HTMLSelectElement).value).toBe("unverified");
+  });
+
+  it("mantém o formulário quando a criação aponta celebração já existente", async () => {
+    render(<CelebrationCreateScreen userId="admin-1" />);
+    choosePrepared();
+    writeResponse = () => json({ error: { code: "conflict", reason: "conflict", message: "Já existe esta celebração nesta data." } }, 409);
+    fireEvent.click(screen.getByRole("button", { name: "Criar celebração" }));
+
+    expect((await screen.findByRole("alert")).textContent).toContain("Já existe esta celebração");
+    expect((screen.getByRole("textbox", { name: "Título" }) as HTMLInputElement).value).toBe("Santo André, Apóstolo");
+    expect(router.replace).not.toHaveBeenCalled();
+    expect(writes()).toHaveLength(1);
+  });
+
   it("exige fonte e não deixa registrar leitura sem fonte", async () => {
     render(<CelebrationCreateScreen userId="admin-1" />);
     fireEvent.change(screen.getByLabelText(/^Data/), { target: { value: "2027-06-29" } });

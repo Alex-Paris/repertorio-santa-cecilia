@@ -51,4 +51,11 @@ describe("Continuar com Facebook", () => {
     fireEvent.click(screen.getByRole("button", { name: "Continuar com Facebook" }));
     expect((await screen.findByRole("alert")).textContent).toContain("Aguarde um minuto");
   });
+
+  it("identifica indisponibilidade do serviço de contas em vez de atribuí-la ao Facebook", async () => {
+    social.mockResolvedValue({ error: { status: 503 } });
+    render(<FacebookAuthButton />);
+    fireEvent.click(screen.getByRole("button", { name: "Continuar com Facebook" }));
+    expect((await screen.findByRole("alert")).textContent).toContain("O serviço de contas está indisponível");
+  });
 });

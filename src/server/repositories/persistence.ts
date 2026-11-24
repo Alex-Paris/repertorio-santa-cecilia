@@ -6,6 +6,7 @@ import mongoose, { type ClientSession } from "mongoose";
 import { LibraryError } from "@/features/library/domain/library-errors";
 import { entityIdSchema, revisionSchema } from "@/features/songs/domain/song-schema";
 import { connectToMongoose } from "@/server/database/mongoose-connection";
+import { ServerConfigurationError } from "@/server/env";
 
 /** Operação sempre restrita a um usuário, definido pelo servidor a partir da sessão. */
 export interface OwnerContext {
@@ -28,7 +29,11 @@ function translatePersistenceError(error: unknown): LibraryError {
   if (code === DUPLICATE_KEY_CODE) {
     return new LibraryError("conflict");
   }
-  if (code === TRANSACTIONS_UNSUPPORTED_CODE) {
+  if (error instanceof ServerConfigurationError) {
+    console.error("[persistência] Falha: ServerConfigurationError.", JSON.stringify({
+      invalidVariables: error.variableNames,
+    }));
+  } else if (code === TRANSACTIONS_UNSUPPORTED_CODE) {
     console.error("[persistência] O MongoDB precisa ser um replica set para usar transações.");
   } else {
     // Só o tipo do erro: a mensagem do driver pode citar dados ou a URI de conexão.

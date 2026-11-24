@@ -20,6 +20,7 @@ import * as publicShareRoute from "@/app/api/v1/public/shares/[token]/route";
 import type { CatalogSong, CatalogSongInput } from "@/features/catalog/domain/catalog-song";
 import type { CelebrationSource } from "@/features/liturgy/domain/calendar";
 import type { CelebrationInput, CelebrationRecord } from "@/features/liturgy/domain/celebration-record";
+import { CELEBRATION_PRESETS } from "@/features/liturgy/data/celebration-presets";
 import type { SongClassificationInput } from "@/features/liturgy/domain/classification";
 import type { MomentSuggestions } from "@/features/liturgy/domain/recommendation";
 import type { Repertoire } from "@/features/repertoires/domain/repertoire";
@@ -163,6 +164,23 @@ afterEach(() => {
 afterAll(dropTestDatabase);
 
 describe("A. importação editorial", () => {
+  it("cria o preenchimento de Santo André pela rota administrativa, em revisão e sem duplicar", async () => {
+    const celebration = CELEBRATION_PRESETS.find((entry) => entry.input.date === "2026-11-30")!.input;
+    expect((await adminCelebrationsRoute.POST(request(null, "POST", "/x", { celebration }), params({}))).status).toBe(401);
+    expect((await adminCelebrationsRoute.POST(request(userA, "POST", "/x", { celebration }), params({}))).status).toBe(403);
+    expect(await LiturgicalCelebrationModel.countDocuments({})).toBe(0);
+
+    const response = await adminCelebrationsRoute.POST(request(admin, "POST", "/x", { celebration }), params({}));
+    expect(response.status).toBe(201);
+    const { celebration: created } = await json<{ celebration: CelebrationRecord }>(response);
+    expect(created).toMatchObject({ date: "2026-11-30", reviewStatus: "pending_review", approval: null, revision: 1 });
+    expect(created.readings).toEqual(celebration.readings);
+    expect(created.sources).toEqual(celebration.sources);
+    expect((await adminCelebrationsRoute.POST(request(admin, "POST", "/x", { celebration }), params({}))).status).toBe(409);
+    expect(await LiturgicalCelebrationModel.countDocuments({})).toBe(1);
+    expect(await CelebrationHistoryModel.countDocuments({ celebrationId: created.id, action: "create", actor: admin.id })).toBe(1);
+  });
+
   it("importa as nove celebrações, todas em revisão, com histórico", async () => {
     expect(await importEditorialCelebrations()).toContain("9 celebração(ões) importada(s) em revisão; 0 já existiam");
 

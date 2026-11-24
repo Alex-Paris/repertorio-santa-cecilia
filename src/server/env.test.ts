@@ -36,6 +36,12 @@ describe("parseServerEnv", () => {
     }
   });
 
+  it("expõe apenas nomes conhecidos, sem duplicatas, para diagnóstico seguro", () => {
+    const error = new ServerConfigurationError(["BETTER_AUTH_SECRET", "valor-secreto", "BETTER_AUTH_SECRET"]);
+    expect(error.variableNames).toEqual(["BETTER_AUTH_SECRET"]);
+    expect(error.message).not.toContain("valor-secreto");
+  });
+
   it.each([
     ["segredo curto", { BETTER_AUTH_SECRET: "x".repeat(31) }],
     ["URL sem http", { BETTER_AUTH_URL: "ftp://exemplo.com" }],

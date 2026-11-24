@@ -14,10 +14,14 @@ const serverEnvSchema = z.object({
 export type ServerEnv = z.infer<typeof serverEnvSchema>;
 
 export class ServerConfigurationError extends Error {
-  constructor(variableNames: string[]) {
+  readonly variableNames: readonly string[];
+
+  constructor(variableNames: readonly string[]) {
+    const safeNames = [...new Set(variableNames.filter((name) => Object.hasOwn(serverEnvSchema.shape, name)))];
     // Somente os nomes: o valor de uma variável inválida nunca entra na mensagem.
-    super(`Variáveis de ambiente ausentes ou inválidas: ${variableNames.join(", ")}.`);
+    super(`Variáveis de ambiente ausentes ou inválidas: ${safeNames.join(", ")}.`);
     this.name = "ServerConfigurationError";
+    this.variableNames = safeNames;
   }
 }
 

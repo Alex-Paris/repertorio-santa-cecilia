@@ -44,6 +44,7 @@ import { LITURGICAL_SEASONS, momentLabel, seasonLabel } from "../../domain/vocab
 import { ReviewStatusBadge } from "../celebration-picker";
 import { ChoiceGroup } from "../form-fields";
 import { CelebrationEditor, EMPTY_CELEBRATION } from "./celebration-editor";
+import { CelebrationPrefill } from "./celebration-prefill";
 
 const CONFLICT_MESSAGE =
   "Esta celebração foi alterada por outra pessoa da administração. Recarregue a página antes de continuar.";
@@ -190,6 +191,8 @@ export function CelebrationCreateScreen({ userId }: { userId: string }) {
   const api = useMemo(() => createLiturgyAdminApi(userId), [userId]);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [editor, setEditor] = useState({ version: 0, initial: EMPTY_CELEBRATION });
+  const [dirty, setDirty] = useState(false);
 
   async function create(input: CelebrationInput): Promise<void> {
     setPending(true);
@@ -205,7 +208,24 @@ export function CelebrationCreateScreen({ userId }: { userId: string }) {
     }
   }
 
-  return <CelebrationEditor initial={EMPTY_CELEBRATION} submitLabel="Criar celebração" pending={pending} error={error} onSubmit={(input) => void create(input)} />;
+  return (
+    <div className="space-y-6">
+      <CelebrationPrefill pending={pending} dirty={dirty} onApply={(initial) => {
+        setEditor((current) => ({ version: current.version + 1, initial }));
+        setDirty(false);
+        setError(null);
+      }} />
+      <CelebrationEditor
+        key={editor.version}
+        initial={editor.initial}
+        submitLabel="Criar celebração"
+        pending={pending}
+        error={error}
+        onSubmit={(input) => void create(input)}
+        onDirtyChange={setDirty}
+      />
+    </div>
+  );
 }
 
 const HISTORY_LABELS: Record<string, string> = {

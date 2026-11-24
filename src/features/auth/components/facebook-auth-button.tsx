@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { FacebookIcon } from "@/components/brand/facebook-icon";
 import { FormError } from "@/components/layout/form-error";
 import { Button } from "@/components/ui/button";
 
@@ -24,9 +25,11 @@ export function FacebookAuthButton() {
         errorCallbackURL: FACEBOOK_ERROR_CALLBACK_URL,
       });
       if (result.error) {
-        setError(result.error.status === 429
-          ? "Muitas tentativas. Aguarde um minuto e tente novamente."
-          : "Não foi possível acessar o Facebook agora. Tente novamente.");
+        const messages: Record<number, string> = {
+          429: "Muitas tentativas. Aguarde um minuto e tente novamente.",
+          503: "O serviço de contas está indisponível no momento. Tente novamente mais tarde.",
+        };
+        setError(messages[result.error.status] ?? "Não foi possível acessar o Facebook agora. Tente novamente.");
         setSubmitting(false);
       }
       // O Better Auth conduz o redirecionamento para o Facebook.
@@ -42,11 +45,12 @@ export function FacebookAuthButton() {
         type="button"
         variant="outline"
         size="lg"
-        className="h-11 w-full"
+        className="h-11 w-full gap-3"
         disabled={submitting}
         aria-busy={submitting}
         onClick={() => void handleSignIn()}
       >
+        <FacebookIcon />
         {submitting ? "Abrindo Facebook…" : "Continuar com Facebook"}
       </Button>
       {error && <FormError message={error} />}
