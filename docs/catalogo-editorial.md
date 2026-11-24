@@ -11,7 +11,7 @@ Em `/admin/catalogo/nova` (só administração). As etapas aparecem na mesma pá
 | Etapa | Campos | Obrigatório para o rascunho |
 | --- | --- | --- |
 | A. Identificação | Título, artista ou compositor, referência da composição, fontes consultadas (título, endereço, data) | Só o título |
-| B. Conteúdo | Somente metadados, link para cifra externa ou cifra própria/autorizada; tom original; link do YouTube e título do vídeo | Tom só para cifra ou link de cifra; vídeo opcional |
+| B. Conteúdo | Somente metadados, link para cifra externa ou cifra própria/autorizada; tom original; link do YouTube, início em segundos e título do vídeo | Tom só para cifra ou link de cifra; vídeo opcional |
 | C. Classificação litúrgica | Tipo de uso, momentos, tempos, restrições, celebrações e temas (pesquisáveis), referências bíblicas, fonte de orientação, justificativa | Nada; aparece depois do rascunho |
 | D. Direitos e revisão | Fundamento, evidência, permissões; conferência humana da classificação; publicação | Evidência só para publicar |
 
@@ -19,6 +19,8 @@ Em `/admin/catalogo/nova` (só administração). As etapas aparecem na mesma pá
 - Nenhum valor é suposto. Cifra própria e link externo exigem o tom real; sem ele, use "Somente metadados".
 - Toda gravação mantém a revisão (`If-Match`) e a verificação do papel administrativo no banco.
 - O link do YouTube é salvo com a música ao criar o rascunho e pode ser alterado em `/admin/catalogo/[id]`. Não exige cifra nem tom original. Apagar o link e salvar remove a referência; um link inválido recusa a gravação inteira. A consulta pública não oferece controles de cadastro ou edição do vídeo.
+- **Iniciar em (segundos)** define o ponto de reprodução: `45` pula a introdução de 45 segundos; `0` começa do início. Links com `t=90`, `t=1m30s`, `start=90` ou `#t=90` preenchem o campo, que pode ser ajustado antes de salvar. Aceita inteiros entre 0 e 604800. Referências antigas continuam começando do início, sem migração.
+- Nos cartões do **Catálogo** e da **Missa**, ▶ abre o player oficial do YouTube e solicita a reprodução no ponto cadastrado. Há um único player por aba: outra música, fechar, Esc, sair da tela ou ocultar a aba interrompem a anterior. Nenhum recurso do YouTube é carregado antes do clique. Se o navegador bloquear a reprodução com som, os controles visíveis permitem iniciá-la. O link **Abrir no YouTube** também mantém o ponto inicial.
 
 ## Música sem cifra
 

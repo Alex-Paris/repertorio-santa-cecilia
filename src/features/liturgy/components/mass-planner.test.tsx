@@ -118,6 +118,14 @@ beforeEach(async () => {
 });
 
 describe("sugestões por momento", () => {
+  it("permite ouvir a referência no cartão, a partir do início cadastrado", () => {
+    const candidates = [{ ...ENTRADA, video: { provider: "youtube" as const, videoId: "abcdefghijk", startSeconds: 45 } }];
+    render(<MassPlanner celebration={CELEBRATION} moments={suggestForCelebration(KING, candidates, { moments: ["entrada"] })} activeMoment="entrada" repertoireId={null} />);
+    fireEvent.click(screen.getByRole("button", { name: "Ouvir Portas Abertas da Manhã" }));
+    expect(screen.getByTitle("Referência em vídeo: Portas Abertas da Manhã").getAttribute("src")).toContain("start=45&autoplay=1");
+    expect(writes()).toEqual([]);
+  });
+
   it("mostra cartões compactos sem repetir o momento ou a justificativa da seleção", () => {
     renderPlanner();
     openMoment("Comunhão");

@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import { EmptyState } from "@/components/layout/empty-state";
 import { buttonVariants } from "@/components/ui/button";
+import { VideoReference } from "@/features/songs/components/video-reference";
 import { MOMENT_ICONS, MomentTag, SEASON_ICONS, SeasonTag } from "@/features/liturgy/components/liturgy-tags";
 import type { LiturgicalMomentId, LiturgicalSeasonId } from "@/features/liturgy/domain/vocabulary";
 import {
@@ -297,12 +298,12 @@ export function CatalogResults({ query, filters = {}, result, selectedId, repert
         {result.songs.map((song) => {
           const current = song.id === selectedId;
           return (
-            <li key={song.id}>
+            <li key={song.id} className={cn("flex items-center", current && "bg-surface-alt")}>
               <Link
                 href={catalogHref({ ...location, selected: song.id })}
                 aria-current={current ? "true" : undefined}
                 className={cn(
-                  "group flex items-center gap-2.5 px-3 py-2 transition-colors hover:bg-surface-alt/60",
+                  "group flex min-w-0 flex-1 items-center gap-2.5 px-3 py-2 transition-colors hover:bg-surface-alt/60",
                   current && "bg-surface-alt shadow-[inset_3px_0_0_var(--gold)]",
                 )}
               >
@@ -319,11 +320,12 @@ export function CatalogResults({ query, filters = {}, result, selectedId, repert
                     </span>
                   )}
                 </span>
-                <ChevronRight
+                {!song.video && <ChevronRight
                   aria-hidden
                   className={cn("size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5", current && "text-gold-strong")}
-                />
+                />}
               </Link>
+              {song.video && <VideoReference variant="play" videoId={song.video.videoId} videoTitle={song.video.title} startSeconds={song.video.startSeconds} title={song.title} className="mr-2" />}
             </li>
           );
         })}

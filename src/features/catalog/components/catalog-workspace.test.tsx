@@ -7,7 +7,7 @@ import { fakeAccount } from "@/test/fake-account-api";
 import { openAccount, openSignedOut } from "@/test/open-account";
 
 import { CatalogRepertoireDock } from "./catalog-repertoire-dock";
-import { CatalogQuickFilters, catalogHref } from "./catalog-results";
+import { CatalogQuickFilters, CatalogResults, catalogHref } from "./catalog-results";
 import { CatalogSongDetail } from "./catalog-song-detail";
 
 const router = vi.hoisted(() => ({ push: vi.fn(), replace: vi.fn(), bfcacheId: "teste" }));
@@ -55,6 +55,15 @@ beforeEach(() => {
 });
 
 describe("endereço do catálogo", () => {
+  it("oferece ouvir no cartão, fora do link que abre a música", () => {
+    render(<CatalogResults query="" result={{ songs: [{ id: A.id, title: A.title, artist: A.artist, contentType: "original", hasChordPro: true, video: { provider: "youtube", videoId: "abcdefghijk", startSeconds: 45 } }], page: 1, pageSize: 12, total: 1, totalPages: 1 }} />);
+    const play = screen.getByRole("button", { name: "Ouvir Canto Fictício A" });
+    expect(play.closest("a")).toBeNull();
+    fireEvent.click(play);
+    expect(screen.getByTitle("Referência em vídeo: Canto Fictício A").getAttribute("src")).toContain("start=45&autoplay=1");
+    expect(screen.getByRole("link", { name: /Canto Fictício A/ }).getAttribute("href")).toBe("/catalogo?musica=cat-a");
+  });
+
   it("guarda busca, filtros, página, música e repertório, nessa ordem", () => {
     expect(catalogHref({ query: "", filters: {} })).toBe("/catalogo");
     expect(

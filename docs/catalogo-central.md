@@ -39,7 +39,7 @@ O tipo **Autorizada** sozinho não libera nada. Só `displayChordPro` e `shareCh
 
 Cadastro em etapas, músicas só com metadados, classificação conferida e importação de metadados estão em [catalogo-editorial.md](catalogo-editorial.md).
 
-Desde a Etapa 2F.1, uma música pode ter `video` (YouTube: provedor e identificador, aprovado pela administração) e `contributions` (propostas aceitas, campos aplicados, crédito público e licença declarada). A projeção pública expõe só `video { provider, videoId, title? }` e `contributorCredit`. Veja [contribuicoes-catalogo.md](contribuicoes-catalogo.md).
+Desde a Etapa 2F.1, uma música pode ter `video` (YouTube: provedor e identificador, aprovado pela administração) e `contributions` (propostas aceitas, campos aplicados, crédito público e licença declarada). A projeção pública expõe só `video { provider, videoId, title?, startSeconds? }` e `contributorCredit`. O início em segundos, opcional, é cadastrado na administração; a busca e as sugestões da Missa também recebem a referência pública para ouvir pelos cartões. Veja [contribuicoes-catalogo.md](contribuicoes-catalogo.md).
 
 ## Música global e música particular
 

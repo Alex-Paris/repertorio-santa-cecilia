@@ -16,6 +16,7 @@ import { getLibraryErrorMessage } from "@/features/library/domain/library-errors
 import { RepertoireBuilder } from "@/features/repertoires/components/repertoire-builder";
 import type { Repertoire } from "@/features/repertoires/domain/repertoire";
 import { KeyLabel } from "@/features/songs/components/key-label";
+import { VideoReference } from "@/features/songs/components/video-reference";
 import { showToast } from "@/lib/utils/toast";
 
 /** "22/11/2026": a data civil, sem fuso horário. */
@@ -521,9 +522,9 @@ function SuggestionCard({ layout, suggestion, moment, date, included, busy, onAd
       )}
     >
       <div className={cn("flex min-w-0 items-start gap-2.5", wide && "@3xl:flex-1")}>
-        <span aria-hidden className="flex size-9 shrink-0 items-center justify-center rounded-full bg-surface-alt text-gold-strong">
+        {song.video ? <VideoReference variant="play" videoId={song.video.videoId} videoTitle={song.video.title} startSeconds={song.video.startSeconds} title={song.title} /> : <span aria-hidden className="flex size-9 shrink-0 items-center justify-center rounded-full bg-surface-alt text-gold-strong">
           <Music2 className="size-5" />
-        </span>
+        </span>}
         <div className="min-w-0 flex-1">
           <p className="font-display text-[1.05rem] leading-snug font-semibold wrap-break-word text-heading">{song.title}</p>
           <p className="text-[0.8rem] text-muted-foreground wrap-break-word">

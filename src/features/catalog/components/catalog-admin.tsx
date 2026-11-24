@@ -16,7 +16,7 @@ import { getLibraryErrorMessage, LibraryError } from "@/features/library/domain/
 import { ChordProEditor } from "@/features/songs/components/chordpro-editor";
 import { MUSICAL_KEYS, type MusicalKey } from "@/features/songs/domain/musical-key";
 import { CONTENT_TYPE_LABELS } from "@/features/songs/domain/song";
-import { youTubeWatchUrl } from "@/features/songs/domain/video-reference";
+import { MAX_VIDEO_START_SECONDS, parseYouTubeId, parseYouTubeStartSeconds, youTubeWatchUrl } from "@/features/songs/domain/video-reference";
 import { showToast } from "@/lib/utils/toast";
 
 import { createCatalogAdminApi } from "../data/catalog-admin-api";
@@ -136,6 +136,7 @@ interface FormState {
   sourceUrl: string;
   videoUrl: string;
   videoTitle: string;
+  videoStartSeconds: string;
   basis: RightsBasis;
   evidence: string;
   displayChordPro: boolean;
@@ -155,6 +156,7 @@ const EMPTY: FormState = {
   sourceUrl: "",
   videoUrl: "",
   videoTitle: "",
+  videoStartSeconds: "0",
   basis: "public-metadata",
   evidence: "",
   displayChordPro: false,
@@ -181,6 +183,7 @@ function toFormState(song: CatalogSong): FormState {
     sourceUrl: song.contentType === "external-link" ? song.sourceUrl : "",
     videoUrl: song.video ? youTubeWatchUrl(song.video.videoId) : "",
     videoTitle: song.video?.title ?? "",
+    videoStartSeconds: String(song.video?.startSeconds ?? 0),
     basis: song.rights.basis,
     evidence: song.rights.evidence,
     displayChordPro: song.rights.displayChordPro,
@@ -207,7 +210,7 @@ function toInput(state: FormState): CatalogSongInput {
   return {
     song,
     video: state.videoUrl.trim()
-      ? { url: state.videoUrl.trim(), ...(state.videoTitle.trim() ? { title: state.videoTitle.trim() } : {}) }
+      ? { url: state.videoUrl.trim(), startSeconds: Number(state.videoStartSeconds || 0), ...(state.videoTitle.trim() ? { title: state.videoTitle.trim() } : {}) }
       : null,
     ...(state.compositionReference.trim() ? { compositionReference: state.compositionReference.trim() } : {}),
     metadataSources: state.metadataSources
@@ -528,9 +531,23 @@ export function CatalogSongEditor({ userId, songId }: { userId: string; songId?:
               Link do YouTube (opcional)
               <Input type="url" value={state.videoUrl} maxLength={2048} disabled={pending}
                 onFocus={revealVideoField}
-                onChange={(event) => set("videoUrl", event.target.value)}
+                onChange={(event) => {
+                  const url = event.target.value;
+                  const seconds = parseYouTubeStartSeconds(url);
+                  setState((current) => current ? { ...current, videoUrl: url,
+                    ...((parseYouTubeId(url) !== parseYouTubeId(current.videoUrl) || seconds !== null) ? { videoStartSeconds: String(seconds ?? 0) } : {}),
+                  } : current);
+                }}
                 placeholder="https://www.youtube.com/watch?v=…" aria-describedby="catalog-video-hint" className="h-10" />
             </label>
+            <div className="space-y-1">
+              <label htmlFor="catalog-video-start" className="block text-sm font-medium">Iniciar em (segundos)</label>
+              <Input id="catalog-video-start" type="number" inputMode="numeric" min={0} max={MAX_VIDEO_START_SECONDS} step={1}
+                aria-describedby="catalog-video-start-hint"
+                value={state.videoStartSeconds} disabled={pending || !state.videoUrl.trim()}
+                onFocus={revealVideoField} onChange={(event) => set("videoStartSeconds", event.target.value)} className="h-10 sm:max-w-48" />
+              <p id="catalog-video-start-hint" className="text-xs text-muted-foreground">Ex.: 45 pula os primeiros 45 segundos. Use 0 para começar do início.</p>
+            </div>
             <label className="block space-y-1 text-sm font-medium">
               Título do vídeo (opcional)
               <Input value={state.videoTitle} maxLength={200} disabled={pending}

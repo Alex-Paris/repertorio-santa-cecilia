@@ -1,10 +1,13 @@
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 
 import * as publishRoute from "@/app/api/v1/admin/catalog/songs/[id]/publish/route";
+import * as classificationRoute from "@/app/api/v1/admin/catalog/songs/[id]/classification/route";
 import * as songRoute from "@/app/api/v1/admin/catalog/songs/[id]/route";
 import * as songsRoute from "@/app/api/v1/admin/catalog/songs/route";
 import * as publicSongRoute from "@/app/api/v1/catalog/songs/[id]/route";
 import type { CatalogSong } from "@/features/catalog/domain/catalog-song";
+import { EMPTY_CLASSIFICATION_INPUT } from "@/features/liturgy/domain/classification";
+import { listSuggestionCandidates, searchCatalog } from "@/server/catalog/catalog-service";
 import { CatalogAdminModel } from "@/server/database/models/catalog-admin-model";
 import { CatalogSongModel } from "@/server/database/models/catalog-song-model";
 
@@ -59,11 +62,11 @@ describe("edição de vídeo pela administração do catálogo", () => {
   it("cria a música e o vídeo no mesmo pedido, sem exigir cifra, tom ou autoria", async () => {
     const response = await songsRoute.POST(new Request(`${ORIGIN}/api/v1/admin/catalog/songs`, {
       method: "POST", headers: { cookie: admin.cookie, origin: ORIGIN, "content-type": "application/json" },
-      body: JSON.stringify({ ...INPUT, video: { url: "https://youtu.be/abcdefghijk", title: "Ensaio" } }),
+      body: JSON.stringify({ ...INPUT, video: { url: "https://youtu.be/abcdefghijk", title: "Ensaio", startSeconds: 45 } }),
     }), { params: Promise.resolve({}) });
     expect(response.status).toBe(201);
     const created = (await response.json()).song;
-    expect(created).toMatchObject({ revision: 1, status: "draft", video: { videoId: "abcdefghijk", title: "Ensaio", approvedBy: admin.id } });
+    expect(created).toMatchObject({ revision: 1, status: "draft", video: { videoId: "abcdefghijk", title: "Ensaio", startSeconds: 45, approvedBy: admin.id } });
     expect(created).not.toHaveProperty("originalKey");
     expect(created).not.toHaveProperty("chordPro");
   });
@@ -72,7 +75,7 @@ describe("edição de vídeo pela administração do catálogo", () => {
     const before = structuredClone(song);
     const response = await update({ url: "https://youtu.be/abcdefghijk?t=10", title: " Ensaio " });
     expect(response.headers.get("etag")).toBe('"2"');
-    expect(song.video).toEqual({ provider: "youtube", videoId: "abcdefghijk", title: "Ensaio", kind: "reference", approvedBy: admin.id, approvedAt: expect.any(String) });
+    expect(song.video).toEqual({ provider: "youtube", videoId: "abcdefghijk", title: "Ensaio", startSeconds: 10, kind: "reference", approvedBy: admin.id, approvedAt: expect.any(String) });
     expect(song).toMatchObject({ title: before.title, status: "draft", contentType: "metadata-only", rights: before.rights, liturgy: before.liturgy, metadataSources: before.metadataSources });
     expect(song).not.toHaveProperty("chordPro");
     expect(song).not.toHaveProperty("originalKey");
@@ -139,6 +142,48 @@ describe("edição de vídeo pela administração do catálogo", () => {
     const approved = song.video;
     await update(undefined);
     expect(song.video).toEqual(approved);
+  });
+
+  it("preserva o início em clientes antigos, permite editar e voltar a zero", async () => {
+    await update({ url: "https://youtu.be/abcdefghijk?t=1m30s" });
+    expect(song.video?.startSeconds).toBe(90);
+    const approved = song.video;
+    await update({ url: "https://youtu.be/abcdefghijk" });
+    expect(song.video).toEqual(approved);
+    await update({ url: "https://youtu.be/abcdefghijk", startSeconds: 45 });
+    expect(song.video?.startSeconds).toBe(45);
+    await update({ url: "https://youtu.be/abcdefghijk?t=90", startSeconds: 0 });
+    expect(song.video).not.toHaveProperty("startSeconds");
+    await update({ url: "https://youtu.be/lmnopqrstuv" });
+    expect(song.video).not.toHaveProperty("startSeconds");
+  });
+
+  it("exibe só os dados públicos do vídeo na busca, no detalhe e nas sugestões da Missa", async () => {
+    await update({ url: "https://youtu.be/abcdefghijk", title: "Ensaio", startSeconds: 45 });
+    expect((await searchCatalog({ page: 1, pageSize: 20, q: "" })).songs).toEqual([]);
+    const published = await publishRoute.POST(new Request(`${ORIGIN}/api/v1/x`, {
+      method: "POST", headers: { cookie: admin.cookie, origin: ORIGIN, "if-match": `"${song.revision}"` },
+    }), params(song.id));
+    expect(published.status).toBe(200);
+    song = (await published.json()).song;
+    const classified = await classificationRoute.PUT(new Request(`${ORIGIN}/api/v1/x`, {
+      method: "PUT", headers: { cookie: admin.cookie, origin: ORIGIN, "content-type": "application/json", "if-match": `"${song.revision}"` },
+      body: JSON.stringify({ liturgy: { ...EMPTY_CLASSIFICATION_INPUT, moments: ["entrada"] } }),
+    }), params(song.id));
+    expect(classified.status).toBe(200);
+    const expected = { provider: "youtube", videoId: "abcdefghijk", title: "Ensaio", startSeconds: 45 };
+    const detail = await publicSongRoute.GET(new Request(`${ORIGIN}/api/v1/catalog/songs/${song.id}`), params(song.id));
+    expect(detail.status).toBe(200);
+    expect((await detail.json()).song.video).toEqual(expected);
+    expect((await searchCatalog({ page: 1, pageSize: 20, q: "" })).songs[0].video).toEqual(expected);
+    expect((await listSuggestionCandidates(["entrada"]))[0].video).toEqual(expected);
+  });
+
+  it("recusa tempos negativos, fracionários, excessivos e números enviados como texto", async () => {
+    for (const startSeconds of [-1, 1.5, 604801, "45", null]) {
+      expect((await songRoute.PUT(request(admin, { url: "https://youtu.be/abcdefghijk", startSeconds }), params(song.id))).status).toBe(400);
+    }
+    expect((await CatalogSongModel.findOne({ id: song.id }).lean())?.revision).toBe(1);
   });
 
   it("um vídeo inválido recusa o cadastro inteiro, sem deixar rascunho parcial", async () => {

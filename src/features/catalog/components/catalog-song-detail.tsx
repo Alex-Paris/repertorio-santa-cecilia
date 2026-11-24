@@ -191,7 +191,7 @@ export function CatalogSongDetail({
               <FileMusic className="size-4 text-gold-strong" aria-hidden />
               Letra e cifra
             </h3>
-            <VideoReference key={song.video?.videoId ?? "none"} videoId={song.video?.videoId} videoTitle={song.video?.title} title={song.title} />
+            <VideoReference key={`${song.id}:${song.video?.videoId ?? "none"}:${song.video?.startSeconds ?? 0}`} videoId={song.video?.videoId} videoTitle={song.video?.title} startSeconds={song.video?.startSeconds} title={song.title} />
           </div>
 
           <div className="mt-2">

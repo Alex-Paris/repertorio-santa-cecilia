@@ -1,5 +1,6 @@
 import type { MusicalKey } from "@/features/songs/domain/musical-key";
 import type { CatalogContentType } from "@/features/songs/domain/song";
+import type { YouTubeReference } from "@/features/songs/domain/video-reference";
 
 import {
   FACT_FIELD_LABELS,
@@ -31,6 +32,7 @@ export interface SuggestionCandidate {
   originalKey?: MusicalKey;
   contentType: CatalogContentType;
   hasChordPro: boolean;
+  video?: YouTubeReference;
   liturgy: PublicSongClassification;
 }
 

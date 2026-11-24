@@ -74,6 +74,7 @@ export function toCatalogSong(document: CatalogSongFields): CatalogSong {
             provider: document.video.provider,
             videoId: document.video.videoId,
             ...(document.video.title ? { title: document.video.title } : {}),
+            ...(document.video.startSeconds ? { startSeconds: document.video.startSeconds } : {}),
             kind: document.video.kind,
             ...(document.video.submissionId ? { submissionId: document.video.submissionId } : {}),
             approvedBy: document.video.approvedBy,

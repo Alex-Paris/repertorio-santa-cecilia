@@ -43,7 +43,7 @@ import type {
   LiturgicalSeasonId,
 } from "@/features/liturgy/domain/vocabulary";
 import { LibraryError } from "@/features/library/domain/library-errors";
-import { parseYouTubeId } from "@/features/songs/domain/video-reference";
+import { parseYouTubeId, parseYouTubeStartSeconds } from "@/features/songs/domain/video-reference";
 import { createId } from "@/lib/utils/create-id";
 import { CatalogAdminModel } from "@/server/database/models/catalog-admin-model";
 import {
@@ -93,6 +93,15 @@ const HAS_CHORD_PRO = {
   ],
 };
 
+/** Só os dados públicos da referência, sem quem aprovou nem a contribuição de origem. */
+const PUBLIC_VIDEO = {
+  $cond: [
+    { $eq: ["$video.provider", "youtube"] },
+    { provider: "$video.provider", videoId: "$video.videoId", title: "$video.title", startSeconds: "$video.startSeconds" },
+    "$$REMOVE",
+  ],
+};
+
 /** Busca pública: só publicadas, paginada, sem carregar cifras no resultado. */
 export function searchCatalog(params: CatalogSearchParams): Promise<CatalogSearchResult> {
   const { page, pageSize } = params;
@@ -113,6 +122,7 @@ export function searchCatalog(params: CatalogSearchParams): Promise<CatalogSearc
           originalKey: 1,
           contentType: PUBLIC_CONTENT_TYPE,
           hasChordPro: HAS_CHORD_PRO,
+          video: PUBLIC_VIDEO,
           moments: { $ifNull: ["$liturgy.moments", []] },
           seasons: { $ifNull: ["$liturgy.seasons", []] },
         },
@@ -154,6 +164,7 @@ const CANDIDATE_PROJECTION = {
   originalKey: 1,
   contentType: PUBLIC_CONTENT_TYPE,
   hasChordPro: HAS_CHORD_PRO,
+  video: PUBLIC_VIDEO,
   liturgy: {
     category: "$liturgy.category",
     moments: "$liturgy.moments",
@@ -426,10 +437,12 @@ function sameRights(current: CatalogRightsDocument, next: CatalogRightsDocument)
 function videoFor(input: CatalogVideoInput, adminUserId: string, now: Date, current?: CatalogVideoDocument): CatalogVideoDocument {
   const videoId = parseYouTubeId(input.url)!;
   const title = input.title || undefined;
-  if (current?.videoId === videoId && current.title === title) return current;
   const sameVideo = current?.videoId === videoId ? current : undefined;
+  const startSeconds = input.startSeconds ?? parseYouTubeStartSeconds(input.url) ?? sameVideo?.startSeconds ?? 0;
+  if (sameVideo && sameVideo.title === title && (sameVideo.startSeconds ?? 0) === startSeconds) return sameVideo;
   return {
     provider: "youtube", videoId, ...(title ? { title } : {}),
+    ...(startSeconds > 0 ? { startSeconds } : {}),
     kind: sameVideo?.kind ?? "reference",
     ...(sameVideo?.submissionId ? { submissionId: sameVideo.submissionId } : {}),
     approvedBy: adminUserId, approvedAt: now,

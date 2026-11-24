@@ -20,7 +20,7 @@ import type { CatalogSongInputData, IsoDateTime, MusicalSong, Revision } from "@
 import { catalogSongDataSchema, entityIdSchema, revisionSchema } from "@/features/songs/domain/song-schema";
 import { isValidIsoDate } from "@/features/liturgy/domain/calendar";
 import { isSafeExternalUrl } from "@/lib/utils/is-safe-external-url";
-import { catalogVideoInputSchema, type CatalogVideoInput } from "./catalog-video";
+import { catalogVideoInputSchema, videoStartSecondsSchema, type CatalogVideoInput } from "./catalog-video";
 
 export const CATALOG_STATUSES = ["draft", "published", "unpublished"] as const;
 export type CatalogStatus = (typeof CATALOG_STATUSES)[number];
@@ -80,6 +80,7 @@ export interface CatalogVideo {
   provider: "youtube";
   videoId: string;
   title?: string;
+  startSeconds?: number;
   kind: "performance" | "reference";
   /** Proposta de onde veio, quando veio de uma contribuição. */
   submissionId?: string;
@@ -145,6 +146,7 @@ export interface CatalogSongSummary {
   contentType: MusicalSong["contentType"];
   /** Há cifra que pode ser exibida no catálogo. */
   hasChordPro: boolean;
+  video?: CatalogSongView["video"];
   /** Momentos e tempos da classificação litúrgica; vazios sem classificação. */
   moments?: LiturgicalMomentId[];
   seasons?: LiturgicalSeasonId[];
@@ -243,6 +245,7 @@ const publicVideoSchema = z.strictObject({
   provider: z.literal("youtube"),
   videoId: z.string().regex(/^[A-Za-z0-9_-]{11}$/),
   title: z.string().max(200).optional(),
+  startSeconds: videoStartSecondsSchema.optional(),
 });
 
 const publicDetails = {
@@ -256,6 +259,7 @@ const catalogVideoSchema = z.strictObject({
   provider: z.literal("youtube"),
   videoId: z.string().regex(/^[A-Za-z0-9_-]{11}$/),
   title: z.string().optional(),
+  startSeconds: videoStartSecondsSchema.optional(),
   kind: z.enum(["performance", "reference"]),
   submissionId: z.string().optional(),
   approvedBy: z.string(),
@@ -320,6 +324,7 @@ export const catalogSongSummarySchema: z.ZodType<CatalogSongSummary> = z.strictO
   originalKey: z.enum(MUSICAL_KEYS).optional(),
   contentType: z.enum(["original", "authorized", "external-link", "metadata-only"]),
   hasChordPro: z.boolean(),
+  video: publicVideoSchema.optional(),
   moments: z.array(z.enum(LITURGICAL_MOMENT_IDS)).optional(),
   seasons: z.array(z.enum(LITURGICAL_SEASON_IDS)).optional(),
 });
@@ -410,9 +415,9 @@ export function toCatalogSongView(song: CatalogSong): CatalogSongView {
     ...(song.liturgy ? { liturgy: toPublicClassification(song.liturgy) } : {}),
     ...(song.compositionReference ? { compositionReference: song.compositionReference } : {}),
     ...(song.metadataSources.length > 0 ? { metadataSources: song.metadataSources.map((source) => ({ ...source })) } : {}),
-    // Vídeo: só provedor, identificador e título. Quem aprovou e de qual proposta veio ficam na administração.
+    // Só a referência pública e o início; aprovação e proposta de origem ficam na administração.
     ...(song.video
-      ? { video: { provider: song.video.provider, videoId: song.video.videoId, ...(song.video.title ? { title: song.video.title } : {}) } }
+      ? { video: { provider: song.video.provider, videoId: song.video.videoId, ...(song.video.title ? { title: song.video.title } : {}), ...(song.video.startSeconds ? { startSeconds: song.video.startSeconds } : {}) } }
       : {}),
     ...(contributorCredit(song) ? { contributorCredit: contributorCredit(song) } : {}),
   };

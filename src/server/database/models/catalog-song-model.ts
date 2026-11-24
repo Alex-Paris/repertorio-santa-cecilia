@@ -19,6 +19,7 @@ import {
 import { MUSICAL_KEYS, type MusicalKey } from "@/features/songs/domain/musical-key";
 import { CATALOG_CONTENT_TYPES, type CatalogContentType } from "@/features/songs/domain/song";
 import { CLASSIFICATION_REVIEW_STATUSES, type ClassificationReviewStatus } from "@/features/liturgy/domain/classification";
+import { MAX_VIDEO_START_SECONDS } from "@/features/songs/domain/video-reference";
 
 export interface CatalogRightsDocument {
   basis: RightsBasis;
@@ -71,6 +72,7 @@ export interface CatalogVideoDocument {
   provider: "youtube";
   videoId: string;
   title?: string;
+  startSeconds?: number;
   kind: "performance" | "reference";
   submissionId?: string;
   approvedBy: string;
@@ -217,6 +219,7 @@ const catalogSongSchema = new Schema<CatalogSongDocument>(
         {
           provider: { type: String, required: true, enum: ["youtube"] },
           videoId: { type: String, required: true, match: /^[A-Za-z0-9_-]{11}$/ },
+          startSeconds: { type: Number, min: 0, max: MAX_VIDEO_START_SECONDS, validate: Number.isInteger },
           title: { type: String },
           kind: { type: String, required: true, enum: ["performance", "reference"] },
           submissionId: { type: String },

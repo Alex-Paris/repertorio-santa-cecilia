@@ -1,6 +1,7 @@
 import type { PublicSongClassification } from "@/features/liturgy/domain/classification";
 import type { Repertoire, RepertoireRecord } from "@/features/repertoires/domain/repertoire";
 import type { MusicalSong, Song, SongId, SongRecord, SongSource } from "@/features/songs/domain/song";
+import type { YouTubeReference } from "@/features/songs/domain/video-reference";
 
 /** Conjunto das músicas e repertórios de um usuário, com a revisão de cada documento. */
 export interface Library {
@@ -19,7 +20,7 @@ export type CatalogSongView = MusicalSong & {
   compositionReference?: string;
   metadataSources?: { title: string; url?: string; accessedAt?: string }[];
   /** Vídeo de referência aprovado: só provedor e identificador, nunca um endereço livre. */
-  video?: { provider: "youtube"; videoId: string; title?: string };
+  video?: YouTubeReference;
   /** "Enviado por": nome público autorizado pelo colaborador. Nunca e-mail nem conta. */
   contributorCredit?: string;
 };

@@ -155,12 +155,38 @@ describe("cadastro simplificado", () => {
     render(<CatalogSongEditor userId="admin-1" />);
     fireEvent.change(screen.getByLabelText("Título"), { target: { value: "Canto com vídeo" } });
     fireEvent.change(screen.getByLabelText("Link do YouTube (opcional)"), { target: { value: "https://youtu.be/abcdefghijk" } });
+    fireEvent.change(screen.getByLabelText("Iniciar em (segundos)"), { target: { value: "45" } });
     fireEvent.change(screen.getByLabelText("Título do vídeo (opcional)"), { target: { value: " Ensaio " } });
     fireEvent.click(screen.getByRole("button", { name: "Criar rascunho" }));
     await waitFor(() => expect(router.replace).toHaveBeenCalled());
     const writes = calls.filter((call) => call.method !== "GET");
     expect(writes).toHaveLength(1);
-    expect(writes[0]).toMatchObject({ method: "POST", url: "/api/v1/admin/catalog/songs", body: { video: { url: "https://youtu.be/abcdefghijk", title: "Ensaio" } } });
+    expect(writes[0]).toMatchObject({ method: "POST", url: "/api/v1/admin/catalog/songs", body: { video: { url: "https://youtu.be/abcdefghijk", title: "Ensaio", startSeconds: 45 } } });
+  });
+
+  it("preenche o tempo do link e permite substituí-lo, inclusive por zero", async () => {
+    stubServer(() => json({ song: draft }, 201));
+    render(<CatalogSongEditor userId="admin-1" />);
+    fireEvent.change(screen.getByLabelText("Título"), { target: { value: "Canto com vídeo" } });
+    fireEvent.change(screen.getByLabelText("Link do YouTube (opcional)"), { target: { value: "https://youtu.be/abcdefghijk?t=1m30s" } });
+    const start = screen.getByLabelText<HTMLInputElement>("Iniciar em (segundos)");
+    expect(start.value).toBe("90");
+    fireEvent.change(start, { target: { value: "0" } });
+    fireEvent.click(screen.getByRole("button", { name: "Criar rascunho" }));
+    await waitFor(() => expect(calls.find((call) => call.method === "POST")?.body).toMatchObject({ video: { startSeconds: 0 } }));
+  });
+
+  it("recusa um tempo negativo ou fracionário sem enviar o formulário", () => {
+    stubServer(() => json({ song: draft }, 201));
+    render(<CatalogSongEditor userId="admin-1" />);
+    fireEvent.change(screen.getByLabelText("Título"), { target: { value: "Canto com vídeo" } });
+    fireEvent.change(screen.getByLabelText("Link do YouTube (opcional)"), { target: { value: "https://youtu.be/abcdefghijk" } });
+    for (const value of ["-1", "1.5"]) {
+      fireEvent.change(screen.getByLabelText("Iniciar em (segundos)"), { target: { value } });
+      fireEvent.click(screen.getByRole("button", { name: "Criar rascunho" }));
+      expect(screen.getByRole("alert")).toBeDefined();
+      expect(calls.filter((call) => call.method !== "GET")).toEqual([]);
+    }
   });
 
   it("um link inválido mostra erro sem criar um rascunho parcial", () => {
@@ -174,15 +200,16 @@ describe("cadastro simplificado", () => {
   });
 
   it("carrega e permite trocar o vídeo no formulário de edição", async () => {
-    const initial: CatalogSong = { ...published, video: { provider: "youtube", videoId: "abcdefghijk", title: "Vídeo anterior", kind: "reference", approvedBy: "admin-1", approvedAt: published.createdAt } };
+    const initial: CatalogSong = { ...published, video: { provider: "youtube", videoId: "abcdefghijk", startSeconds: 45, title: "Vídeo anterior", kind: "reference", approvedBy: "admin-1", approvedAt: published.createdAt } };
     stubServer(() => json({ song: initial }), initial);
     render(<CatalogSongEditor userId="admin-1" songId="cat-1" />);
     const input = await screen.findByLabelText<HTMLInputElement>("Link do YouTube (opcional)");
     expect(input.value).toBe("https://www.youtube.com/watch?v=abcdefghijk");
+    expect(screen.getByLabelText<HTMLInputElement>("Iniciar em (segundos)").value).toBe("45");
     expect(screen.getByLabelText<HTMLInputElement>("Título do vídeo (opcional)").value).toBe("Vídeo anterior");
     fireEvent.change(input, { target: { value: "https://www.youtube.com/shorts/lmnopqrstuv" } });
     fireEvent.click(screen.getByRole("button", { name: "Salvar alterações" }));
-    await waitFor(() => expect(calls.find((call) => call.method === "PUT")).toMatchObject({ url: "/api/v1/admin/catalog/songs/cat-1", ifMatch: '"3"', body: { video: { url: "https://www.youtube.com/shorts/lmnopqrstuv", title: "Vídeo anterior" } } }));
+    await waitFor(() => expect(calls.find((call) => call.method === "PUT")).toMatchObject({ url: "/api/v1/admin/catalog/songs/cat-1", ifMatch: '"3"', body: { video: { url: "https://www.youtube.com/shorts/lmnopqrstuv", title: "Vídeo anterior", startSeconds: 0 } } }));
   });
 
   it("apagar o link remove a referência na mesma gravação da música", async () => {
