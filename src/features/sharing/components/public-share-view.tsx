@@ -11,6 +11,7 @@ import { transposeKey } from "@/features/songs/domain/transposition";
 
 import type { PublicShareSnapshot } from "../domain/public-share";
 import { describeShareContent } from "./share-item-status";
+import { CloneSharedRepertoire } from "./clone-shared-repertoire";
 
 interface PublicShareViewProps {
   token: string;
@@ -47,6 +48,8 @@ export function PublicShareView({ token, share }: PublicShareViewProps) {
           ) : undefined
         }
       />
+
+      <CloneSharedRepertoire key={token} token={token} />
 
       <ol className="divide-y rounded-xl border bg-card">
         {share.items.map((item) => (

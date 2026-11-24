@@ -99,9 +99,9 @@ describe("página pública do repertório", () => {
     expect(link.getAttribute("target")).toBe("_blank");
   });
 
-  it("não tem controles de edição nem links para áreas privadas", () => {
-    // O único botão é o menu de impressão (Etapa 2F.2), que leva só às páginas do próprio link.
-    expect(screen.getAllByRole("button").map((button) => button.textContent)).toEqual(["Imprimir"]);
+  it("oferece copiar sem controles de edição do original e sem consultar a conta na leitura", () => {
+    expect(screen.getAllByRole("button").map((button) => button.textContent)).toEqual(["Imprimir", "Copiar para meus repertórios"]);
+    expect(fetchSpy).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", { name: "Imprimir" }));
 
     for (const link of screen.getAllByRole("link")) {

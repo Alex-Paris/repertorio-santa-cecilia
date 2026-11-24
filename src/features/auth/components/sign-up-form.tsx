@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
 
 import { FormError } from "@/components/layout/form-error";
@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { accountLibrary } from "@/features/library/data/browser-library";
 
 import { authClient } from "../auth-client";
+import { parseAuthReturn, withAuthReturn } from "../services/auth-return";
 import {
   getAuthErrorMessage,
   parseSignUp,
@@ -24,6 +25,7 @@ const EMPTY_VALUES: SignUpValues = { name: "", email: "", password: "", confirma
 
 export function SignUpForm() {
   const router = useRouter();
+  const returnTo = parseAuthReturn(useSearchParams().get("retorno"));
   const [values, setValues] = useState(EMPTY_VALUES);
   const [errors, setErrors] = useState<SignUpErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
@@ -50,7 +52,7 @@ export function SignUpForm() {
     try {
       const { name, email, password } = parsed.data;
       const { data, error } = await authClient.signUp.email({
-        name, email, password, callbackURL: VERIFICATION_CALLBACK_URL,
+        name, email, password, callbackURL: withAuthReturn(VERIFICATION_CALLBACK_URL, returnTo),
       });
       if (error) {
         setFormError(getAuthErrorMessage(error.status === 429 ? "TOO_MANY_REQUESTS" : error.code));
@@ -59,9 +61,9 @@ export function SignUpForm() {
       setValues(EMPTY_VALUES);
       if (data?.token) {
         void accountLibrary.checkSession();
-        router.replace("/");
+        router.replace(returnTo ?? "/");
       } else {
-        router.replace("/entrar?cadastro=verificar");
+        router.replace(withAuthReturn("/entrar?cadastro=verificar", returnTo));
       }
       router.refresh();
     } catch {
@@ -132,7 +134,7 @@ export function SignUpForm() {
       </Button>
 
       <p className="text-sm text-muted-foreground">
-        <Link href="/entrar" className="text-foreground underline underline-offset-3">
+        <Link href={withAuthReturn("/entrar", returnTo)} className="text-foreground underline underline-offset-3">
           Já tenho uma conta
         </Link>
       </p>

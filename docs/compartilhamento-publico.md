@@ -15,6 +15,7 @@ A coleção `repertoire_shares` é separada de `repertoires`. Não existe campo 
 | `status`         | `active` ou `revoked`                                                  |
 | `tokenVersion`   | Entra na assinatura; aumenta ao revogar                                |
 | `revision`       | Controle de concorrência                                               |
+| `cloneVersion`   | Reserva transacional para cópias, em disputa com atualização/revogação  |
 | `snapshot`       | O que o público vê. Removido ao revogar                                |
 | `contentHash`    | SHA-256 do conteúdo publicado                                          |
 | `sources`        | Relação item público ↔ música privada. Nunca lida pela rota pública    |
@@ -52,6 +53,7 @@ Privadas, com sessão, `ownerId` da sessão e `Cache-Control: private, no-store`
 | `POST /api/v1/library/repertoires/[id]/shares/[shareId]/preview` | Prévia de atualização            |
 | `PUT /api/v1/library/repertoires/[id]/shares/[shareId]`      | Atualiza                             |
 | `DELETE /api/v1/library/repertoires/[id]/shares/[shareId]`   | Revoga                               |
+| `POST /api/v1/library/shares/clone`                       | Copia uma publicação ativa para a conta da sessão |
 
 Públicas, sem sessão e somente leitura:
 
@@ -63,7 +65,21 @@ Públicas, sem sessão e somente leitura:
 
 Respostas públicas usam `Cache-Control: no-store`, `Referrer-Policy: no-referrer` e `X-Robots-Tag: noindex, nofollow`, aplicados em `src/proxy.ts`. A API repete os cabeçalhos. Inválido, revogado e inexistente têm a mesma resposta.
 
-As páginas públicas ficam fora do grupo `(app)`: não carregam navegação, sessão nem biblioteca. As leituras não usam `use cache`, e `connection()` garante avaliação por requisição.
+As páginas públicas ficam fora do grupo `(app)`: não carregam navegação, sessão nem biblioteca durante a leitura. A sessão só é consultada quando a pessoa escolhe copiar. As leituras não usam `use cache`, e `connection()` garante avaliação por requisição.
+
+## Copiar para meus repertórios
+
+Na página `/s/<token>`, **Copiar para meus repertórios** permite salvar uma cópia independente. Ler, abrir músicas e imprimir continuam sem login. Sem sessão, a ação leva a `/entrar?retorno=...`; login, cadastro, confirmação de e-mail e Facebook preservam o retorno para a publicação. O destino é validado estritamente como um caminho de compartilhamento do próprio site, sem redirecionamento externo. Ao retornar, a pessoa confirma a cópia pelo botão; nenhuma navegação GET salva dados automaticamente.
+
+A API autenticada recebe apenas `{ token, requestId }` (UUID). O proprietário do destino vem da sessão, com origem e identidade esperada conferidas. O token vai no corpo, sem aparecer no caminho da API privada. O snapshot é relido e a assinatura, o estado ativo e as permissões atuais são conferidos na transação. Cópias disputam o registro da publicação com atualizações e revogações. A mesma tentativa retorna o mesmo repertório, inclusive em chamadas concorrentes ou novas tentativas após falha de rede; a gravação de músicas e repertório é atômica.
+
+- Nome, descrição, ordem, tons e momentos vêm exclusivamente da versão pública. A data só é copiada se foi publicada; IDs/revisões da celebração, anotações e dados da conta original não são copiados.
+- Músicas pessoais recebem novos IDs e ficam na conta de destino. Apenas a cifra publicada é copiada, como conteúdo autorizado; uma cifra omitida permanece omitida. Links externos continuam como links.
+- Músicas do catálogo mantêm referências ao catálogo, inclusive músicas só com metadados e sem tom. Não viram cópias particulares de cifras globais. Itens indisponíveis são omitidos com aviso; se nenhum estiver disponível, nada é salvo.
+- O resultado informa a quantidade omitida e oferece **Abrir meu repertório**. A cópia pode ser editada sem alterar a origem. Atualizar ou revogar o link não altera cópias já salvas.
+- O limite de cópias é de 10 solicitações por minuto, por conta/IP/instância, usando o limitador existente; os limites de itens e tamanho do compartilhamento também se aplicam. Não substitui um limite distribuído no proxy.
+
+Na Vercel, o ambiente usado pelo link deve ter `PUBLIC_SHARING_ENABLED=true` e `SHARE_LINK_SECRET` estável, com pelo menos 32 caracteres. A leitura sem login não depende do Facebook nem do Resend. Uma configuração alterada só entra no novo deployment; preservar a chave existente evita invalidar links anteriores. Não são necessárias variáveis novas para copiar.
 
 ## Concorrência
 

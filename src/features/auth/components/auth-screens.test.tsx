@@ -75,4 +75,12 @@ describe("oferta de Facebook nas telas públicas", () => {
     await expect(SignInScreen()).rejects.toThrow("redirect:/conta");
     await expect(SignUpScreen()).rejects.toThrow("redirect:/conta");
   });
+
+  it("quem já tem sessão volta à publicação sem ficar preso no login ou cadastro", async () => {
+    lookupSession.mockResolvedValue({ status: "authenticated" });
+    const path = `/s/${"a".repeat(22)}.${"b".repeat(43)}`;
+    const props = { searchParams: Promise.resolve({ retorno: path }) };
+    await expect(SignInScreen(props)).rejects.toThrow(`redirect:${path}`);
+    await expect(SignUpScreen(props)).rejects.toThrow(`redirect:${path}`);
+  });
 });

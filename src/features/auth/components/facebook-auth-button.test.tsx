@@ -4,13 +4,27 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { FacebookAuthButton } from "./facebook-auth-button";
 
 const social = vi.hoisted(() => vi.fn());
+const query = vi.hoisted(() => ({ value: "" }));
 vi.mock("../auth-client", () => ({ authClient: { signIn: { social } } }));
+vi.mock("next/navigation", () => ({ useSearchParams: () => new URLSearchParams(query.value) }));
 
 beforeEach(() => {
   social.mockReset();
+  query.value = "";
 });
 
 describe("Continuar com Facebook", () => {
+  it("volta ao link compartilhado depois do Facebook, inclusive no cadastro e erro", async () => {
+    const path = `/s/${"a".repeat(22)}.${"b".repeat(43)}`;
+    query.value = `retorno=${encodeURIComponent(path)}`;
+    social.mockResolvedValue({ data: { redirect: true }, error: null });
+    render(<FacebookAuthButton />);
+    fireEvent.click(screen.getByRole("button", { name: "Continuar com Facebook" }));
+    await waitFor(() => expect(social).toHaveBeenCalledWith({
+      provider: "facebook", callbackURL: path, newUserCallbackURL: path,
+      errorCallbackURL: `/entrar?social=facebook&retorno=${encodeURIComponent(path)}`,
+    }));
+  });
   it("inicia OAuth pelo Better Auth e indica que está abrindo o Facebook", async () => {
     social.mockResolvedValue({ data: { redirect: true, url: "https://www.facebook.com/dialog/oauth" }, error: null });
     render(<FacebookAuthButton />);

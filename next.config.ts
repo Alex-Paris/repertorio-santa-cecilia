@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
   ],
   // O caminho de um link público é a própria credencial de acesso: não vai para os logs.
   logging: {
-    incomingRequests: { ignore: [/^\/s\//, /^\/api\/v1\/public\//] },
+    incomingRequests: { ignore: [/^\/s\//, /^\/api\/v1\/public\//, /^\/(entrar|cadastro)\?.*retorno=/] },
   },
   turbopack: {
     rules: {

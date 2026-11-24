@@ -1,5 +1,7 @@
 import "server-only";
 
+import type { ClientSession } from "mongoose";
+
 import {
   publicShareSnapshotSchema,
   type PublicShareSnapshot,
@@ -22,6 +24,7 @@ import { parseShareToken, verifyShareSignature } from "./share-token";
 async function withCurrentCatalogRights(
   snapshot: PublicShareSnapshot,
   sources: readonly ShareSourceDocument[],
+  session?: ClientSession,
 ): Promise<PublicShareSnapshot> {
   const catalogItemIds = new Map(
     sources.filter((source) => source.source === "catalog").map((source) => [source.publicItemId, source.songId]),
@@ -34,7 +37,7 @@ async function withCurrentCatalogRights(
     CatalogSongModel.find(
       { id: { $in: [...new Set(catalogItemIds.values())] } },
       { _id: 0, id: 1, status: 1, contentType: 1, rights: 1 },
-    ).lean(),
+    ).session(session ?? null).lean(),
   );
   const current = new Map(documents.map((document) => [document.id, document]));
 
@@ -62,7 +65,7 @@ async function withCurrentCatalogRights(
  * Único caminho de leitura sem sessão. Consulta o estado atual a cada chamada, lê apenas
  * o que foi publicado e responde igual para link inválido, revogado ou inexistente.
  */
-export async function readPublicShare(token: string): Promise<PublicShareSnapshot | null> {
+export async function readPublicShareRecord(token: string, session?: ClientSession) {
   const { enabled, secret } = getSharingConfig();
   const parsed = parseShareToken(token);
 
@@ -73,8 +76,8 @@ export async function readPublicShare(token: string): Promise<PublicShareSnapsho
   const document = await runPersistence(() =>
     RepertoireShareModel.findOne(
       { id: parsed.shareId, status: "active" },
-      { _id: 0, snapshot: 1, tokenVersion: 1, sources: 1 },
-    ).lean(),
+      { _id: 0, snapshot: 1, tokenVersion: 1, revision: 1, sources: 1 },
+    ).session(session ?? null).lean(),
   );
 
   // Confere a assinatura mesmo sem documento, para o tempo de resposta não indicar qual ID existe.
@@ -87,7 +90,18 @@ export async function readPublicShare(token: string): Promise<PublicShareSnapsho
   if (!result.success) {
     return null;
   }
-  return withCurrentCatalogRights(result.data, document.sources ?? []);
+  return {
+    id: parsed.shareId,
+    tokenVersion: document.tokenVersion,
+    revision: document.revision,
+    snapshot: await withCurrentCatalogRights(result.data, document.sources ?? [], session),
+    sources: document.sources ?? [],
+  };
+}
+
+/** A projeção pública nunca inclui as referências de origem. */
+export async function readPublicShare(token: string): Promise<PublicShareSnapshot | null> {
+  return (await readPublicShareRecord(token))?.snapshot ?? null;
 }
 
 export type PublicShareResult =

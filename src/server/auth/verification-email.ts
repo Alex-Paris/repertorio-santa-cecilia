@@ -1,6 +1,7 @@
 import "server-only";
 
 import { SITE_NAME } from "@/lib/site";
+import { parseAuthReturn, withAuthReturn } from "@/features/auth/services/auth-return";
 
 import { getEmailDeliveryConfig } from "./sign-up-policy";
 
@@ -11,7 +12,15 @@ export async function sendVerificationEmail({ to, url }: { to: string; url: stri
 
   // Também cobre confirmações reenviadas por uma tentativa de login sem callback.
   const verificationURL = new URL(url);
-  verificationURL.searchParams.set("callbackURL", "/entrar?email=confirmado");
+  let returnTo: string | null = null;
+  try {
+    const callback = new URL(verificationURL.searchParams.get("callbackURL") ?? "/", verificationURL.origin);
+    if (callback.origin === verificationURL.origin) {
+      returnTo = parseAuthReturn(callback.pathname) ??
+        (callback.pathname === "/entrar" ? parseAuthReturn(callback.searchParams.get("retorno")) : null);
+    }
+  } catch { /* Um callback inválido usa a tela padrão de confirmação. */ }
+  verificationURL.searchParams.set("callbackURL", withAuthReturn("/entrar?email=confirmado", returnTo));
 
   try {
     const response = await fetch("https://api.resend.com/emails", {

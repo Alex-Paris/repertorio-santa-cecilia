@@ -335,6 +335,10 @@ A flag protege criação, atualização e acesso público no servidor. Revogar c
 
 **Publicar:** no repertório, escolha **Compartilhar repertório** e **Criar novo link**. Confirme música por música quais cifras podem ser distribuídas, veja a prévia e publique. Depois, use **Copiar link**.
 
+**Abrir e copiar:** compartilhe o endereço `/s/...` gerado em **Copiar link**. Qualquer pessoa pode ler, abrir músicas e imprimir sem conta. Para guardar uma cópia editável, escolha **Copiar para meus repertórios**. Sem sessão, entre ou crie uma conta; o site preserva o retorno ao link para confirmar a cópia. A cópia contém apenas a versão publicada, mantém as referências do catálogo e não altera a origem. A data só é copiada quando foi publicada. Revogar ou atualizar o link não altera cópias já salvas.
+
+Na **Vercel**, configure `PUBLIC_SHARING_ENABLED=true` e uma `SHARE_LINK_SECRET` estável de pelo menos 32 caracteres no ambiente correspondente. Preserve a chave existente: trocá-la invalida links anteriores. Use um novo deployment para aplicar mudanças de variáveis. Copiar não exige novas credenciais.
+
 | Público | Permanece privado |
 | --- | --- |
 | Nome e descrição do repertório | Anotações dos itens |

@@ -47,6 +47,21 @@ describe("envio de confirmação", () => {
     await expect(sendVerificationEmail(email)).rejects.toThrow("Não foi possível enviar o e-mail de confirmação.");
   });
 
+  it("preserva somente o retorno seguro para um repertório compartilhado", async () => {
+    configure();
+    const fetch = vi.fn().mockResolvedValue(new Response("{}"));
+    vi.stubGlobal("fetch", fetch);
+    const path = `/s/${"a".repeat(22)}.${"b".repeat(43)}`;
+    for (const callback of [path, `/entrar?email=confirmado&retorno=${encodeURIComponent(path)}`]) {
+      await sendVerificationEmail({ ...email, url: `${email.url}&callbackURL=${encodeURIComponent(callback)}` });
+      const body = JSON.parse(fetch.mock.calls.at(-1)![1].body);
+      const url = new URL(body.text.match(/https:\/\/[^\s]+/)[0]);
+      expect(url.searchParams.get("callbackURL")).toBe(`/entrar?email=confirmado&retorno=${encodeURIComponent(path)}`);
+    }
+    await sendVerificationEmail({ ...email, url: `${email.url}&callbackURL=${encodeURIComponent(`https://evil.example/entrar?retorno=${encodeURIComponent(path)}`)}` });
+    expect(JSON.parse(fetch.mock.calls.at(-1)![1].body).text).not.toContain("retorno");
+  });
+
   it("não envia sem configuração", async () => {
     vi.stubEnv("RESEND_API_KEY", "");
     const fetch = vi.fn();

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 import { FacebookIcon } from "@/components/brand/facebook-icon";
 import { FormError } from "@/components/layout/form-error";
@@ -8,8 +9,10 @@ import { Button } from "@/components/ui/button";
 
 import { authClient } from "../auth-client";
 import { FACEBOOK_ERROR_CALLBACK_URL } from "../services/auth-form";
+import { parseAuthReturn, withAuthReturn } from "../services/auth-return";
 
 export function FacebookAuthButton() {
+  const returnTo = parseAuthReturn(useSearchParams().get("retorno"));
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,9 +23,9 @@ export function FacebookAuthButton() {
     try {
       const result = await authClient.signIn.social({
         provider: "facebook",
-        callbackURL: "/",
-        newUserCallbackURL: "/",
-        errorCallbackURL: FACEBOOK_ERROR_CALLBACK_URL,
+        callbackURL: returnTo ?? "/",
+        newUserCallbackURL: returnTo ?? "/",
+        errorCallbackURL: withAuthReturn(FACEBOOK_ERROR_CALLBACK_URL, returnTo),
       });
       if (result.error) {
         const messages: Record<number, string> = {

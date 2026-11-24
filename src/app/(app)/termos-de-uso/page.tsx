@@ -45,7 +45,7 @@ export default function TermsPage() {
 
       <LegalSection id="compartilhamento" title="6. Compartilhamento de repertórios">
         <p>Antes de gerar um link público, confira a prévia e as autorizações de cada conteúdo. O nome, a descrição e os demais campos publicados poderão ser lidos por qualquer pessoa com o endereço. Você deve ter autorização para divulgar dados de terceiros e conteúdo protegido.</p>
-        <p>Quem recebe um link pode repassá-lo, imprimir ou copiar o que conseguir visualizar. A revogação impede novos acessos pelo endereço do Santa Cecília, mas não remove cópias que já estejam fora do serviço. A ausência de indexação em mecanismos de busca não substitui um controle de acesso.</p>
+        <p>Quem recebe um link pode repassá-lo, imprimir ou salvar uma cópia editável na própria conta. A cópia inclui somente os dados publicados; músicas do catálogo mantêm suas referências e permissões atuais. A revogação impede novos acessos pelo link do Santa Cecília, mas não remove cópias independentes já salvas dentro ou fora do serviço. A ausência de indexação em mecanismos de busca não substitui um controle de acesso.</p>
         <p>Não publique informações pessoais desnecessárias, credenciais ou dados sensíveis em títulos, descrições, cifras ou outros campos que possam se tornar públicos.</p>
       </LegalSection>
 

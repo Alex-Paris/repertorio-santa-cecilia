@@ -62,7 +62,8 @@ function PrivacyNotice() {
       <Info className="mt-0.5 size-4 shrink-0" aria-hidden />
       Qualquer pessoa com o link verá o que está nesta prévia, sem precisar de conta. Suas anotações
       e seus dados de conta nunca são publicados. Alterações futuras no repertório só aparecem no
-      link quando você escolher “Atualizar publicação”.
+      link quando você escolher “Atualizar publicação”. Quem recebe pode guardar uma cópia na própria conta;
+      atualizar ou revogar o link não altera as cópias já salvas.
     </p>
   );
 }
@@ -143,7 +144,7 @@ function ShareCard({ share, onUpdate, onRevoke }: ShareCardProps) {
             </Button>
           }
           title={`Revogar o link de “${share.name}”?`}
-          description="O link deixa de funcionar imediatamente e não pode ser reativado. O conteúdo publicado é apagado; seu repertório privado continua intacto."
+          description="O link deixa de funcionar imediatamente e não pode ser reativado. A publicação é apagada; seu repertório privado e as cópias já salvas por outras pessoas continuam disponíveis."
           confirmLabel="Revogar link"
           onConfirm={onRevoke}
         />
@@ -484,7 +485,7 @@ function ShareManager({ repertoire, songs, catalogSongs, api }: ShareManagerProp
       {!enabled && (
         <p className="rounded-lg border px-3 py-2.5 text-sm text-muted-foreground">
           O compartilhamento público não está ativado neste ambiente. Links já criados podem ser
-          revogados.
+          revogados. Para gerar e abrir links, o responsável pelo site precisa ativar o recurso.
         </p>
       )}
 

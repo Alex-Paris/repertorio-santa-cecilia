@@ -29,6 +29,8 @@ export interface RepertoireShareDocument {
   status: "active" | "revoked";
   tokenVersion: number;
   revision: number;
+  /** Cópias disputam a publicação com revogação/atualização sem mudar a revisão editorial. */
+  cloneVersion?: number;
   /** Removido ao revogar: o conteúdo publicado deixa de existir. */
   snapshot?: PublicShareSnapshot;
   contentHash?: string;
@@ -71,6 +73,7 @@ const repertoireShareSchema = new Schema<RepertoireShareDocument>(
     status: { type: String, enum: ["active", "revoked"], required: true },
     tokenVersion: { type: Number, required: true },
     revision: { type: Number, required: true },
+    cloneVersion: { type: Number },
     // Validado pelo schema público ao gravar e ao ler.
     snapshot: { type: Schema.Types.Mixed },
     contentHash: { type: String },

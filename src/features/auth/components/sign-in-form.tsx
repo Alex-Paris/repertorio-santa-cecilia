@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { accountLibrary } from "@/features/library/data/browser-library";
 
 import { authClient } from "../auth-client";
+import { parseAuthReturn, withAuthReturn } from "../services/auth-return";
 import {
   getAuthErrorMessage, getFacebookAuthErrorMessage, parseSignIn, parseVerificationEmail, VERIFICATION_CALLBACK_URL, type SignInErrors,
 } from "../services/auth-form";
@@ -19,6 +20,7 @@ import {
 export function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const returnTo = parseAuthReturn(searchParams.get("retorno"));
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<SignInErrors>({});
@@ -45,7 +47,7 @@ export function SignInForm() {
     setResending(true);
     try {
       const { error } = await authClient.sendVerificationEmail({
-        email: parsed.data, callbackURL: VERIFICATION_CALLBACK_URL,
+        email: parsed.data, callbackURL: withAuthReturn(VERIFICATION_CALLBACK_URL, returnTo),
       });
       if (error) {
         setFormError(getAuthErrorMessage(error.status === 429 ? "TOO_MANY_REQUESTS" : error.code));
@@ -74,7 +76,7 @@ export function SignInForm() {
     setErrors({});
     setSubmitting(true);
     try {
-      const { error } = await authClient.signIn.email(parsed.data);
+      const { error } = await authClient.signIn.email({ ...parsed.data, ...(returnTo ? { callbackURL: returnTo } : {}) });
       if (error) {
         setNeedsVerification(error.code === "EMAIL_NOT_VERIFIED");
         setFormError(getAuthErrorMessage(error.status === 429 ? "TOO_MANY_REQUESTS" : error.code));
@@ -83,7 +85,7 @@ export function SignInForm() {
       // O Next preserva o estado de telas visitadas: a senha não pode ficar na memória.
       setPassword("");
       void accountLibrary.checkSession();
-      router.replace("/");
+      router.replace(returnTo ?? "/");
       router.refresh();
     } catch {
       setFormError(getAuthErrorMessage(undefined));
@@ -147,7 +149,7 @@ export function SignInForm() {
 
       <p className="text-sm text-muted-foreground">
         Ainda não tem uma conta?{" "}
-        <Link href="/cadastro" className="text-foreground underline underline-offset-3">
+        <Link href={withAuthReturn("/cadastro", returnTo)} className="text-foreground underline underline-offset-3">
           Criar conta
         </Link>
       </p>

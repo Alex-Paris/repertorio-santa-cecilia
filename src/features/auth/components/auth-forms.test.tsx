@@ -7,6 +7,7 @@ import { getAuthErrorMessage, getFacebookAuthErrorMessage, parseSignUp } from ".
 import { SignInForm } from "./sign-in-form";
 import { SignOutButton } from "./sign-out-button";
 import { SignUpForm } from "./sign-up-form";
+import { parseAuthReturn } from "../services/auth-return";
 
 const router = vi.hoisted(() => ({ replace: vi.fn(), refresh: vi.fn() }));
 const query = vi.hoisted(() => ({ value: "" }));
@@ -37,6 +38,21 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllGlobals());
 
 describe("login", () => {
+  it("volta à publicação e mantém o contexto no link de cadastro", async () => {
+    const path = `/s/${"a".repeat(22)}.${"b".repeat(43)}`;
+    query.value = `retorno=${encodeURIComponent(path)}`;
+    render(<SignInForm />);
+    expect(screen.getByRole("link", { name: "Criar conta" }).getAttribute("href")).toBe(`/cadastro?${query.value}`);
+    type("E-mail", "ana@exemplo.test"); type("Senha", "senha-123456");
+    fireEvent.click(screen.getByRole("button", { name: "Entrar" }));
+    await waitFor(() => expect(router.replace).toHaveBeenCalledWith(path));
+    expect(authClient.signIn.email).toHaveBeenCalledWith({ email: "ana@exemplo.test", password: "senha-123456", callbackURL: path });
+  });
+
+  it.each(["https://evil.example", "//evil.example", "/\\evil.example", "/admin/catalogo", "/s/invalido", "/s/%2F%2Fevil.example"])("recusa retorno inseguro %s", (value) => {
+    expect(parseAuthReturn(value)).toBeNull();
+  });
+
   function submit(): void {
     fireEvent.click(screen.getByRole("button", { name: "Entrar" }));
   }
@@ -128,6 +144,17 @@ describe("login", () => {
 });
 
 describe("cadastro", () => {
+  it("preserva o link compartilhado na confirmação por e-mail e no acesso à conta existente", async () => {
+    const path = `/s/${"a".repeat(22)}.${"b".repeat(43)}`;
+    query.value = `retorno=${encodeURIComponent(path)}`;
+    authClient.signUp.email.mockResolvedValue({ data: { token: null }, error: null });
+    render(<SignUpForm />);
+    expect(screen.getByRole("link", { name: "Já tenho uma conta" }).getAttribute("href")).toBe(`/entrar?${query.value}`);
+    type("Nome", "Ana"); type("E-mail", "ana@exemplo.test"); type("Senha", "senha-123456"); type("Confirmar senha", "senha-123456");
+    fireEvent.click(screen.getByRole("button", { name: "Criar conta" }));
+    await waitFor(() => expect(router.replace).toHaveBeenCalledWith(`/entrar?cadastro=verificar&${query.value}`));
+    expect(authClient.signUp.email).toHaveBeenCalledWith(expect.objectContaining({ callbackURL: `/entrar?email=confirmado&${query.value}` }));
+  });
   function fill(): void {
     type("Nome", "Ana");
     type("E-mail", "ana@exemplo.test");
