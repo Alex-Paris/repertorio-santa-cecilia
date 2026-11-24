@@ -9,11 +9,11 @@ export const metadata: Metadata = { title: "Entrar", robots: { index: false } };
 
 export default function SignInPage() {
   return (
-    <>
-      <PageHeader title="Entrar" description="Acesse sua conta." />
-      <Suspense fallback={<ContentSkeleton />}>
-        <SignInScreen />
-      </Suspense>
-    </>
+    <div className="py-4 md:py-8">
+      <section className="surface-panel mx-auto w-full max-w-md p-5 sm:p-8" aria-label="Acessar sua conta">
+        <PageHeader title="Entrar" description="Acesse sua conta para organizar suas músicas e repertórios." />
+        <Suspense fallback={<ContentSkeleton />}><SignInScreen /></Suspense>
+      </section>
+    </div>
   );
 }

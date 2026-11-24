@@ -90,7 +90,7 @@ function FilterSelect({ name, label, value, options }: FilterSelectProps) {
         id={id}
         name={name}
         defaultValue={value ?? ""}
-        className="h-10 w-full min-w-0 rounded-lg border border-input bg-card px-2.5 text-base md:text-sm"
+        className="h-11 w-full min-w-0 rounded-lg border border-input bg-field px-3 text-base md:text-sm"
       >
         <option value="">Todos</option>
         {options.map((option) => (
@@ -134,7 +134,7 @@ export function CatalogSearchForm({ query, filters = {}, repertoireId, explore, 
           defaultValue={query}
           maxLength={100}
           placeholder="Título ou autoria"
-          className="h-12 w-full min-w-0 rounded-xl border border-input bg-background/70 pr-24 pl-11 text-base"
+          className="h-12 w-full min-w-0 rounded-xl border border-input bg-field pr-24 pl-11 text-base"
         />
         <button type="submit" className={cn(buttonVariants({ size: "sm" }), "absolute top-1/2 right-1.5 h-9 -translate-y-1/2 px-3")}>
           Buscar
@@ -203,7 +203,7 @@ export function CatalogQuickFilters({ location, facets }: QuickFiltersProps) {
           <li key={`${chip.key}-${chip.id}`} className="shrink-0">
             <Link
               href={catalogHref({ ...location, filters: next, page: 1, selected: null })}
-              aria-pressed={chip.active}
+              aria-current={chip.active ? "true" : undefined}
               aria-label={chip.active ? `Retirar o filtro ${chip.label}` : `Filtrar por ${chip.label}`}
               className={cn(
                 "inline-flex h-9 items-center gap-1.5 rounded-full border px-3 text-[0.82rem] font-medium whitespace-nowrap transition-colors",

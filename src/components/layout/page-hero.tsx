@@ -59,7 +59,7 @@ export function PageHero({ title, subtitle, align = "center", children, classNam
           className="absolute inset-y-0 -right-[24rem] -left-[24rem] -z-10 [mask-image:linear-gradient(to_bottom,black_55%,transparent)] bg-[radial-gradient(300px_260px_at_calc(12%_+_18.24rem)_42%,color-mix(in_oklab,var(--gold)_30%,transparent),transparent_72%),radial-gradient(560px_380px_at_calc(12%_+_18.24rem)_40%,color-mix(in_oklab,var(--gold)_20%,transparent),transparent_70%),radial-gradient(360px_260px_at_calc(92%_-_20.16rem)_10%,color-mix(in_oklab,var(--card)_80%,transparent),transparent_70%)]"
         />
         <GothicWindow
-          className={cn("absolute top-0 right-3 -z-10 hidden opacity-45 xl:block", centered ? "h-[14rem] w-[12rem]" : "h-[8.5rem] w-[7.5rem]")}
+          className={cn("absolute top-0 right-3 -z-10 hidden opacity-25 xl:block", centered ? "h-[14rem] w-[12rem]" : "h-[8.5rem] w-[7.5rem]")}
         />
 
         <div className={cn("flex items-center gap-3", centered ? "md:items-start md:gap-0" : "md:gap-5")}>

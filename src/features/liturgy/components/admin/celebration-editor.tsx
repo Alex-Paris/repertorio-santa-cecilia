@@ -254,6 +254,8 @@ export function CelebrationEditor({ initial, submitLabel, pending, error, onSubm
     const parsed = celebrationInputSchema.safeParse(fromDraft(draft));
     if (!parsed.success) {
       setLocalError(parsed.error.issues[0]?.message ?? "Confira os campos da celebração.");
+      const form = event.currentTarget;
+      requestAnimationFrame(() => form.querySelector<HTMLElement>("[role='alert']")?.focus());
       return;
     }
     setLocalError(null);
@@ -276,8 +278,13 @@ export function CelebrationEditor({ initial, submitLabel, pending, error, onSubm
   }
 
   return (
-    <form id={formId} onSubmit={handleSubmit} noValidate aria-label="Conteúdo da celebração" className="max-w-2xl space-y-6">
-      <section className="space-y-4">
+    <form id={formId} onSubmit={handleSubmit} noValidate aria-label="Conteúdo da celebração" className="admin-editor">
+      <nav aria-label="Seções do cadastro de celebração" className="flex flex-wrap gap-2">
+        {[["identificacao", "Identificação"], ["calendario", "Calendário"], ["leituras", "Leituras"], ["editorial", "Leitura editorial"], ["fontes", "Fontes"]].map(([id, label]) => (
+          <a key={id} href={`#${formId}-${id}`} className="inline-flex min-h-9 items-center rounded-lg border bg-card px-3 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:bg-secondary hover:text-primary">{label}</a>
+        ))}
+      </nav>
+      <section id={`${formId}-identificacao`} className="scroll-mt-28 space-y-4">
         <h2 className="font-display text-lg font-semibold">Identificação</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <Labeled label="Data" hint="Data civil, sem horário.">
@@ -303,7 +310,7 @@ export function CelebrationEditor({ initial, submitLabel, pending, error, onSubm
         </Labeled>
       </section>
 
-      <section className="space-y-4">
+      <section id={`${formId}-calendario`} className="scroll-mt-28 space-y-4">
         <h2 className="font-display text-lg font-semibold">Calendário</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <Labeled label="Grau">
@@ -358,7 +365,7 @@ export function CelebrationEditor({ initial, submitLabel, pending, error, onSubm
         </div>
       </section>
 
-      <section className="space-y-4">
+      <section id={`${formId}-leituras`} className="scroll-mt-28 space-y-4">
         <h2 className="font-display text-lg font-semibold">Leituras</h2>
         <p className="text-sm text-muted-foreground">
           Só a referência, nunca o texto. Uma leitura só pode ser registrada se alguma fonte abaixo a confirmar; sem fonte,
@@ -398,7 +405,7 @@ export function CelebrationEditor({ initial, submitLabel, pending, error, onSubm
         })}
       </section>
 
-      <section className="space-y-4">
+      <section id={`${formId}-editorial`} className="scroll-mt-28 space-y-4">
         <h2 className="font-display text-lg font-semibold">Leitura editorial</h2>
         <p className="text-sm text-muted-foreground">
           Interpretação do Repertório Santa Cecília, mostrada como tal. Não vem das fontes.
@@ -423,7 +430,7 @@ export function CelebrationEditor({ initial, submitLabel, pending, error, onSubm
         </Labeled>
       </section>
 
-      <section className="space-y-4">
+      <section id={`${formId}-fontes`} className="scroll-mt-28 space-y-4">
         <h2 className="font-display text-lg font-semibold">Fontes</h2>
         <p className="text-sm text-muted-foreground">
           Toda celebração precisa de ao menos uma fonte. Indique o que cada uma confirma: o que nenhuma fonte confirma aparece
@@ -443,9 +450,9 @@ export function CelebrationEditor({ initial, submitLabel, pending, error, onSubm
         </Button>
       </section>
 
-      {(localError ?? error) && <FormError message={(localError ?? error) as string} />}
-      <div className="flex flex-wrap items-center gap-3">
-        <Button type="submit" size="lg" className="h-10 px-4" disabled={pending}>
+      <div className="form-actions">
+        {(localError ?? error) && <div className="w-full"><FormError message={(localError ?? error) as string} /></div>}
+        <Button type="submit" size="lg" disabled={pending}>
           {pending ? "Salvando…" : submitLabel}
         </Button>
         {dirty && <span className="text-sm text-muted-foreground">Há alterações não salvas.</span>}

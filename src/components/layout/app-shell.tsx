@@ -34,13 +34,14 @@ export function AppShell({ children }: { children: ReactNode }) {
       <header
         data-app-chrome
         data-print-hide
-        className="sticky top-0 z-30 bg-header text-header-foreground shadow-[0_1px_0_rgb(0_0_0/0.25)] [@media(max-height:520px)]:static"
+        className="sticky top-0 z-30 border-b border-white/10 bg-header text-header-foreground shadow-sm [@media(max-height:520px)]:static"
       >
         <div className="mx-auto flex h-14 w-full max-w-[1448px] items-center gap-3 px-4 md:h-16 lg:h-[4.6rem] lg:gap-6 lg:px-6">
           <Brand />
           <span aria-hidden className="hidden h-10 w-px bg-header-foreground/20 lg:block" />
           <TopNav />
-          <HeaderSearch className="ml-auto hidden max-w-[24.5rem] min-w-[11rem] flex-1 lg:block" />
+          <HeaderSearch className="ml-auto hidden max-w-[24.5rem] min-w-[11rem] flex-1 xl:block" />
+          <ThemeToggle className="ml-auto hidden text-header-foreground hover:bg-white/10 hover:text-header-foreground lg:inline-flex xl:ml-0" />
           <AccountMenu className="ml-auto hidden md:block lg:ml-0" />
           <div className="ml-auto flex items-center gap-1 md:hidden">
             <Link
@@ -68,7 +69,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <footer
         data-app-chrome
         data-print-hide
-        className="mx-auto w-full max-w-[1448px] px-4 pb-[calc(5rem+env(safe-area-inset-bottom))] text-center text-xs text-muted-foreground md:pb-6"
+        className="mt-8 w-full border-t bg-card/40 px-4 pt-5 pb-[calc(5rem+env(safe-area-inset-bottom))] text-center text-xs leading-relaxed text-muted-foreground md:pb-6"
       >
         <LegalLinks />
         <p className="mt-2">{SANTA_CECILIA_CREDIT}</p>

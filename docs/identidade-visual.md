@@ -1,6 +1,6 @@
 # Identidade visual
 
-Redesign da Etapa 2E.4A, a partir das referências aprovadas (`referencia-01-inicio-preparar-missa.png`, `referencia-02-catalogo-leitor.png`) e do logotipo do Grupo de Canto Santa Cecília. A pasta `repertorio-redesign-referencias/`, com essas imagens, o logotipo original e o briefing, saiu do projeto depois da Etapa 2F.1 e continua no histórico do Git (commit `07e76bc`). Só a apresentação mudou: contratos HTTP, MongoDB, direitos, revisões (`If-Match`) e regras litúrgicas continuam os mesmos.
+Identidade da Etapa 2E.4A, a partir das referências aprovadas (`referencia-01-inicio-preparar-missa.png`, `referencia-02-catalogo-leitor.png`) e do logotipo do Grupo de Canto Santa Cecília, refinada em **24/11/2026**. A pasta `repertorio-redesign-referencias/`, com essas imagens, o logotipo original e o briefing, saiu do projeto depois da Etapa 2F.1 e continua no histórico do Git (commit `07e76bc`). Esta revisão visual preserva contratos HTTP, MongoDB, direitos, revisões (`If-Match`) e regras litúrgicas.
 
 ## Nome
 
@@ -20,18 +20,45 @@ Definidos em `src/app/globals.css`, com variante escura.
 
 | Token | Claro | Escuro | Uso |
 | --- | --- | --- | --- |
-| `--background` | `#f4e8d2` | `#1b1a12` | Pergaminho, com luz suave no alto |
-| `--card` | `#fff9ef` | `#25241a` | Superfícies marfim |
-| `--foreground` | `#472d1b` | `#efe3cd` | Texto |
-| `--heading` | `#4a2c19` | `#f3e2c0` | Títulos em serifa |
-| `--primary` | `#4f6126` | `#d0b96a` | Oliva: ações principais, abas ativas |
-| `--header` | `#384620` | `#13140c` | Cabeçalho e faixa do painel |
-| `--header-accent` | `#e3ad3c` | `#e3ad3c` | Dourado da lira: aba ativa e "Santa Cecília" no cabeçalho |
-| `--gold` / `--gold-strong` | `#bd8524` / `#855c12` | `#dca843` / `#e8bb55` | Ícones, divisores; o forte é legível como texto |
-| `--border` | `#e3d1b2` | `#3d3a2b` | Bordas bege suaves |
-| `--chord` | `#4c6a1f` | `#cdd68e` | Acordes |
+| `--background` | `#f7f5ee` | `#141a15` | Pergaminho claro / verde profundo |
+| `--card` | `#fffdf8` | `#1e281f` | Superfícies distintas do fundo |
+| `--foreground` | `#30352b` | `#e5eadc` | Texto principal |
+| `--heading` | `#35402b` | `#edf0e2` | Títulos em serifa |
+| `--primary` | `#465b32` | `#b8d29c` | Ações e seleção em oliva |
+| `--header` | `#2f3e25` | `#101710` | Cabeçalho e faixa do painel |
+| `--header-accent` | `#d9b46c` | `#dbb873` | Dourado da marca e seleção no cabeçalho |
+| `--gold` / `--gold-strong` | `#a77d34` / `#88631c` | `#dbb873` / `#dbb873` | Apoio e ornamentos; forte para texto |
+| `--border` | `#dce0d2` | `#394638` | Divisores e cartões |
+| `--input` | `#8b927f` | `#75826c` | Contorno dos controles |
+| `--field` | `#fffefa` | `#151e16` | Fundo opaco de campos |
+| `--muted-foreground` | `#646b5b` | `#afbaa5` | Texto secundário |
+| `--chord` | `#3e5f24` | `#c7ddad` | Acordes |
 
-Ajuste com o logotipo: o oliva puxou levemente para o verde do manto e o dourado para o da lira e da auréola, sem mudar fundos, textos e bordas. Contraste (claro): texto secundário `#6b5543` sobre o fundo ≈ 5,8:1; dourado forte sobre o fundo ≈ 4,9:1 e sobre marfim ≈ 5,7:1; oliva com texto marfim ≈ 6,5:1; dourado do cabeçalho sobre o oliva ≈ 5:1. No escuro, o dourado sobre o fundo fica em ≈ 8:1. As cores litúrgicas só tingem etiquetas e atalhos (`liturgicalTint`) e sempre vêm com o nome; o branco vira dourado claro para continuar visível.
+O oliva acompanha o manto da marca; o dourado fica como apoio. O tema escuro usa superfícies verdes e texto claro, com ações em oliva claro. Texto secundário sobre cartão: **5,44:1** no claro e **7,54:1** no escuro; botão principal: **7,37:1** e **9,91:1**. O novo contorno sobre o fundo opaco do campo mede **3,19:1** no claro e **4,20:1** no escuro. Na paleta anterior, os pares de borda/fundo da página mediam aproximadamente 1,53:1 e 1,93:1, e os controles também usavam transparência. Os valores são dos pares de tokens sólidos, não uma certificação de todos os estados. As cores litúrgicas continuam separadas da paleta de ações e sempre acompanhadas do nome.
+
+## Análise e aplicação de 24/11/2026
+
+| Área | Problema observado | Alteração aplicada |
+| --- | --- | --- |
+| Temas | Campos transparentes se confundiam com o pergaminho e bordas pouco distintas nos dois temas | Fundos próprios para campos, contornos mais definidos, superfícies e texto secundário separados |
+| Administração | Ferramentas dispersas, pouca orientação entre áreas e conteúdo estreito no desktop | Navegação própria para catálogo, liturgia, contribuições, importação e qualidade; opção ativa única; coluna lateral no desktop e faixa rolável no celular |
+| Formulários | Seções longas sem separação e salvar distante dos campos | Cartões por assunto, atalhos para seções da celebração e barra de ações visível; em telas baixas a barra volta ao fluxo normal |
+| Controles | Tamanhos e estados inconsistentes | Base de botões de 40–44px, campos e seletores de 44px, estado de foco, erro, hover e desabilitado consistentes, mantendo variantes compactas |
+| Estados editoriais | Publicada e em revisão tinham pouco destaque | Etiquetas de situação com texto e cores semânticas, além de contagem real de músicas na lista |
+| Login e cadastro | Formulários soltos, sem um contorno claro | Painéis centralizados com introdução, preservando Facebook, e-mail, validação e mensagens |
+| Navegação geral | Ícones empilhados e estado selecionado pouco evidente; tema no desktop dentro do menu | Navegação horizontal mais compacta, item ativo destacado, seletor de tema direto em telas largas e indicador na barra móvel |
+| Catálogo | Links de filtro usavam `aria-pressed`, atributo inadequado para links | `aria-current` identifica o filtro ativo; nomes e URLs continuam preservados |
+| Leitura e movimento | Foco podia se aproximar das barras fixas | Espaço de rolagem para foco e campos; respeito a movimento reduzido; paletas próprias da apresentação e papel branco mantidos |
+
+Referências utilizadas: [formulários do Primer/GitHub](https://primer.style/product/ui-patterns/forms/) para agrupamento, navegação e clareza das ações; [escala do Radix Colors](https://www.radix-ui.com/colors/docs/palette-composition/understanding-the-scale) para separar fundo, superfície, controle, hover, borda e texto; [contraste WCAG 2.2](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html) para verificar legibilidade. Foram adotados padrões de uso, mantendo ilustração, fontes e identidade do Santa Cecília.
+
+### Verificação desta revisão
+
+- **Antes:** 20 combinações de página, tema e largura. O catálogo apresentou uso inválido de `aria-pressed` nos links nos quatro cenários; corrigido para `aria-current`.
+- **Depois:** 19 páginas, em 1440px e 390px, nos temas claro e escuro: **76 cenários**, sem rolagem horizontal, erros de JavaScript ou violações detectadas pelo axe nos estados examinados. Inclui início, catálogo e música, preparação da missa, repertórios, biblioteca e leitura, login, cadastro, conta, administração de catálogo/liturgia/contribuições, importação, qualidade e privacidade.
+- **Uso real no navegador:** navegação e seção administrativa ativa em 320, 390, 768 e 1024px, além de 1440px; tema mantido após recarregar; validação da celebração com mensagem visível e foco; preenchimento preparado, navegação por âncoras e salvamento local; papel branco na impressão; apresentação clara independente do tema escuro; diálogo de exclusão aberto e cancelado.
+- **Código:** lint, TypeScript, build de produção, 1.433 testes unitários e 54 testes de integração de autenticação/calendário/consulta passaram.
+- **Ambiente:** contas, músicas, celebrações e repertórios fictícios em MongoDB local descartável. Nenhuma conta ou dado de produção foi criado, editado ou removido. Não houve commit nem deploy automático. As verificações são amostras com dados de teste, sem afirmar certificação completa de acessibilidade.
 
 Tipografia: Fraunces (serifa, tamanho óptico 72, sem as formas "suaves") para títulos, subtítulos em itálico e a letra da cifra no leitor do catálogo; Geist para a interface. Breakpoint extra `hd` (1400px) para as colunas largas das referências.
 

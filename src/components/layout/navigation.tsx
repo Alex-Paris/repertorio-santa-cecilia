@@ -77,16 +77,16 @@ function TopLinks({ pathname }: { pathname: string | null }) {
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "group relative flex h-14 min-w-16 flex-col items-center justify-center gap-0.5 rounded-lg px-3 text-[0.95rem] whitespace-nowrap transition-colors lg:h-[4.25rem] lg:min-w-[5.5rem]",
-                  active ? "text-header-foreground" : "text-header-foreground/85 hover:bg-white/5 hover:text-header-foreground",
+                  "group relative flex h-11 min-w-16 items-center justify-center gap-2 rounded-lg px-3 text-sm whitespace-nowrap transition-colors",
+                  active ? "bg-white/10 text-header-foreground" : "text-header-muted hover:bg-white/5 hover:text-header-foreground",
                 )}
               >
-                <item.icon className="size-[1.35rem] stroke-[1.5]" aria-hidden />
-                <span className="font-display font-medium">{item.label}</span>
+                <item.icon className="size-[1.1rem] stroke-[1.7]" aria-hidden />
+                <span className="font-medium">{item.label}</span>
                 <span
                   aria-hidden
                   className={cn(
-                    "absolute inset-x-3 bottom-1.5 h-0.5 rounded-full bg-header-accent transition-opacity",
+                    "absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-header-accent transition-opacity",
                     active ? "opacity-100" : "opacity-0",
                   )}
                 />
@@ -117,10 +117,10 @@ function BottomLinks({ pathname }: { pathname: string | null }) {
                 aria-current={active ? "page" : undefined}
                 className={cn(
                   "flex h-16 flex-col items-center justify-center gap-1 text-xs font-medium transition-colors [@media(max-height:520px)]:h-12 [@media(max-height:520px)]:gap-0",
-                  active ? "text-heading" : "text-muted-foreground",
+                  active ? "font-semibold text-primary" : "text-muted-foreground hover:bg-muted/60",
                 )}
               >
-                <item.icon className={cn("size-5 stroke-[1.6]", active && "text-gold-strong")} aria-hidden />
+                <span className={cn("grid h-7 w-11 place-items-center rounded-lg", active && "bg-primary/10")}><item.icon className="size-5 stroke-[1.7]" aria-hidden /></span>
                 {item.shortLabel}
               </Link>
             </li>

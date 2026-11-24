@@ -11,7 +11,7 @@ export const metadata = legalMetadata(
 
 export default function PrivacyPage() {
   return (
-    <LegalDocument title="Política de Privacidade" description="Como seus dados são usados no Santa Cecília e como exercer seus direitos.">
+    <LegalDocument title="Política de Privacidade" description="Como seus dados são usados no Santa Cecília e como exercer seus direitos." updatedAt="2026-11-24">
       <LegalSection id="responsavel" title="1. Responsável e contato">
         <p>Esta política descreve o tratamento de dados no {SITE_NAME}, um serviço de organização musical para missas e encontros. Você pode ler estas informações e solicitar atendimento sem estar conectado a uma conta.</p>
         <LegalContact subject="Solicitação de privacidade" />
@@ -55,6 +55,7 @@ export default function PrivacyPage() {
       </LegalSection>
 
       <LegalSection id="cookies" title="7. Cookies, preferências e serviços externos">
+        <p>Na administração, buscar uma liturgia por data consulta a API independente Liturgia Diária. O servidor envia somente a data escolhida; não envia nome, e-mail, cookies, sessão ou biblioteca da conta. O provedor pode receber dados técnicos da conexão do servidor. A consulta fornece metadados e referências para conferência, sem salvar ou aprovar uma celebração automaticamente.</p>
         <p>Cookies de autenticação mantêm a sessão e protegem etapas do login. Em produção, os cookies de sessão usam proteção HttpOnly, Secure e SameSite=Lax. A validade padrão da sessão é de sete dias e pode ser renovada durante o uso; sair da conta invalida a sessão correspondente no servidor. Bloquear esses cookies pode impedir o acesso às áreas privadas.</p>
         <p>Seu navegador também pode guardar tema, preferências de leitura e, em instalações antigas, uma biblioteca local ainda não importada. Sair da conta ou solicitar a exclusão no servidor não limpa automaticamente esses dados, backups exportados ou arquivos no seu dispositivo. A biblioteca antiga pode ser removida pela opção específica de importação, e preferências podem ser apagadas nas configurações do navegador.</p>
         <p>Não há scripts de publicidade comportamental ou de análise de audiência incluídos na aplicação atual. Referências de vídeo do YouTube são carregadas somente quando você pede, usando o domínio de privacidade aprimorada do YouTube. Ao carregar um vídeo ou abrir um link externo, o terceiro pode receber dados técnicos, como seu IP, e aplicar sua própria política e seus próprios cookies.</p>

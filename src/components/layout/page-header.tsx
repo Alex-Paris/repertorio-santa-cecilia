@@ -25,10 +25,10 @@ export function PageHeader({ title, description, back, actions }: PageHeaderProp
         Título e ações lado a lado só quando cabem: o título tem uma largura mínima (20rem) e, sem
         espaço, as ações descem para a linha de baixo em vez de espremer ou cobrir o título.
       */}
-      <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
         <div className="min-w-0 flex-[1_1_20rem]">
-          <h1 className="font-display text-3xl font-semibold tracking-tight text-balance md:text-4xl">{title}</h1>
-          {description && <div className="mt-1.5 text-muted-foreground">{description}</div>}
+          <h1 className="font-display text-3xl leading-tight font-semibold tracking-tight text-balance text-heading md:text-4xl">{title}</h1>
+          {description && <div className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base">{description}</div>}
         </div>
         {actions && <div className="flex max-w-full flex-wrap gap-2">{actions}</div>}
       </div>

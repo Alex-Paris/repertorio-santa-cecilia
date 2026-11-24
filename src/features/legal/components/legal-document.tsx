@@ -10,13 +10,13 @@ export function legalMetadata(title: string, description: string, path: string):
   return { title, description, alternates: { canonical: `${SITE_URL}${path}` }, robots: { index: true, follow: true } };
 }
 
-export function LegalDocument({ title, description, children }: { title: string; description: string; children: ReactNode }) {
+export function LegalDocument({ title, description, children, updatedAt = LEGAL_UPDATED_AT }: { title: string; description: string; children: ReactNode; updatedAt?: string }) {
   return (
     <>
       <PageHeader title={title} description={description} />
       <article className="space-y-8 rounded-2xl border bg-card p-5 text-base leading-relaxed shadow-sm sm:p-7 md:p-8 [&_a]:underline [&_a]:underline-offset-4 [&_a:hover]:text-primary">
         <p className="text-sm text-muted-foreground">
-          {SITE_NAME} · Atualizado em <time dateTime={LEGAL_UPDATED_AT}>22 de novembro de 2026</time>
+          {SITE_NAME} · Atualizado em <time dateTime={updatedAt}>{new Intl.DateTimeFormat("pt-BR", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${updatedAt}T00:00:00Z`))}</time>
         </p>
         {children}
       </article>

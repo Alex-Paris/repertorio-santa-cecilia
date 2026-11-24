@@ -116,7 +116,7 @@ Nada de sessão, e-mail ou dados de conta além do ID. O conteúdo por revisão 
 
 - **Lista:** busca por título e por período, filtros por situação e tempo litúrgico, paginada.
 - **Nova celebração:** formulário completo. A celebração nasce em revisão.
-- **Começar pela data:** em `/admin/liturgia/nova`, escolher uma celebração preparada e clicar em **Preencher formulário** carrega identificação, referências bíblicas, trechos estruturados e fontes. Não consulta sites externos, não grava e não aprova. Os dados continuam editáveis, e o botão **Criar celebração** usa a mesma rota administrativa, validações, proteção de duplicatas e histórico. Alterações não salvas só são substituídas após confirmação.
+- **Começar pela data:** em `/admin/liturgia/nova`, informar a data e clicar em **Buscar liturgia** consulta uma API independente. A prévia apresenta referências, fontes e campos que precisam de conferência. **Usar dados consultados** preenche o formulário. As dez opções preparadas também continuam disponíveis, sem consulta externa. Nenhum carregamento grava ou aprova. O botão **Criar celebração** usa a mesma rota administrativa, validações, proteção de duplicatas e histórico. Alterações não salvas só são substituídas após confirmação.
 - **Edição:**
   - Identificação, calendário e leituras (registrada, não conferida ou não se aplica, com trechos estruturados).
   - Leitura editorial (celebrações do vocabulário, temas e observações).
@@ -133,13 +133,15 @@ Nada de sessão, e-mail ou dados de conta além do ID. O conteúdo por revisão 
 
 ### Preenchimento pela interface
 
-O seletor da nova celebração reaproveita as nove entradas da base inicial e acrescenta **30/11/2026 — Santo André, Apóstolo**, totalizando dez opções preparadas. É uma alternativa para evitar digitação na administração em produção: não requer executar o importador nem modificar seu bloqueio para produção. A base original e seus identificadores permanecem intactos. Nada é cadastrado ao abrir a tela ou ao carregar o formulário.
+O caminho principal permite consultar a data, inclusive em outros anos: **Buscar liturgia por data → Buscar liturgia → Usar dados consultados**. Conferir o resultado e clicar em **Criar celebração**. Não é necessário pedir novas inclusões ao desenvolvedor para cada data. A fonte pode ainda não ter disponibilizado determinada missa; nesse caso, a tela informa a ausência e mantém o cadastro manual disponível.
+
+Como alternativa, **Usar uma celebração já preparada** reaproveita as nove entradas da base inicial e acrescenta **30/11/2026 — Santo André, Apóstolo**, totalizando dez opções fixas. Não requer executar o importador nem modificar seu bloqueio para produção. A base original e seus identificadores permanecem intactos. Nada é cadastrado ao abrir a tela ou ao carregar o formulário.
 
 Os dados adicionais ficam em `src/features/liturgy/data/celebration-presets.ts`. A consulta ao Vatican News em 24/11/2026 confirma título, grau, 1ª leitura (`Rm 10,9-18`) e Evangelho (`Mt 4,18-22`) de 30/11. O salmo (`Sl 18(19A),2-3.4-5`, resposta 5a) foi comparado com o Lecionário do Secretariado Nacional de Liturgia de Portugal, pp. 364–366. A fonte portuguesa confirma somente referências; não confirma calendário nem redação do Lecionário do Brasil. Cor vermelha pela regra geral da IGMR 346b, tempo e ciclo ficam como inferências a conferir. Fontes e ressalvas acompanham o preenchimento; nenhuma conferência humana ou aprovação é presumida.
 
-Para essa missa: **Administração → Liturgia → Nova celebração → 30 de novembro de 2026 — Santo André, Apóstolo → Preencher formulário**. Conferir, ajustar se necessário e clicar em **Criar celebração**. Depois de salvar, a consulta pública é `/preparar-missa?data=2026-11-30`, com o aviso de dados em revisão até a aprovação. A data é segunda-feira; o domingo dessa semana é 29/11, 1º Domingo do Advento, já incluído nas opções.
+Para o preenchimento fixo dessa missa: **Administração → Liturgia → Nova celebração → Usar uma celebração já preparada → 30 de novembro de 2026 — Santo André, Apóstolo → Preencher formulário**. Conferir, ajustar se necessário e clicar em **Criar celebração**. Depois de salvar, a consulta pública é `/preparar-missa?data=2026-11-30`, com o aviso de dados em revisão até a aprovação. A data é segunda-feira; o domingo dessa semana é 29/11, 1º Domingo do Advento, já incluído nas opções.
 
-O seletor cobre apenas essas datas específicas. Não gera leituras para outros dias ou anos e não substitui uma integração licenciada com um calendário brasileiro. Os salmos não conferidos da base original continuam não conferidos. Ao salvar, a celebração nasce em revisão; a aprovação humana continua uma ação separada.
+As opções fixas cobrem somente essas datas específicas; a consulta externa permite buscar outras. Não são geradas leituras por cálculo. Os salmos não conferidos da base original continuam não conferidos. Ao salvar, a celebração nasce em revisão; a aprovação humana continua uma ação separada.
 
 ### Importador de desenvolvimento
 
@@ -195,7 +197,7 @@ Nas linhas marcadas com "—", as leituras foram confirmadas pela USCCB, que val
 
 ## Integração automatizada: viabilidade
 
-Investigação feita entre 11 e 14/11/2026. Nenhuma fonte foi integrada.
+Investigação original feita entre 11 e 14/11/2026. A tabela abaixo registra as conclusões daquela etapa, antes da consulta de metadados implementada em 24/11/2026.
 
 | Fonte | Cobertura | Calendário do Brasil | Licença | Formato | Conclusão |
 | --- | --- | --- | --- | --- | --- |
@@ -206,7 +208,7 @@ Investigação feita entre 11 e 14/11/2026. Nenhuma fonte foi integrada.
 | Vatican News | Universal, poucos dias à frente | Parcial | Termos de reuso não verificados | HTML | Sem salmo e sem calendário nacional. |
 | USCCB | EUA | Não | Termos não verificados; bloqueou após poucas consultas | HTML | Não pode ser usada como calendário do Brasil. |
 
-**Conclusão:** nenhuma fonte confirmada reúne calendário brasileiro, leituras, cobertura e licença adequada. Por isso:
+**Conclusão daquela etapa:** nenhuma fonte confirmada reunia calendário brasileiro, leituras, cobertura e licença adequada para uma integração completa. Por isso:
 
 - A base continua editorial, com revisão humana.
 - `LiturgicalCalendarProvider` permite trocar a fonte sem mudar quem consome.
@@ -215,6 +217,20 @@ Investigação feita entre 11 e 14/11/2026. Nenhuma fonte foi integrada.
 **Próximos passos possíveis:**
 - Pedir à CNBB licença ou acesso aos dados do Diretório e da Liturgia Diária.
 - Contribuir com o calendário nacional do Brasil para a Liturgical Calendar API e, depois, usá-la só para datas e graus, com leituras e revisão sempre na base editorial.
+
+### Consulta por data implementada em 24/11/2026
+
+Foi integrada a **API Liturgia Diária — Dancrf**, serviço independente com [documentação pública da versão v2](https://github.com/Dancrf/liturgia-diaria/blob/main/docs/v2/README.md). A v2 é documentada como estável; a v1 tem desativação prevista e a v3 está em testes. Usa-se somente a v2, em `https://liturgia.up.railway.app/v2/?dia=DD&mes=MM&ano=AAAA`. Não há alegação de API oficial da CNBB, parceria, revisão humana ou licença para reproduzir textos litúrgicos.
+
+- **Consulta sob demanda:** `GET /api/v1/admin/liturgy/prefill?date=AAAA-MM-DD`, com sessão, papel administrativo e identidade esperada. Não existe cron, geração automática de registros ou sincronização anual. Cada data é solicitada ao serviço quando a administração clica em **Buscar liturgia**; anos futuros não dependem de uma lista no código. A disponibilidade e a correção do serviço externo não são garantidas pelo projeto.
+- **Somente metadados e referências:** o servidor recebe o JSON do provedor e descarta orações, textos, antífonas e refrões. Apenas título, cor, grau explicitamente reconhecido, citações, trechos estruturados e informações de proveniência entram na prévia e no eventual cadastro. A resposta bruta não é enviada ao navegador, registrada em log nem armazenada em cache ou banco.
+- **Validação:** a data retornada precisa corresponder exatamente à solicitada; título, cor e referências passam por validação. A URL e o host são fixos, sem redirecionamentos, cookies ou credenciais enviados ao terceiro. Prazo de 8 segundos e leitura limitada a 512 KiB. Consultas limitadas a 12 por minuto, por instância, usuário e IP, usando o mecanismo já existente do projeto.
+- **Inferências identificadas:** tempo e ciclos são calculados por regras gerais (Páscoa gregoriana, Advento e Epifania/Batismo em uso no Brasil) e não são atribuídos ao provedor como fatos confirmados. Cor e grau explícitos têm proveniência na fonte independente. Grau não reconhecido permanece vazio na prévia e exige escolha antes de preencher. Particularidades locais continuam exigindo conferência; não há precedência diocesana automática.
+- **Referências sem aproximação:** versículos descontínuos e capítulos separados são preservados. Formas ambíguas entre capítulos, mais de seis trechos ou citações fora do formato ficam não conferidas, com a referência registrada em observação para preenchimento manual. Um salmo informado só pelo número não vira o salmo inteiro: fica não conferido até definir os versículos.
+- **Alternativas e limites:** a v2 entrega uma celebração por consulta e pode trazer leituras alternativas. A prévia informa essas alternativas; o formulário começa com a primeira opção, explicitamente registrada nas observações. Missas com leituras adicionais em `extras` (como a Vigília Pascal) exigem cadastro manual, pois o modelo atual comporta quatro papéis. Não se presume cobertura de todos os formulários, missas votivas ou calendários locais.
+- **Escrita e revisão:** consultar e aplicar não salvam. A gravação usa o `POST` administrativo existente, com revisão pendente, autoria, histórico e unicidade. Não há alteração automática em uma celebração já salva ou aprovada, nem nos repertórios. As opções preparadas, com seus dados editoriais, continuam disponíveis se a fonte falhar.
+
+Verificação externa em 24/11/2026: `30/11/2026` retornou Santo André, Apóstolo, festa, cor vermelha, `Rm 10,9-18`, `Sl 18(19A)` e `Mt 4,18-22`; a falta dos versículos do salmo é sinalizada. `10/01/2027` retornou Batismo do Senhor, festa, com quatro referências. Estas consultas verificam o contrato e a disponibilidade dessas datas, sem certificar a cobertura de um ano inteiro. Testes automatizados usam respostas simuladas e MongoDB local descartável.
 
 ## Regras de recomendação nesta etapa
 
@@ -236,7 +252,7 @@ O algoritmo da Etapa 2E.2 é o mesmo. O que mudou foi a separação dos critéri
 
 ## Direitos autorais
 
-- Só metadados e referências bíblicas. O texto das leituras e dos salmos não é copiado nem baixado.
+- Só metadados e referências bíblicas são publicados e armazenados. Na consulta externa, o pacote JSON passa transitoriamente pelo servidor; textos de leituras, salmos, orações, antífonas e refrões são descartados antes da prévia e não são persistidos nem enviados ao navegador.
 - As citações transcritas da USCCB estão no formato brasileiro, com a ressalva registrada na fonte.
 - Nenhuma página é raspada automaticamente. A conferência da Etapa 2E.2 foi feita durante o desenvolvimento, uma página por vez, só para comparar referências.
 - As músicas e as celebrações de teste são fictícias e marcadas como tais.

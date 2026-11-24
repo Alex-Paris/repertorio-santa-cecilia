@@ -167,6 +167,8 @@ describe("revisão editorial", () => {
 
 describe("nova celebração", () => {
   function choosePrepared(id = "2026-11-30-santo-andre-apostolo"): void {
+    const summary = screen.getByText("Usar uma celebração já preparada");
+    if (!summary.closest("details")!.open) fireEvent.click(summary);
     fireEvent.change(screen.getByRole("combobox", { name: "Escolha uma celebração preparada" }), { target: { value: id } });
     fireEvent.click(screen.getByRole("button", { name: "Preencher formulário" }));
   }

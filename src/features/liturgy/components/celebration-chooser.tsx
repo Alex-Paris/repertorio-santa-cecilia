@@ -45,7 +45,7 @@ export function CelebrationChooser({ date, context, error }: CelebrationChooserP
       action="/preparar-missa"
       method="get"
       aria-label="Escolher a missa"
-      className="rounded-2xl border bg-card/95 p-4 shadow-[0_6px_24px_-12px_rgb(71_45_27/0.35)] md:px-5 md:py-4"
+      className="surface-panel p-4 md:px-5 md:py-4"
     >
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-x-3 gap-y-3 lg:flex lg:items-stretch lg:gap-0">
         <Fact label="Data da missa" className="lg:pr-5">
@@ -61,7 +61,7 @@ export function CelebrationChooser({ date, context, error }: CelebrationChooserP
               required
               defaultValue={date}
               aria-invalid={error ? true : undefined}
-              className="h-11 w-full rounded-lg border border-input bg-background pr-2 pl-9 text-[0.95rem] font-medium lg:w-[12.5rem]"
+              className="h-11 w-full rounded-lg border border-input bg-field pr-2 pl-9 text-base font-medium lg:w-[12.5rem]"
             />
           </div>
         </Fact>

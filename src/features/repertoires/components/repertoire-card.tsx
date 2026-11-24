@@ -15,7 +15,7 @@ export function RepertoireCard({ repertoire }: { repertoire: Repertoire }) {
     <li>
       <Link
         href={`/repertorios/${repertoire.id}`}
-        className="flex items-center gap-3 rounded-xl border bg-card p-4 transition-colors hover:bg-muted"
+        className="interactive-card flex min-h-24 items-center gap-4 rounded-2xl border bg-card p-5 hover:bg-muted/50"
       >
         <div className="min-w-0 flex-1">
           <p className="font-medium text-heading">{repertoire.name}</p>

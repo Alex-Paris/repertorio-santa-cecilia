@@ -108,7 +108,7 @@ export function CatalogClassificationEditor({ api, song, onSaved }: CatalogClass
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate aria-labelledby="classificacao-liturgica" className="max-w-2xl space-y-5">
+    <form onSubmit={handleSubmit} noValidate aria-labelledby="classificacao-liturgica" className="surface-panel space-y-5 p-4 sm:p-6">
       <div>
         <h3 id="classificacao-liturgica" className="sr-only">
           Classificação litúrgica
@@ -325,7 +325,7 @@ export function CatalogReviewPanel({ api, song, onSaved }: CatalogReviewPanelPro
   }
 
   return (
-    <section aria-labelledby="revisao-classificacao" className="space-y-3 rounded-xl border p-4 text-sm">
+    <section aria-labelledby="revisao-classificacao" className="surface-panel space-y-3 p-4 text-sm sm:p-6">
       <h3 id="revisao-classificacao" className="font-medium">
         Revisão da classificação
       </h3>

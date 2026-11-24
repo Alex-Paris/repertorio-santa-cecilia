@@ -100,7 +100,7 @@ export function LiturgyAdminList({ userId }: { userId: string }) {
         </Link>
       </div>
 
-      <form onSubmit={submit} role="search" aria-label="Filtrar celebrações" className="grid gap-3 rounded-xl border p-4 sm:grid-cols-2">
+      <form onSubmit={submit} role="search" aria-label="Filtrar celebrações" className="surface-panel grid gap-4 p-4 sm:grid-cols-2 sm:p-5">
         <label className="space-y-1 text-sm font-medium sm:col-span-2">
           Título
           <Input value={filters.q} onChange={(event) => set("q", event.target.value)} className="h-10" />
@@ -150,10 +150,10 @@ export function LiturgyAdminList({ userId }: { userId: string }) {
             {result.total === 1 ? "1 celebração" : `${result.total} celebrações`}
           </p>
           {result.celebrations.length > 0 && (
-            <ul className="divide-y rounded-xl border bg-card">
+            <ul className="surface-panel divide-y">
               {result.celebrations.map((entry) => (
                 <li key={entry.celebrationId}>
-                  <Link href={`/admin/liturgia/${entry.celebrationId}`} className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3 hover:bg-muted">
+                  <Link href={`/admin/liturgia/${entry.celebrationId}`} className="flex min-h-20 flex-wrap items-center gap-x-3 gap-y-2 px-5 py-4 transition-colors hover:bg-muted/60">
                     <span className="min-w-0 flex-1">
                       <span className="block font-medium wrap-break-word">{celebrationDisplayTitle(entry)}</span>
                       <span className="block text-sm text-muted-foreground">
@@ -210,7 +210,7 @@ export function CelebrationCreateScreen({ userId }: { userId: string }) {
 
   return (
     <div className="space-y-6">
-      <CelebrationPrefill pending={pending} dirty={dirty} onApply={(initial) => {
+      <CelebrationPrefill pending={pending} dirty={dirty} loadByDate={api.prefill} onApply={(initial) => {
         setEditor((current) => ({ version: current.version + 1, initial }));
         setDirty(false);
         setError(null);
@@ -318,7 +318,7 @@ function ReviewPanel({ record, blocked, onReview }: ReviewPanelProps) {
   }
 
   return (
-    <section aria-labelledby="revisao-titulo" className="space-y-4 rounded-xl border p-4">
+    <section aria-labelledby="revisao-titulo" className="surface-panel max-w-4xl space-y-4 p-4 sm:p-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 id="revisao-titulo" className="font-display text-lg font-semibold">
           Revisão editorial
@@ -423,7 +423,7 @@ function SuggestionDiagnostics({ api, celebrationId }: { api: LiturgyAdminApi; c
   }, [api, celebrationId]);
 
   return (
-    <section aria-labelledby="diagnostico-titulo" className="space-y-3">
+    <section aria-labelledby="diagnostico-titulo" className="surface-panel max-w-4xl space-y-3 p-4 sm:p-6">
       <h2 id="diagnostico-titulo" className="font-display text-lg font-semibold">
         Sugestões do catálogo
       </h2>
@@ -558,7 +558,7 @@ export function CelebrationAdminScreen({ userId, celebrationId }: { userId: stri
         onDirtyChange={setDirty}
       />
       <SuggestionDiagnostics key={`diagnostico-${record.revision}`} api={api} celebrationId={record.id} />
-      <section aria-labelledby="historico-titulo" className="space-y-3">
+      <section aria-labelledby="historico-titulo" className="surface-panel max-w-4xl space-y-3 p-4 sm:p-6">
         <h2 id="historico-titulo" className="font-display text-lg font-semibold">
           Histórico de alterações
         </h2>

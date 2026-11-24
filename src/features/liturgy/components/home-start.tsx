@@ -15,7 +15,7 @@ import { MassExplore } from "./celebration-chooser";
 import { LiturgicalColorMark } from "./liturgical-color";
 import { SeasonTag } from "./liturgy-tags";
 
-const CARD = "rounded-2xl border bg-card/95 shadow-[0_6px_24px_-12px_rgb(71_45_27/0.35)]";
+const CARD = "surface-panel";
 
 export function massHref(entry: Pick<CelebrationSummary, "date" | "celebrationId">): string {
   return `/preparar-missa?data=${entry.date}&celebracao=${encodeURIComponent(entry.celebrationId)}`;
@@ -36,7 +36,7 @@ function OtherDate({ highlighted }: { highlighted: boolean }) {
             type="date"
             name="data"
             required
-            className="h-10 w-full rounded-lg border border-input bg-background pr-2 pl-9 text-[0.95rem] font-medium sm:w-[12.5rem]"
+            className="h-11 w-full rounded-lg border border-input bg-field pr-2 pl-9 text-base font-medium sm:w-[12.5rem]"
           />
         </div>
         <button

@@ -37,6 +37,12 @@ const STATUS_LABELS: Record<CatalogStatus, string> = {
   unpublished: "Despublicada",
 };
 
+const STATUS_TONES: Record<CatalogStatus, string> = {
+  draft: "border-warning/25 bg-warning/8 text-warning",
+  published: "border-success/25 bg-success/8 text-success",
+  unpublished: "border-border bg-muted text-muted-foreground",
+};
+
 const CONFLICT_MESSAGE =
   "Esta música foi alterada por outra pessoa da administração. Recarregue a página antes de continuar.";
 
@@ -66,7 +72,7 @@ export function CatalogAdminList({ userId }: { userId: string }) {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-end justify-between gap-2">
+      <div className="surface-panel flex flex-wrap items-end justify-between gap-4 p-4 sm:p-5">
         <div className="space-y-1">
           <label htmlFor="admin-status" className="block text-sm font-medium">
             Situação
@@ -80,17 +86,6 @@ export function CatalogAdminList({ userId }: { userId: string }) {
             ))}
           </NativeSelect>
         </div>
-        <div className="flex flex-wrap gap-x-4 gap-y-1">
-          <Link href="/admin/catalogo/qualidade" className="text-sm font-medium underline underline-offset-3">
-            Qualidade da classificação
-          </Link>
-          <Link href="/admin/catalogo/importar" className="text-sm font-medium underline underline-offset-3">
-            Importar metadados
-          </Link>
-          <Link href="/admin/contribuicoes" className="text-sm font-medium underline underline-offset-3">
-            Contribuições
-          </Link>
-        </div>
         <Link href="/admin/catalogo/nova" className={cn(buttonVariants({ size: "lg" }))}>
           <Plus data-icon="inline-start" aria-hidden />
           Nova música
@@ -98,17 +93,18 @@ export function CatalogAdminList({ userId }: { userId: string }) {
       </div>
       {error && <FormError message={error} />}
       {!songs && !error && <ContentSkeleton />}
+      {songs && <p role="status" className="text-sm text-muted-foreground">{songs.length === 1 ? "1 música" : `${songs.length} músicas`}</p>}
       {songs && songs.length === 0 && <p className="text-sm text-muted-foreground">Nenhuma música nesta situação.</p>}
       {songs && songs.length > 0 && (
-        <ul className="divide-y rounded-xl border bg-card">
+        <ul className="surface-panel divide-y">
           {songs.map((song) => (
             <li key={song.id}>
-              <Link href={`/admin/catalogo/${song.id}`} className="flex items-center gap-3 px-4 py-3 hover:bg-muted">
+              <Link href={`/admin/catalogo/${song.id}`} className="flex min-h-20 items-center gap-3 px-5 py-4 transition-colors hover:bg-muted/60">
                 <span className="min-w-0 flex-1">
                   <span className="block truncate font-medium">{song.title}</span>
                   <span className="block truncate text-sm text-muted-foreground">{song.artist}</span>
                 </span>
-                <span className="text-xs text-muted-foreground">{STATUS_LABELS[song.status]}</span>
+                <span className={cn("shrink-0 rounded-full border px-2.5 py-1 text-xs font-medium", STATUS_TONES[song.status])}>{STATUS_LABELS[song.status]}</span>
               </Link>
             </li>
           ))}
@@ -343,7 +339,7 @@ export function CatalogSongEditor({ userId, songId }: { userId: string; songId?:
     );
 
   return (
-    <div className="max-w-2xl space-y-8">
+    <div className="max-w-4xl space-y-6">
       <Steps available={song !== null} />
 
       {song && (
@@ -359,7 +355,7 @@ export function CatalogSongEditor({ userId, songId }: { userId: string; songId?:
         </p>
       )}
 
-      <form onSubmit={handleSubmit} noValidate aria-label="Dados da música" className="space-y-8">
+      <form onSubmit={handleSubmit} noValidate aria-label="Dados da música" className="admin-editor">
         <section className="space-y-4">
           <SectionTitle id="identificacao" hint="Só o título é obrigatório para criar o rascunho. O que a fonte não confirma fica em branco.">
             A. Identificação
@@ -541,9 +537,9 @@ export function CatalogSongEditor({ userId, songId }: { userId: string; songId?:
           )}
         </fieldset>
 
-        {error && <FormError message={error} />}
-        <div className="flex flex-wrap gap-2">
-          <Button type="submit" size="lg" className="h-10 px-4" disabled={pending}>
+        <div className="form-actions">
+          {error && <div className="w-full"><FormError message={error} /></div>}
+          <Button type="submit" size="lg" disabled={pending}>
             {song ? "Salvar alterações" : "Criar rascunho"}
           </Button>
           <Link href="/admin/catalogo" className={cn(buttonVariants({ variant: "ghost", size: "lg" }), "h-10 px-4")}>

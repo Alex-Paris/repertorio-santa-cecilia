@@ -13,6 +13,7 @@ import {
 } from "../domain/calendar";
 import { celebrationInputSchema, type CelebrationInput, type CelebrationRecord } from "../domain/celebration-record";
 import type { ReviewRequest } from "../domain/review";
+import { liturgyPrefillSchema } from "../domain/prefill";
 import { DISCARD_RULE_LABELS, type MomentDiagnosis } from "../domain/recommendation";
 import { LITURGICAL_COLORS, LITURGICAL_MOMENT_IDS, LITURGICAL_SEASON_IDS } from "../domain/vocabulary";
 
@@ -81,6 +82,8 @@ export function createLiturgyAdminApi(userId: string) {
   const path = (id: string) => `/celebrations/${encodeURIComponent(id)}`;
 
   return {
+    prefill: (date: string, signal?: AbortSignal) =>
+      api.request(`/prefill?date=${encodeURIComponent(date)}`, liturgyPrefillSchema, { signal }),
     list: async (query: Partial<CelebrationQuery>) => {
       const params = new URLSearchParams();
       for (const [key, value] of Object.entries(query)) {

@@ -38,7 +38,7 @@ export function CelebrationDateForm({ date, error, label = "Data da celebração
           required
           defaultValue={date}
           aria-invalid={error ? true : undefined}
-          className="h-11 w-auto min-w-44 flex-1 bg-background sm:flex-none"
+          className="h-11 w-auto min-w-44 flex-1 bg-field sm:flex-none"
         />
         <button type="submit" className={cn(buttonVariants({ size: "lg" }), "h-11 px-5")}>
           Ver celebração
@@ -50,15 +50,15 @@ export function CelebrationDateForm({ date, error, label = "Data da celebração
 }
 
 const STATUS_TONE: Record<ReviewStatus, string> = {
-  reviewed: "border-primary/40 text-primary",
-  pending_review: "border-accent/60",
-  needs_update: "border-accent/60",
-  disputed: "border-destructive/50 text-destructive",
+  reviewed: "border-success/30 bg-success/8 text-success",
+  pending_review: "border-warning/30 bg-warning/8 text-warning",
+  needs_update: "border-info/30 bg-info/8 text-info",
+  disputed: "border-destructive/30 bg-destructive/8 text-destructive",
 };
 
 export function ReviewStatusBadge({ status }: { status: ReviewStatus }) {
   return (
-    <span className={cn("inline-flex rounded-full border px-2 py-0.5 text-xs font-medium", STATUS_TONE[status])}>
+    <span className={cn("inline-flex shrink-0 rounded-full border px-2.5 py-1 text-xs font-medium", STATUS_TONE[status])}>
       {REVIEW_STATUS_LABELS[status]}
     </span>
   );

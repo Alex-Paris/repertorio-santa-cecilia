@@ -70,7 +70,7 @@ describe("endereço do catálogo", () => {
       />,
     );
     const active = screen.getByRole("link", { name: "Retirar o filtro Quaresma" });
-    expect(active.getAttribute("aria-pressed")).toBe("true");
+    expect(active.getAttribute("aria-current")).toBe("true");
     expect(active.getAttribute("href")).toBe("/catalogo?q=p%C3%A3o&repertorio=rep-1");
     expect(screen.getByRole("link", { name: "Filtrar por Comunhão" }).getAttribute("href")).toBe(
       "/catalogo?q=p%C3%A3o&momento=comunhao&tempo=quaresma&repertorio=rep-1",
