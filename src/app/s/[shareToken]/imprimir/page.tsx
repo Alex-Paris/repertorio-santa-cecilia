@@ -1,13 +1,13 @@
 import { connection } from "next/server";
 
 import { SharePrintScreen } from "@/features/printing/components/print-screens";
-import { parsePrintFormat } from "@/features/printing/domain/print-model";
+import { parsePrintFormat, parseSemitones } from "@/features/printing/domain/print-model";
 import { ShareTemporarilyUnavailable, ShareUnavailable } from "@/features/sharing/components/share-unavailable";
 import { loadPublicShare } from "@/server/sharing/public-share-reader";
 
 interface PageProps {
   params: Promise<{ shareToken: string }>;
-  searchParams: Promise<{ formato?: string | string[] }>;
+  searchParams: Promise<{ formato?: string | string[]; item?: string | string[]; tom?: string | string[] }>;
 }
 
 /**
@@ -21,7 +21,9 @@ export default async function SharePrintPage({ params, searchParams }: PageProps
 
   switch (result.status) {
     case "ready":
-      return <SharePrintScreen token={shareToken} share={result.share} initialFormat={parsePrintFormat(query.formato, "lyrics")} />;
+      if (query.item !== undefined && (typeof query.item !== "string" || !result.share.items.some((item) => item.id === query.item))) return <ShareUnavailable />;
+      return <SharePrintScreen token={shareToken} share={result.share} itemId={typeof query.item === "string" ? query.item : undefined}
+        semitones={query.tom === undefined ? undefined : parseSemitones(query.tom)} initialFormat={parsePrintFormat(query.formato, "lyrics")} />;
     case "unavailable":
       return <ShareUnavailable />;
     case "failed":

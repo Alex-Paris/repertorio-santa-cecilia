@@ -20,7 +20,7 @@ import type { CatalogSongInputData, IsoDateTime, MusicalSong, Revision } from "@
 import { catalogSongDataSchema, entityIdSchema, revisionSchema } from "@/features/songs/domain/song-schema";
 import { isValidIsoDate } from "@/features/liturgy/domain/calendar";
 import { isSafeExternalUrl } from "@/lib/utils/is-safe-external-url";
-import { catalogVideoInputSchema, videoStartSecondsSchema, type CatalogVideoInput } from "./catalog-video";
+import { catalogVideoInputSchema, publicVideoReferenceSchema as publicVideoSchema, videoStartSecondsSchema, type CatalogVideoInput } from "./catalog-video";
 
 export const CATALOG_STATUSES = ["draft", "published", "unpublished"] as const;
 export type CatalogStatus = (typeof CATALOG_STATUSES)[number];
@@ -240,13 +240,6 @@ const musicalFields = {
   artist: z.string().max(300),
   originalKey: z.enum(MUSICAL_KEYS),
 };
-
-const publicVideoSchema = z.strictObject({
-  provider: z.literal("youtube"),
-  videoId: z.string().regex(/^[A-Za-z0-9_-]{11}$/),
-  title: z.string().max(200).optional(),
-  startSeconds: videoStartSecondsSchema.optional(),
-});
 
 const publicDetails = {
   compositionReference: z.string().max(300).optional(),

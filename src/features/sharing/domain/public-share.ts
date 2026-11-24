@@ -1,9 +1,12 @@
 import { z } from "zod";
 
+import { publicVideoReferenceSchema } from "@/features/catalog/domain/catalog-video";
+
 import { isValidIsoDate } from "@/features/liturgy/domain/calendar";
 import { LITURGICAL_MOMENT_IDS, type LiturgicalMomentId } from "@/features/liturgy/domain/vocabulary";
 import { MUSICAL_KEYS, type MusicalKey } from "@/features/songs/domain/musical-key";
 import { entityIdSchema } from "@/features/songs/domain/song-schema";
+import type { YouTubeReference } from "@/features/songs/domain/video-reference";
 import { isSafeExternalUrl } from "@/lib/utils/is-safe-external-url";
 
 /** Versão do texto que o proprietário confirma. Mudar o texto exige mudar a versão. */
@@ -31,6 +34,8 @@ export interface PublicShareItem {
   content: PublicShareContent;
   /** Momento da missa em que a música entra, quando o repertório é de uma celebração. */
   moment?: LiturgicalMomentId;
+  /** Referência pública atual do catálogo, resolvida na leitura inclusive para links antigos. */
+  video?: YouTubeReference;
 }
 
 /** Celebração a que o repertório se destina. A data só entra se o proprietário escolher. */
@@ -66,6 +71,7 @@ const publicShareItemSchema: z.ZodType<PublicShareItem> = z.strictObject({
   transposeSemitones: z.number().int().min(-11).max(11),
   content: contentSchema,
   moment: z.enum(LITURGICAL_MOMENT_IDS).optional(),
+  video: publicVideoReferenceSchema.optional(),
 });
 
 /** `strictObject` em todos os níveis: um campo inesperado invalida a publicação inteira. */

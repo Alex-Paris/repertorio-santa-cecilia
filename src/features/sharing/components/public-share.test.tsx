@@ -25,6 +25,7 @@ const share: PublicShareSnapshot = {
       originalKey: "G",
       transposeSemitones: 2,
       content: { kind: "chordpro", chordPro: "[G]Primeira linha" },
+      video: { provider: "youtube", videoId: "abcdefghijk", startSeconds: 45 },
     },
     {
       id: id("b"),
@@ -86,8 +87,8 @@ describe("página pública do repertório", () => {
     expect(within(screen.getAllByRole("listitem")[0]).getByText("A")).toBeDefined();
   });
 
-  it("indica quais cifras estão disponíveis", () => {
-    expect(screen.getByText("Cifra incluída")).toBeDefined();
+  it("não repete Cifra incluída na lista", () => {
+    expect(screen.queryByText("Cifra incluída")).toBeNull();
     expect(screen.getByText("Sem cifra")).toBeDefined();
   });
 
@@ -100,20 +101,42 @@ describe("página pública do repertório", () => {
   });
 
   it("oferece copiar sem controles de edição do original e sem consultar a conta na leitura", () => {
-    expect(screen.getAllByRole("button").map((button) => button.textContent)).toEqual(["Imprimir", "Copiar para meus repertórios"]);
+    expect(screen.getAllByRole("button").map((button) => button.textContent)).toEqual(["Imprimir", "Mais"]);
+    expect(screen.queryByRole("button", { name: "Copiar para meus repertórios" })).toBeNull();
+    expect(screen.queryByRole("region", { name: "Guardar uma cópia" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Mais ações do repertório" }));
+    expect(screen.getByRole("button", { name: "Copiar para meus repertórios" })).toBeDefined();
     expect(fetchSpy).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", { name: "Imprimir" }));
 
     for (const link of screen.getAllByRole("link")) {
       const href = link.getAttribute("href") ?? "";
       expect(
-        href.startsWith(`/s/${TOKEN}/musicas/`) || href.startsWith(`/s/${TOKEN}/imprimir?`) || href.startsWith("https://example.com"),
+        href === "/repertorios" || href.startsWith(`/s/${TOKEN}/musicas/`) || href.startsWith(`/s/${TOKEN}/imprimir?`) || href.startsWith("https://example.com"),
       ).toBe(true);
     }
   });
 });
 
 describe("leitor público", () => {
+  it("usa a barra compacta e o painel do repertório, com vídeo que abre em um clique", () => {
+    openSong(id("a"));
+    expect(screen.getByRole("group", { name: "Controles da cifra" })).toBeDefined();
+    expect(screen.getByRole("complementary", { name: "Leitura no repertório" })).toBeDefined();
+    expect(document.querySelector("iframe")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Vídeo" }));
+    expect(screen.getByTitle("Referência em vídeo: Com Cifra").getAttribute("src")).toContain("start=45&autoplay=1");
+    expect(screen.queryByRole("button", { name: /Carregar vídeo/ })).toBeNull();
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it("imprime somente a música aberta e mantém o tom temporário escolhido", () => {
+    openSong(id("a"));
+    fireEvent.click(screen.getByRole("button", { name: "Aumentar um semitom" }));
+    fireEvent.click(screen.getByRole("button", { name: "Imprimir" }));
+    expect(screen.getByRole("link", { name: "Com cifra" }).getAttribute("href")).toBe(`/s/${TOKEN}/imprimir?formato=cifras&item=${id("a")}&tom=3`);
+  });
+
   it("exibe a cifra no tom publicado", () => {
     openSong(id("a"));
 
@@ -151,7 +174,7 @@ describe("leitor público", () => {
   it("volta para a página do repertório publicado", () => {
     openSong(id("a"));
 
-    expect(screen.getByRole("link", { name: "Show Público" }).getAttribute("href")).toBe(`/s/${TOKEN}`);
+    for (const link of screen.getAllByRole("link", { name: "Show Público" })) expect(link.getAttribute("href")).toBe(`/s/${TOKEN}`);
   });
 
   it("navega entre as músicas publicadas", () => {

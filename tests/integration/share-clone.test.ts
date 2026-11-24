@@ -3,9 +3,11 @@ import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from "vites
 import * as cloneRoute from "@/app/api/v1/library/shares/clone/route";
 import * as publicRoute from "@/app/api/v1/public/shares/[token]/route";
 import { RIGHTS_DECLARATION_VERSION, type ShareSelection, type ShareSummary } from "@/features/sharing/domain/public-share";
+import type { CatalogSongInput } from "@/features/catalog/domain/catalog-song";
 import { createCatalogAdminService } from "@/server/catalog/catalog-service";
 import { CatalogSongModel } from "@/server/database/models/catalog-song-model";
 import { RepertoireModel } from "@/server/database/models/repertoire-model";
+import { RepertoireShareModel } from "@/server/database/models/repertoire-share-model";
 import { SongModel } from "@/server/database/models/song-model";
 import { resetRateLimitsForTests } from "@/server/http/rate-limit";
 import { createLibraryService, type LibraryService } from "@/server/library/library-service";
@@ -175,5 +177,31 @@ describe("leitura pública e cópia para outra conta", () => {
     const reduced = await partial.json();
     expect(reduced.skippedItems).toBe(1);
     expect(reduced.repertoire.items).toHaveLength(3);
+  });
+
+  it("links antigos recebem o vídeo público atual, sem republicação ou dados da aprovação", async () => {
+    const { repertoire, a } = await setup();
+    const admin = createCatalogAdminService("editor-privado");
+    const input: CatalogSongInput = { song: { title: "Canto com vídeo público", artist: "", contentType: "metadata-only" }, metadataSources: [{ title: "Fonte fictícia" }], rights: { basis: "public-metadata", evidence: "Teste fictício", displayChordPro: false, shareChordPro: false } };
+    const draft = await admin.create(input);
+    let catalog = await admin.publish(draft.id, draft.revision);
+    await latest(library).repertoires.addSong(repertoire.id, catalog.id, "catalog");
+    const share = await publish(repertoire.id, [a.id]);
+    const before = await RepertoireShareModel.findOne({ id: share.id }).lean();
+    catalog = await admin.update(catalog.id, { ...input, video: { url: "https://youtu.be/abcdefghijk", title: "Ensaio", startSeconds: 45 } }, catalog.revision);
+    const opened = await open(tokenOf(share));
+    expect(opened.status).toBe(200);
+    const { share: current } = await opened.json();
+    expect(current.items.at(-1).video).toEqual({ provider: "youtube", videoId: "abcdefghijk", title: "Ensaio", startSeconds: 45 });
+    expect(JSON.stringify(current)).not.toMatch(/editor-privado|approvedBy|approvedAt|submissionId|ANOTAÇÃO PRIVADA/);
+    expect((await RepertoireShareModel.findOne({ id: share.id }).lean())?.snapshot).toEqual(before?.snapshot);
+    const copied = await clone(tokenOf(share));
+    expect(copied.status).toBe(201);
+    expect((await copied.json()).repertoire.items.at(-1)).toMatchObject({ songId: catalog.id, source: "catalog" });
+    catalog = await admin.update(catalog.id, { ...input, video: null }, catalog.revision);
+    expect((await (await open(tokenOf(share))).json()).share.items.at(-1)).not.toHaveProperty("video");
+    catalog = await admin.update(catalog.id, { ...input, video: { url: "https://youtu.be/abcdefghijk", startSeconds: 90 } }, catalog.revision);
+    await admin.unpublish(catalog.id, catalog.revision);
+    expect((await (await open(tokenOf(share))).json()).share.items.at(-1)).not.toHaveProperty("video");
   });
 });

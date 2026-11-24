@@ -7,7 +7,9 @@ import {
   type PublicShareSnapshot,
 } from "@/features/sharing/domain/public-share";
 import { canShareChordPro } from "@/features/catalog/domain/catalog-song";
-import { CatalogSongModel } from "@/server/database/models/catalog-song-model";
+import { publicVideoReferenceSchema } from "@/features/catalog/domain/catalog-video";
+import { CatalogSongModel, type CatalogSongDocument } from "@/server/database/models/catalog-song-model";
+import type { YouTubeReference } from "@/features/songs/domain/video-reference";
 import {
   RepertoireShareModel,
   type ShareSourceDocument,
@@ -16,6 +18,8 @@ import { runPersistence } from "@/server/repositories/persistence";
 
 import { getSharingConfig } from "./share-config";
 import { parseShareToken, verifyShareSignature } from "./share-token";
+
+type CurrentCatalogReference = Pick<CatalogSongDocument, "id" | "status" | "contentType" | "rights"> & { video?: YouTubeReference };
 
 /**
  * Um snapshot não autoriza distribuição perpétua: a cada leitura, músicas do catálogo que
@@ -36,8 +40,8 @@ async function withCurrentCatalogRights(
   const documents = await runPersistence(() =>
     CatalogSongModel.find(
       { id: { $in: [...new Set(catalogItemIds.values())] } },
-      { _id: 0, id: 1, status: 1, contentType: 1, rights: 1 },
-    ).session(session ?? null).lean(),
+      { _id: 0, id: 1, status: 1, contentType: 1, rights: 1, "video.provider": 1, "video.videoId": 1, "video.title": 1, "video.startSeconds": 1 },
+    ).session(session ?? null).lean<CurrentCatalogReference[]>(),
   );
   const current = new Map(documents.map((document) => [document.id, document]));
 
@@ -49,14 +53,23 @@ async function withCurrentCatalogRights(
         return item;
       }
       const song = current.get(songId);
+      const publicItem = { ...item };
+      delete publicItem.video;
       const allowed =
         song?.status === "published" &&
         (item.content.kind !== "chordpro" || canShareChordPro(song));
       if (allowed && item.content.kind === "external-link" && song.rights?.linkExternalSource === false) {
         // A permissão de mostrar o link foi retirada depois da publicação: fica só a identificação.
-        return { ...item, content: { kind: "none" as const } };
+        publicItem.content = { kind: "none" };
+      } else if (!allowed && item.content.kind !== "none") {
+        publicItem.content = { kind: "unavailable" };
       }
-      return allowed || item.content.kind === "none" ? item : { ...item, content: { kind: "unavailable" } };
+      // O vídeo segue a referência pública atual, sem republicar snapshots nem expor a aprovação.
+      const video = publicVideoReferenceSchema.safeParse(song?.video);
+      if (song?.status === "published" && publicItem.content.kind !== "unavailable" && video.success) {
+        publicItem.video = video.data;
+      }
+      return publicItem;
     }),
   };
 }

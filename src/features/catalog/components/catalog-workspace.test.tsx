@@ -170,9 +170,9 @@ describe("música aberta no painel central", () => {
     expect(screen.queryByRole("button", { name: "Restaurar tom original" })).toBeNull();
   });
 
-  it("sem link de vídeo, só uma indicação compacta: sem player, miniatura, partitura ou PDF", () => {
+  it("sem link de vídeo, não ocupa espaço com aviso, player ou miniatura", () => {
     render(<CatalogSongDetail song={A} />);
-    expect(screen.getByText("Sem vídeo de referência")).toBeDefined();
+    expect(screen.queryByText("Sem vídeo de referência")).toBeNull();
     expect(screen.queryByRole("button", { name: /vídeo/i })).toBeNull();
     expect(document.querySelector("iframe, img[src*='ytimg']")).toBeNull();
     expect(screen.queryByText(/Partitura|PDF/)).toBeNull();
@@ -180,15 +180,12 @@ describe("música aberta no painel central", () => {
 
   it("trocar a referência fecha o player anterior e exige novo clique para carregar", () => {
     const { rerender } = render(<CatalogSongDetail song={{ ...A, video: { provider: "youtube", videoId: "abcdefghijk" } }} />);
-    fireEvent.click(screen.getByRole("button", { name: "Referência em vídeo" }));
-    fireEvent.click(screen.getByRole("button", { name: "Carregar vídeo de Canto Fictício A" }));
+    fireEvent.click(screen.getByRole("button", { name: "Vídeo" }));
     expect(document.querySelector("iframe")).not.toBeNull();
 
     rerender(<CatalogSongDetail song={{ ...A, video: { provider: "youtube", videoId: "lmnopqrstuv" } }} />);
     expect(document.querySelector("iframe")).toBeNull();
-    fireEvent.click(screen.getByRole("button", { name: "Referência em vídeo" }));
-    expect(document.querySelector("iframe")).toBeNull();
-    fireEvent.click(screen.getByRole("button", { name: "Carregar vídeo de Canto Fictício A" }));
+    fireEvent.click(screen.getByRole("button", { name: "Vídeo" }));
     expect(document.querySelector("iframe")?.src).toContain("/embed/lmnopqrstuv");
   });
 });

@@ -405,27 +405,24 @@ describe("vídeo aprovado e crédito no catálogo", () => {
     expect(screen.getByText("Enviado por:").textContent).toContain("Grupo Santa Cecília");
     expect(document.querySelector("iframe")).toBeNull();
 
-    fireEvent.click(screen.getByRole("button", { name: "Referência em vídeo" }));
-    const panel = screen.getByRole("complementary", { name: "Referência em vídeo" });
-    expect(document.querySelector("iframe")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Vídeo" }));
+    const panel = screen.getByRole("complementary", { name: "Vídeo" });
     const external = within(panel).getByRole("link", { name: /Abrir no YouTube/ });
     expect(external.getAttribute("href")).toBe("https://www.youtube.com/watch?v=abcdefghijk");
     expect(external.getAttribute("rel")).toContain("noopener");
 
-    fireEvent.click(within(panel).getByRole("button", { name: /Carregar vídeo/ }));
     const iframe = document.querySelector("iframe")!;
-    expect(iframe.getAttribute("src")).toBe("https://www.youtube-nocookie.com/embed/abcdefghijk?rel=0");
-    expect(iframe.getAttribute("src")).not.toContain("autoplay");
+    expect(iframe.getAttribute("src")).toContain("https://www.youtube-nocookie.com/embed/abcdefghijk?rel=0&autoplay=1");
   });
 
-  it("sem crédito nem vídeo, só a indicação compacta", () => {
+  it("sem crédito nem vídeo, não cria avisos extras", () => {
     render(<CatalogSongScreen song={toCatalogSongView({ ...song, video: undefined, contributions: undefined })} />);
     expect(screen.queryByText("Enviado por:")).toBeNull();
-    expect(screen.getByText("Sem vídeo de referência")).toBeDefined();
+    expect(screen.queryByText("Sem vídeo de referência")).toBeNull();
   });
 
   it("identificador malformado não vira player", () => {
     render(<VideoReference title="Canto" videoId={'abc"><script>'} />);
-    expect(screen.getByText("Sem vídeo de referência")).toBeDefined();
+    expect(screen.queryByRole("button", { name: "Vídeo" })).toBeNull();
   });
 });

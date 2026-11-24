@@ -114,37 +114,36 @@ describe("ouvir nos cartões", () => {
 });
 
 describe("referência em vídeo", () => {
-  it("com link válido, abre um painel ao lado; o player só é carregado depois do pedido", () => {
+  it("o botão Vídeo abre e solicita a reprodução em um único clique", () => {
     render(<VideoReference title="Canto Fictício" url="https://youtu.be/abcdefghijk" />);
-    const toggle = screen.getByRole("button", { name: "Referência em vídeo" });
+    const toggle = screen.getByRole("button", { name: "Vídeo" });
     expect(toggle.getAttribute("aria-expanded")).toBe("false");
     expect(document.querySelector("iframe")).toBeNull();
 
     fireEvent.click(toggle);
-    const panel = screen.getByRole("complementary", { name: "Referência em vídeo" });
-    expect(document.activeElement).toBe(screen.getByRole("button", { name: "Fechar referência em vídeo" }));
-    expect(document.querySelector("iframe")).toBeNull();
+    const panel = screen.getByRole("complementary", { name: "Vídeo" });
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: "Fechar vídeo" }));
 
-    fireEvent.click(screen.getByRole("button", { name: "Carregar vídeo de Canto Fictício" }));
     const frame = screen.getByTitle("Referência em vídeo: Canto Fictício");
     expect(panel.contains(frame)).toBe(true);
-    expect(frame.getAttribute("src")).toBe("https://www.youtube-nocookie.com/embed/abcdefghijk?rel=0");
-    expect(frame.getAttribute("allow")).not.toContain("autoplay");
+    expect(frame.getAttribute("src")).toContain("https://www.youtube-nocookie.com/embed/abcdefghijk?rel=0&autoplay=1");
+    expect(frame.getAttribute("allow")).toContain("autoplay");
+    expect(screen.queryByRole("button", { name: /Carregar vídeo/ })).toBeNull();
   });
 
   it("o painel fecha com Esc e devolve o foco ao botão", () => {
     render(<VideoReference title="Canto Fictício" url="https://youtu.be/abcdefghijk" />);
-    const toggle = screen.getByRole("button", { name: "Referência em vídeo" });
+    const toggle = screen.getByRole("button", { name: "Vídeo" });
     fireEvent.click(toggle);
     fireEvent.keyDown(document, { key: "Escape" });
-    expect(screen.queryByRole("complementary", { name: "Referência em vídeo" })).toBeNull();
+    expect(screen.queryByRole("complementary", { name: "Vídeo" })).toBeNull();
     expect(document.activeElement).toBe(toggle);
   });
 
-  it("sem link válido, só a indicação compacta: nenhum botão nem player", () => {
+  it("sem link válido, não ocupa espaço com aviso, botão ou player", () => {
     render(<VideoReference title="Canto Fictício" url="https://exemplo.test/video" />);
     expect(screen.queryByRole("button")).toBeNull();
-    expect(screen.getByText("Sem vídeo de referência")).toBeDefined();
+    expect(screen.queryByText("Sem vídeo de referência")).toBeNull();
     expect(document.querySelector("iframe")).toBeNull();
   });
 });

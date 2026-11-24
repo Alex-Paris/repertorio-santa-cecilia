@@ -7,7 +7,6 @@ import { startTransition, useState } from "react";
 
 import { EmptyState } from "@/components/layout/empty-state";
 import { MENU_ITEM_CLASS, MoreActionsMenu } from "@/components/layout/more-actions-menu";
-import { PageHeader } from "@/components/layout/page-header";
 import { PageSkeleton } from "@/components/layout/page-skeleton";
 import { Button } from "@/components/ui/button";
 import { songRepository } from "@/features/library/data/browser-library";
@@ -38,16 +37,15 @@ import { PrintMenu } from "@/features/printing/components/print-menu";
 
 import type { ReadingMode } from "../domain/reader-preferences";
 import type { MusicalSong, Song, SongId, SongSource } from "../domain/song";
-import { ChordSheet } from "./chord-sheet";
+import { ChordReader } from "./chord-reader";
 import { ContentTypeBadge } from "./content-type-badge";
 import { DeleteSongButton } from "./delete-song-button";
 import { useReaderPreferences } from "../hooks/use-reader-preferences";
 import { ExternalSourceNotice } from "./external-source-notice";
-import { KeyLabel } from "./key-label";
 import { PresentationReader, type PresentationTarget } from "./presentation-reader";
-import { FontSizeControls, ReadingModeToggle } from "./reader-controls";
+import { SongReadingHeader } from "./song-reading-header";
 import { SongNotFound } from "./song-not-found";
-import { TransposeControls } from "./transpose-controls";
+import { VideoReference } from "./video-reference";
 
 interface SongContentProps {
   song: MusicalSong;
@@ -89,32 +87,8 @@ function SongContent({
   }
 
   return (
-    <>
-      {/*
-        Uma barra só, presa sob o cabeçalho enquanto a cifra rola: cifra ou letra, tom e tamanho,
-        como no catálogo. Na letra, a transposição some; o tom continua guardado e volta na cifra.
-      */}
-      <div
-        role="group"
-        aria-label="Controles da cifra"
-        className="sticky top-14 z-10 mb-3 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border bg-card/95 px-3 py-2 backdrop-blur md:top-16 lg:top-[4.6rem] [@media(max-height:520px)]:top-0"
-      >
-        <ReadingModeToggle compact />
-        {readingMode === "chords" && (
-          <TransposeControls
-            originalKey={song.originalKey}
-            semitones={semitones}
-            onChange={onSemitonesChange}
-            hint={isPersisted ? "Ajuste salvo somente neste repertório." : "Ajuste temporário: a música não é alterada."}
-            compact
-          />
-        )}
-        <FontSizeControls fontSize={fontSize} compact />
-      </div>
-      <article className="overflow-x-auto rounded-xl border bg-card p-5 md:p-8">
-        <ChordSheet source={song.chordPro} semitones={semitones} fontSize={fontSize} mode={readingMode} />
-      </article>
-    </>
+    <ChordReader chordPro={song.chordPro} originalKey={song.originalKey} semitones={semitones} fontSize={fontSize} readingMode={readingMode}
+      adjustmentHint={isPersisted ? "Ajuste salvo somente neste repertório." : "Ajuste temporário: a música não é alterada."} onSemitonesChange={onSemitonesChange} />
   );
 }
 
@@ -159,6 +133,7 @@ function SongDetail({
   );
   const semitones = context ? itemSemitones : temporarySemitones;
   const canPresent = context !== null || (song.contentType !== "external-link" && Boolean(song.chordPro));
+  const video = source === "catalog" ? library.catalogSongs.find((candidate) => candidate.id === song.id)?.video : undefined;
   const { userId: accountId, submission } = useSongSubmission(personalSong ? song.id : null);
 
   function handleSemitonesChange(next: number): void {
@@ -202,8 +177,10 @@ function SongDetail({
   return (
     <>
       <div data-app-chrome>
-        <PageHeader
+        <SongReadingHeader
           title={song.title}
+          artist={song.artist}
+          originalKey={song.originalKey}
           back={
             context
               ? { href: `/repertorios/${context.repertoire.id}`, label: context.repertoire.name }
@@ -211,28 +188,14 @@ function SongDetail({
                 ? { href: "/catalogo", label: "Catálogo" }
                 : { href: "/biblioteca", label: "Músicas" }
           }
-          description={
-            <>
-              <p>{song.artist}</p>
-              <div className="mt-3 flex flex-wrap items-center gap-3">
-                {song.originalKey ? (
-                  <p className="flex items-baseline gap-1.5 text-sm">
-                    <span aria-hidden>Tom original</span>
-                    <KeyLabel musicalKey={song.originalKey} />
-                  </p>
-                ) : (
-                  <p className="text-sm text-muted-foreground">Tom original não informado</p>
-                )}
-                {source === "catalog" || song.contentType === "metadata-only" ? (
+          badge={source === "catalog" || song.contentType === "metadata-only" ? (
                   <span className="rounded-full border px-2 py-0.5 text-xs">Catálogo</span>
                 ) : (
                   <ContentTypeBadge contentType={song.contentType} />
                 )}
-              </div>
-            </>
-          }
           actions={
             <>
+              {video && <VideoReference key={`${song.id}:${video.videoId}:${video.startSeconds ?? 0}`} title={song.title} videoId={video.videoId} videoTitle={video.title} startSeconds={video.startSeconds} />}
               {canPresent && (
                 <Button size="lg" onClick={startPresentation}>
                   <MonitorPlay data-icon="inline-start" aria-hidden />

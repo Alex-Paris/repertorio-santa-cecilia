@@ -4,8 +4,6 @@ export interface VideoPreview {
   ownerId: string;
   videoId: string;
   startSeconds: number;
-  loaded: boolean;
-  autoplay: boolean;
 }
 
 let current: VideoPreview | null = null;
@@ -25,9 +23,6 @@ export const videoPreview = {
   getSnapshot: (): VideoPreview | null => current,
   getServerSnapshot: (): VideoPreview | null => null,
   open: (next: VideoPreview) => update(next),
-  load(ownerId: string) {
-    if (current?.ownerId === ownerId) update({ ...current, loaded: true });
-  },
   stop(ownerId: string) {
     if (current?.ownerId === ownerId) update(null);
   },

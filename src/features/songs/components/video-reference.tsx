@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "cn";
-import { ExternalLink, Film, Play, PlayCircle, Square, X } from "lucide-react";
+import { ExternalLink, Play, Square, X } from "lucide-react";
 import { useCallback, useEffect, useId, useRef, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 
@@ -26,10 +26,8 @@ interface VideoReferenceProps {
 }
 
 /**
- * Referência em vídeo, ao lado do título da cifra. Sem endereço válido, é só uma indicação de
- * uma linha: nada de miniatura nem botão de tocar falso. Com endereço, abre um painel
- * flutuante, que não tira a cifra da área principal; o player do YouTube (sem cookies) só é
- * carregado quando a pessoa pede. No cartão, o clique em ouvir também solicita reprodução.
+ * Um clique abre o player de privacidade aprimorada e solicita reprodução.
+ * Sem vídeo válido, não ocupa espaço. Nenhum recurso externo é carregado antes do clique.
  */
 export function VideoReference({ videoId, url, title, videoTitle, startSeconds, variant = "reference", className }: VideoReferenceProps) {
   // O identificador passa pela mesma validação de um endereço: nada fora do padrão chega ao iframe.
@@ -40,7 +38,7 @@ export function VideoReference({ videoId, url, title, videoTitle, startSeconds, 
   const snapshot = useSyncExternalStore(videoPreview.subscribe, videoPreview.getSnapshot, videoPreview.getServerSnapshot);
   const active = snapshot?.ownerId === ownerId ? snapshot : null;
   const open = active !== null;
-  const frameSrc = active?.loaded ? youTubeEmbedUrl(active.videoId, { startSeconds: active.startSeconds, autoplay: active.autoplay }) : undefined;
+  const frameSrc = active ? youTubeEmbedUrl(active.videoId, { startSeconds: active.startSeconds, autoplay: true }) : undefined;
   const panelId = useId();
   const headingId = useId();
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -84,15 +82,7 @@ export function VideoReference({ videoId, url, title, videoTitle, startSeconds, 
     };
   }, [open, ownerId]);
 
-  if (!id) {
-    if (variant === "play") return null;
-    return (
-      <p className={cn("inline-flex items-center gap-1.5 text-xs text-muted-foreground", className)}>
-        <Film className="size-3.5" aria-hidden />
-        Sem vídeo de referência
-      </p>
-    );
-  }
+  if (!id) return null;
 
   return (
     <>
@@ -108,12 +98,12 @@ export function VideoReference({ videoId, url, title, videoTitle, startSeconds, 
         aria-controls={panelId}
         onClick={() => {
           if (open) videoPreview.stop(ownerId);
-          else videoPreview.open({ ownerId, videoId: id, startSeconds: start, loaded: variant === "play", autoplay: variant === "play" });
+          else videoPreview.open({ ownerId, videoId: id, startSeconds: start });
         }}
       >
         {variant === "play"
           ? open ? <Square className="size-4 fill-current" aria-hidden /> : <Play className="size-4 fill-current" aria-hidden />
-          : <><Film data-icon="inline-start" aria-hidden />Referência em vídeo</>}
+          : <>{open ? <Square data-icon="inline-start" aria-hidden /> : <Play data-icon="inline-start" aria-hidden />}Vídeo</>}
       </Button>
       {open && createPortal(
         <aside
@@ -124,7 +114,7 @@ export function VideoReference({ videoId, url, title, videoTitle, startSeconds, 
         >
           <div className="flex items-center gap-2">
             <h2 id={headingId} className="flex-1 font-display text-base font-semibold text-heading">
-              Referência em vídeo
+              Vídeo
             </h2>
             <Button
               ref={closeRef}
@@ -132,7 +122,7 @@ export function VideoReference({ videoId, url, title, videoTitle, startSeconds, 
               variant="ghost"
               size="icon-lg"
               className="size-9"
-              aria-label="Fechar referência em vídeo"
+              aria-label="Fechar vídeo"
               onClick={() => {
                 videoPreview.stop(ownerId);
                 toggleRef.current?.focus();
@@ -143,36 +133,17 @@ export function VideoReference({ videoId, url, title, videoTitle, startSeconds, 
           </div>
           <p className="mt-0.5 text-sm font-medium wrap-break-word">{title}</p>
           {videoTitle && videoTitle !== title && <p className="text-xs text-muted-foreground wrap-break-word">{videoTitle}</p>}
-          {active.loaded ? (
             <div className="relative mt-2 aspect-video min-h-[202px] w-full overflow-hidden rounded-xl border bg-black">
               <iframe
                 ref={attachFrame}
                 src={frameSrc}
                 title={`Referência em vídeo: ${title}`}
                 className="absolute inset-0 size-full"
-                loading={active.autoplay ? "eager" : "lazy"}
+                loading="eager"
                 referrerPolicy="strict-origin-when-cross-origin"
-                allow={`${active.autoplay ? "autoplay; " : ""}encrypted-media; picture-in-picture; fullscreen`}
+                allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
               />
             </div>
-          ) : (
-            <div className="mt-1 space-y-2">
-              <p className="text-sm text-muted-foreground">
-                O vídeo vem do YouTube, no modo de privacidade aprimorada, e só é carregado quando você pedir. A cifra
-                continua aberta ao lado.
-              </p>
-              <Button
-                type="button"
-                variant="outline"
-                size="lg"
-                className="h-auto min-h-10 max-w-full py-2 text-left whitespace-normal"
-                onClick={() => videoPreview.load(ownerId)}
-              >
-                <PlayCircle data-icon="inline-start" aria-hidden />
-                Carregar vídeo de {title}
-              </Button>
-            </div>
-          )}
           <div className="mt-2 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs text-muted-foreground">
             <p>{active.startSeconds > 0 ? `Início em ${active.startSeconds} s` : "YouTube"}</p>
             <a
@@ -186,7 +157,7 @@ export function VideoReference({ videoId, url, title, videoTitle, startSeconds, 
               <span className="sr-only">(abre em outra aba)</span>
             </a>
           </div>
-          {active.autoplay && <p className="mt-2 text-xs text-muted-foreground">Se o som não iniciar, toque em reproduzir no vídeo.</p>}
+          <p className="mt-2 text-xs text-muted-foreground">Se o som não iniciar, toque em reproduzir no vídeo.</p>
         </aside>, document.body,
       )}
     </>

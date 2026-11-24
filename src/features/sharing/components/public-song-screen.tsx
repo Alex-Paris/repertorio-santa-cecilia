@@ -1,56 +1,28 @@
 "use client";
 
-import { cn } from "cn";
-import { ChevronLeft, ChevronRight, FileMusic, MonitorPlay } from "lucide-react";
-import Link from "next/link";
+import { FileMusic, MonitorPlay } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { startTransition, useState } from "react";
 
 import { EmptyState } from "@/components/layout/empty-state";
-import { PageHeader } from "@/components/layout/page-header";
-import { momentLabel } from "@/features/liturgy/domain/vocabulary";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { ChordSheet } from "@/features/songs/components/chord-sheet";
+import { Button } from "@/components/ui/button";
+import { RepertoireReadingFrame } from "@/features/repertoires/components/repertoire-reading-panel";
+import { PrintMenu } from "@/features/printing/components/print-menu";
+import { ChordReader } from "@/features/songs/components/chord-reader";
 import { ExternalSourceNotice } from "@/features/songs/components/external-source-notice";
-import { KeyLabel } from "@/features/songs/components/key-label";
 import { PresentationStage } from "@/features/songs/components/presentation-stage";
-import { FontSizeControls, ReadingModeToggle } from "@/features/songs/components/reader-controls";
-import { TransposeControls } from "@/features/songs/components/transpose-controls";
+import { SongReadingHeader } from "@/features/songs/components/song-reading-header";
+import { VideoReference } from "@/features/songs/components/video-reference";
 import { transposeKey } from "@/features/songs/domain/transposition";
 import { useReaderPreferences } from "@/features/songs/hooks/use-reader-preferences";
 import { useDocumentTitle } from "@/lib/utils/use-document-title";
 
 import type { PublicShareItem, PublicShareSnapshot } from "../domain/public-share";
 import { ShareUnavailable } from "./share-unavailable";
+import { SharedRepertoireMenu } from "./clone-shared-repertoire";
 
 const NO_CHORDS_MESSAGE = "A cifra desta música não foi incluída nesta publicação.";
 const UNAVAILABLE_MESSAGE = "Esta música não está mais disponível neste link.";
-
-function NeighborLink({ href, direction }: { href: string | null; direction: "previous" | "next" }) {
-  const isPrevious = direction === "previous";
-  const label = isPrevious ? "Anterior" : "Próxima";
-  const Icon = isPrevious ? ChevronLeft : ChevronRight;
-  const content = (
-    <>
-      {isPrevious && <Icon data-icon="inline-start" aria-hidden />}
-      {label}
-      {!isPrevious && <Icon data-icon="inline-end" aria-hidden />}
-    </>
-  );
-
-  if (!href) {
-    return (
-      <Button variant="outline" size="lg" disabled>
-        {content}
-      </Button>
-    );
-  }
-  return (
-    <Link href={href} className={cn(buttonVariants({ variant: "outline", size: "lg" }))}>
-      {content}
-    </Link>
-  );
-}
 
 interface PublicSongReaderProps {
   token: string;
@@ -99,33 +71,35 @@ function PublicSongReader({ token, share, item }: PublicSongReaderProps) {
     });
   }
 
-  const isExternal = item.content.kind === "external-link";
-
   return (
     <>
       <div data-app-chrome>
-        <PageHeader
+        <SongReadingHeader
           title={item.title}
+          artist={item.artist}
+          originalKey={item.originalKey}
           back={{ href: listHref, label: share.name }}
-          description={
-            <>
-              <p>{item.artist}</p>
-              {item.moment && <p className="mt-1 text-sm">Momento da missa: {momentLabel(item.moment)}</p>}
-              {!isExternal && item.originalKey && (
-                <p className="mt-3 flex items-baseline gap-1.5 text-sm">
-                  <span aria-hidden>Tom publicado</span>
-                  <KeyLabel musicalKey={transposeKey(item.originalKey, item.transposeSemitones)} />
-                </p>
-              )}
-            </>
-          }
+          badge={<span className="rounded-full border px-2 py-0.5 text-xs">Compartilhado</span>}
           actions={
+            <>
+            {item.video && <VideoReference videoId={item.video.videoId} videoTitle={item.video.title} startSeconds={item.video.startSeconds} title={item.title} />}
             <Button size="lg" onClick={() => setPresentingId(item.id)}>
               <MonitorPlay data-icon="inline-start" aria-hidden />
               Apresentar
             </Button>
+            {item.content.kind === "chordpro" && <PrintMenu options={[
+              { label: "Com cifra", href: `${listHref}/imprimir?formato=cifras&item=${item.id}&tom=${semitonesOf(item)}` },
+              { label: "Somente letra", href: `${listHref}/imprimir?formato=letras&item=${item.id}` },
+            ]} />}
+            <SharedRepertoireMenu token={token} returnHref={hrefOf(item)} />
+            </>
           }
         />
+
+        <RepertoireReadingFrame name={share.name} href={listHref}
+          moment={item.moment}
+          configuredKey={item.content.kind === "chordpro" && item.originalKey ? transposeKey(item.originalKey, item.transposeSemitones) : undefined}
+          navigation={{ position: index + 1, total: share.items.length, previousHref: previous && hrefOf(previous), nextHref: next && hrefOf(next) }} />
 
         {item.content.kind === "external-link" && (
           <ExternalSourceNotice sourceUrl={item.content.sourceUrl} />
@@ -140,35 +114,9 @@ function PublicSongReader({ token, share, item }: PublicSongReaderProps) {
         )}
 
         {item.content.kind === "chordpro" && item.originalKey && (
-          <>
-            <div className="mb-4">
-              <ReadingModeToggle />
-            </div>
-            {readingMode === "chords" && (
-              <TransposeControls
-                className="mb-4"
-                originalKey={item.originalKey}
-                semitones={semitonesOf(item)}
-                onChange={(semitones) => adjust(item, semitones)}
-                hint="Ajuste temporário: a publicação não é alterada."
-              />
-            )}
-            <div className="mb-4">
-              <FontSizeControls fontSize={fontSize} />
-            </div>
-            <article className="overflow-x-auto rounded-xl border bg-card p-5 md:p-8">
-              <ChordSheet source={item.content.chordPro} semitones={semitonesOf(item)} fontSize={fontSize} mode={readingMode} />
-            </article>
-          </>
+          <ChordReader chordPro={item.content.chordPro} originalKey={item.originalKey} semitones={semitonesOf(item)} fontSize={fontSize} readingMode={readingMode}
+            adjustmentHint="Ajuste temporário: a publicação não é alterada." onSemitonesChange={(semitones) => adjust(item, semitones)} />
         )}
-
-        <nav aria-label="Músicas publicadas" className="mt-4 flex flex-wrap items-center justify-between gap-2">
-          <NeighborLink href={previous && hrefOf(previous)} direction="previous" />
-          <span className="text-sm text-muted-foreground tabular-nums">
-            Música {index + 1} de {share.items.length}
-          </span>
-          <NeighborLink href={next && hrefOf(next)} direction="next" />
-        </nav>
       </div>
 
       {presenting && (

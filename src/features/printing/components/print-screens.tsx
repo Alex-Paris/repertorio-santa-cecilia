@@ -106,19 +106,22 @@ export function CatalogSongPrintScreen({ song, ...props }: Omit<SongPrintProps, 
 }
 
 /** Link público: só o retrato publicado; um link revogado nem chega aqui. */
-export function SharePrintScreen({ token, share, initialFormat }: { token: string; share: PublicShareSnapshot; initialFormat: PrintFormat }) {
+export function SharePrintScreen({ token, share, initialFormat, itemId, semitones }: { token: string; share: PublicShareSnapshot; initialFormat: PrintFormat; itemId?: string; semitones?: number }) {
   const [format, setFormat] = useFormat(initialFormat, "formato", true);
+  const selected = itemId ? share.items.find((item) => item.id === itemId) : undefined;
+  const printable = selected ? { ...share, items: [{ ...selected, transposeSemitones: semitones ?? selected.transposeSemitones }] } : share;
   const lines = share.mass ? [share.mass.title, share.mass.date ? formatLongDate(share.mass.date) : ""].filter(Boolean) : [];
   return (
     <PrintView
-      heading="Imprimir repertório"
-      name={share.name}
-      back={{ href: `/s/${token}`, label: share.name }}
+      heading={selected ? "Imprimir música" : "Imprimir repertório"}
+      name={selected?.title ?? share.name}
+      back={{ href: selected ? `/s/${token}/musicas/${selected.id}` : `/s/${token}`, label: selected?.title ?? share.name }}
       format={format}
-      formatLabels={REPERTOIRE_PRINT_LABELS}
+      formatLabels={selected ? SONG_PRINT_LABELS : REPERTOIRE_PRINT_LABELS}
       onFormatChange={setFormat}
-      items={buildSharePrint(share, format)}
-      header={{ title: share.name, lines }}
+      items={buildSharePrint(printable, format)}
+      single={Boolean(selected)}
+      header={{ title: selected?.title ?? share.name, lines: selected ? [selected.artist] : lines }}
     />
   );
 }

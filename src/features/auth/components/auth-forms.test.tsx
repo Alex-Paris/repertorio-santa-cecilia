@@ -49,6 +49,12 @@ describe("login", () => {
     expect(authClient.signIn.email).toHaveBeenCalledWith({ email: "ana@exemplo.test", password: "senha-123456", callbackURL: path });
   });
 
+  it("permite voltar à música compartilhada, sem aceitar outros caminhos ou parâmetros", () => {
+    const path = `/s/${"a".repeat(22)}.${"b".repeat(43)}/musicas/${"c".repeat(32)}`;
+    expect(parseAuthReturn(path)).toBe(path);
+    for (const value of [path + "/editar", path + "?retorno=https://evil.example", path.replace(/c{32}$/, "../admin"), path + "#conta"]) expect(parseAuthReturn(value)).toBeNull();
+  });
+
   it.each(["https://evil.example", "//evil.example", "/\\evil.example", "/admin/catalogo", "/s/invalido", "/s/%2F%2Fevil.example"])("recusa retorno inseguro %s", (value) => {
     expect(parseAuthReturn(value)).toBeNull();
   });
