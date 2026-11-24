@@ -98,7 +98,7 @@ A `CatalogSong` registra cada contribuição aceita em `contributions[]` (propos
 - Guarda-se só o estruturado: `{ provider: "youtube", videoId, title?, kind, ownPerformance }`. O link digitado não é guardado.
 - "Este vídeo é uma apresentação minha." é declaração; a administração marca que assistiu e que o vídeo corresponde à música (`videoVerified`) antes de publicá-lo.
 - No catálogo, `video: { provider, videoId, title? }`. O componente `VideoReference` mostra "Sem vídeo de referência" quando não há; com vídeo, "Referência em vídeo" abre um painel flutuante não modal (Esc e botão de fechar, foco de volta), sem iframe até "Carregar vídeo", no modo `youtube-nocookie.com`, sem reprodução automática, com "Abrir no YouTube" e o aviso de que um vídeo removido aparece como indisponível no próprio player. Sem áudio próprio nem download.
-- A administração também pode cadastrar a referência diretamente na música aberta em `/catalogo` ou `/catalogo/[id]`: **Adicionar vídeo do YouTube** abre link e título opcional; **Editar vídeo** permite trocar ou remover. Funciona em músicas sem cifra. A rota `PUT /api/v1/admin/catalog/songs/[id]/video` recebe `{ video: { url, title? } }` ou `{ video: null }`, exige sessão administrativa e `If-Match` e altera só o vídeo. Provedor, identificador e aprovação são definidos pelo servidor; usuários comuns continuam pelo fluxo de contribuições. Regravar o mesmo vídeo e título preserva a aprovação original; trocar o vídeo remove a associação à contribuição anterior. Não exige chave de API do YouTube nem consulta o vídeo no servidor.
+- A administração cadastra a referência em `/admin/catalogo/nova`, na etapa **B. Conteúdo**, pelos campos **Link do YouTube (opcional)** e **Título do vídeo (opcional)**. A referência é salva junto com o rascunho, inclusive em músicas sem cifra. Em `/admin/catalogo/[id]`, os mesmos campos permitem trocar o vídeo; apagar o link e salvar remove a referência. A criação e a atualização existentes aceitam `video: { url, title? }` ou `video: null`; omitir `video` na API preserva uma referência já existente. A gravação da música e do vídeo é atômica, com sessão administrativa e `If-Match` na edição. Provedor, identificador e aprovação são definidos pelo servidor; usuários comuns continuam pelo fluxo de contribuições. Regravar o mesmo vídeo e título preserva a aprovação original; trocar o vídeo remove a associação à contribuição anterior. A consulta pública apenas exibe a referência. Não exige chave de API do YouTube nem consulta o vídeo no servidor.
 
 ## Segurança e privacidade
 
@@ -160,7 +160,6 @@ Administração (`adminRoute`):
 | `/api/v1/admin/catalog/submissions/[id]/reject` | POST | Recusar com justificativa (`If-Match`) |
 | `/api/v1/admin/catalog/submissions/[id]/request-changes` | POST | Pedir correções (`If-Match`) |
 | `/api/v1/admin/catalog/songs/[id]/contribution-removal` | POST | Remover vídeo e/ou crédito (`If-Match`) |
-| `/api/v1/admin/catalog/songs/[id]/video` | PUT | Cadastrar, trocar ou remover referência do YouTube (`If-Match`) |
 
 Erros novos: `submission-not-found` (404), `submission-active` (409), `submission-limit-exceeded` e `submission-daily-limit` (429), `submission-already-reviewed` (409), `submission-duplicates` (409), `submission-content-too-large` (413). Todas as respostas são `private, no-store`.
 

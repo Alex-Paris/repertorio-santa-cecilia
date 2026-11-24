@@ -20,6 +20,7 @@ import type { CatalogSongInputData, IsoDateTime, MusicalSong, Revision } from "@
 import { catalogSongDataSchema, entityIdSchema, revisionSchema } from "@/features/songs/domain/song-schema";
 import { isValidIsoDate } from "@/features/liturgy/domain/calendar";
 import { isSafeExternalUrl } from "@/lib/utils/is-safe-external-url";
+import { catalogVideoInputSchema, type CatalogVideoInput } from "./catalog-video";
 
 export const CATALOG_STATUSES = ["draft", "published", "unpublished"] as const;
 export type CatalogStatus = (typeof CATALOG_STATUSES)[number];
@@ -218,6 +219,7 @@ const detailsFields = {
 export const catalogSongInputSchema = z.strictObject({
   song: catalogSongDataSchema,
   rights: catalogRightsInputSchema,
+  video: catalogVideoInputSchema.nullable().optional(),
   ...detailsFields,
 });
 
@@ -226,6 +228,8 @@ export type CatalogSongInput = {
   rights: z.input<typeof catalogRightsInputSchema>;
   compositionReference?: string;
   metadataSources?: CatalogMetadataSource[];
+  /** Ausente: preserva o vídeo existente. `null`: remove a referência. */
+  video?: CatalogVideoInput | null;
 };
 
 const musicalFields = {

@@ -1,7 +1,7 @@
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 
 import * as publishRoute from "@/app/api/v1/admin/catalog/songs/[id]/publish/route";
-import * as videoRoute from "@/app/api/v1/admin/catalog/songs/[id]/video/route";
+import * as songRoute from "@/app/api/v1/admin/catalog/songs/[id]/route";
 import * as songsRoute from "@/app/api/v1/admin/catalog/songs/route";
 import * as publicSongRoute from "@/app/api/v1/catalog/songs/[id]/route";
 import type { CatalogSong } from "@/features/catalog/domain/catalog-song";
@@ -14,21 +14,26 @@ let admin: TestUser;
 let musician: TestUser;
 let song: CatalogSong;
 const params = (id: string) => ({ params: Promise.resolve({ id }) });
+const INPUT = {
+  song: { title: "[TESTE] Canto sem cifra", artist: "", contentType: "metadata-only" },
+  rights: { basis: "public-metadata", evidence: "Fonte fictícia de teste.", displayChordPro: false, shareChordPro: false },
+  metadataSources: [{ title: "Fonte fictícia", url: "https://example.com/fonte" }],
+};
 
 function request(user: TestUser | null, video: unknown, revision: number | null = song.revision, origin = ORIGIN) {
-  return new Request(`${ORIGIN}/api/v1/admin/catalog/songs/${song.id}/video`, {
+  return new Request(`${ORIGIN}/api/v1/admin/catalog/songs/${song.id}`, {
     method: "PUT",
     headers: {
       "content-type": "application/json", origin,
       ...(user ? { cookie: user.cookie, "x-repertorio-expected-user": user.id } : {}),
       ...(revision === null ? {} : { "if-match": `"${revision}"` }),
     },
-    body: JSON.stringify({ video }),
+    body: JSON.stringify({ ...INPUT, ...(video === undefined ? {} : { video }) }),
   });
 }
 
 async function update(video: unknown, revision = song.revision) {
-  const response = await videoRoute.PUT(request(admin, video, revision), params(song.id));
+  const response = await songRoute.PUT(request(admin, video, revision), params(song.id));
   expect(response.status).toBe(200);
   song = (await response.json()).song;
   return response;
@@ -42,11 +47,7 @@ beforeEach(async () => {
   const response = await songsRoute.POST(new Request(`${ORIGIN}/api/v1/admin/catalog/songs`, {
     method: "POST",
     headers: { cookie: admin.cookie, origin: ORIGIN, "content-type": "application/json" },
-    body: JSON.stringify({
-      song: { title: "[TESTE] Canto sem cifra", artist: "", contentType: "metadata-only" },
-      rights: { basis: "public-metadata", evidence: "Fonte fictícia de teste.", displayChordPro: false, shareChordPro: false },
-      metadataSources: [{ title: "Fonte fictícia", url: "https://example.com/fonte" }],
-    }),
+    body: JSON.stringify(INPUT),
   }), { params: Promise.resolve({}) });
   expect(response.status).toBe(201);
   song = (await response.json()).song;
@@ -55,6 +56,18 @@ beforeEach(async () => {
 afterAll(dropTestDatabase);
 
 describe("edição de vídeo pela administração do catálogo", () => {
+  it("cria a música e o vídeo no mesmo pedido, sem exigir cifra, tom ou autoria", async () => {
+    const response = await songsRoute.POST(new Request(`${ORIGIN}/api/v1/admin/catalog/songs`, {
+      method: "POST", headers: { cookie: admin.cookie, origin: ORIGIN, "content-type": "application/json" },
+      body: JSON.stringify({ ...INPUT, video: { url: "https://youtu.be/abcdefghijk", title: "Ensaio" } }),
+    }), { params: Promise.resolve({}) });
+    expect(response.status).toBe(201);
+    const created = (await response.json()).song;
+    expect(created).toMatchObject({ revision: 1, status: "draft", video: { videoId: "abcdefghijk", title: "Ensaio", approvedBy: admin.id } });
+    expect(created).not.toHaveProperty("originalKey");
+    expect(created).not.toHaveProperty("chordPro");
+  });
+
   it("salva só o identificador e registra a aprovação sem alterar música, direitos ou classificação", async () => {
     const before = structuredClone(song);
     const response = await update({ url: "https://youtu.be/abcdefghijk?t=10", title: " Ensaio " });
@@ -104,20 +117,37 @@ describe("edição de vídeo pela administração do catálogo", () => {
       { url: "https://youtu.be/abcdefghijk", approvedBy: musician.id },
       { url: "https://youtu.be/abcdefghijk", title: "x".repeat(201) },
     ]) {
-      expect((await videoRoute.PUT(request(admin, video), params(song.id))).status).toBe(400);
+      expect((await songRoute.PUT(request(admin, video), params(song.id))).status).toBe(400);
     }
     expect((await CatalogSongModel.findOne({ id: song.id }).lean())?.revision).toBe(1);
   });
 
   it("exige sessão, papel administrativo, origem confiável e revisão atual", async () => {
     const video = { url: "https://youtu.be/abcdefghijk" };
-    expect((await videoRoute.PUT(request(null, video), params(song.id))).status).toBe(401);
-    expect((await videoRoute.PUT(request(musician, video), params(song.id))).status).toBe(403);
-    expect((await videoRoute.PUT(request(admin, video, song.revision, "https://example.com"), params(song.id))).status).toBe(403);
-    expect((await videoRoute.PUT(request(admin, video, null), params(song.id))).status).toBe(428);
+    expect((await songRoute.PUT(request(null, video), params(song.id))).status).toBe(401);
+    expect((await songRoute.PUT(request(musician, video), params(song.id))).status).toBe(403);
+    expect((await songRoute.PUT(request(admin, video, song.revision, "https://example.com"), params(song.id))).status).toBe(403);
+    expect((await songRoute.PUT(request(admin, video, null), params(song.id))).status).toBe(428);
     const staleRevision = song.revision;
     await update(video);
-    expect((await videoRoute.PUT(request(admin, null, staleRevision), params(song.id))).status).toBe(412);
+    expect((await songRoute.PUT(request(admin, null, staleRevision), params(song.id))).status).toBe(412);
     expect((await CatalogSongModel.findOne({ id: song.id }).lean())?.video?.videoId).toBe("abcdefghijk");
+  });
+
+  it("omitir o campo de vídeo em outro cliente preserva a referência existente", async () => {
+    await update({ url: "https://youtu.be/abcdefghijk" });
+    const approved = song.video;
+    await update(undefined);
+    expect(song.video).toEqual(approved);
+  });
+
+  it("um vídeo inválido recusa o cadastro inteiro, sem deixar rascunho parcial", async () => {
+    const before = await CatalogSongModel.countDocuments();
+    const response = await songsRoute.POST(new Request(`${ORIGIN}/api/v1/admin/catalog/songs`, {
+      method: "POST", headers: { cookie: admin.cookie, origin: ORIGIN, "content-type": "application/json" },
+      body: JSON.stringify({ ...INPUT, video: { url: "https://example.com/invalido" } }),
+    }), { params: Promise.resolve({}) });
+    expect(response.status).toBe(400);
+    expect(await CatalogSongModel.countDocuments()).toBe(before);
   });
 });

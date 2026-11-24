@@ -11,13 +11,14 @@ Em `/admin/catalogo/nova` (só administração). As etapas aparecem na mesma pá
 | Etapa | Campos | Obrigatório para o rascunho |
 | --- | --- | --- |
 | A. Identificação | Título, artista ou compositor, referência da composição, fontes consultadas (título, endereço, data) | Só o título |
-| B. Conteúdo | Somente metadados, link para cifra externa ou cifra própria/autorizada; tom original | Tom só para cifra ou link |
+| B. Conteúdo | Somente metadados, link para cifra externa ou cifra própria/autorizada; tom original; link do YouTube e título do vídeo | Tom só para cifra ou link de cifra; vídeo opcional |
 | C. Classificação litúrgica | Tipo de uso, momentos, tempos, restrições, celebrações e temas (pesquisáveis), referências bíblicas, fonte de orientação, justificativa | Nada; aparece depois do rascunho |
 | D. Direitos e revisão | Fundamento, evidência, permissões; conferência humana da classificação; publicação | Evidência só para publicar |
 
 - O rascunho pode ficar incompleto. O que a fonte não confirma fica em branco: artista vazio aparece como "Autoria não informada"; tom vazio, como "Tom original não informado".
 - Nenhum valor é suposto. Cifra própria e link externo exigem o tom real; sem ele, use "Somente metadados".
 - Toda gravação mantém a revisão (`If-Match`) e a verificação do papel administrativo no banco.
+- O link do YouTube é salvo com a música ao criar o rascunho e pode ser alterado em `/admin/catalogo/[id]`. Não exige cifra nem tom original. Apagar o link e salvar remove a referência; um link inválido recusa a gravação inteira. A consulta pública não oferece controles de cadastro ou edição do vídeo.
 
 ## Música sem cifra
 

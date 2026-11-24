@@ -8,7 +8,4 @@ export const catalogVideoInputSchema = z.strictObject({
   title: z.string().trim().max(200, "O título do vídeo deve ter no máximo 200 caracteres.").optional(),
 });
 
-/** `null` remove o vídeo sem alterar cifra, classificação ou direitos. */
-export const catalogVideoUpdateSchema = z.strictObject({ video: catalogVideoInputSchema.nullable() });
-
 export type CatalogVideoInput = z.infer<typeof catalogVideoInputSchema>;

@@ -2,7 +2,6 @@ import { z } from "zod";
 
 import { createLibraryApi } from "@/features/library/data/remote/library-api";
 import type { ClassificationReviewRequest, SongClassificationInput } from "@/features/liturgy/domain/classification";
-import type { CatalogVideoInput } from "../domain/catalog-video";
 
 import {
   catalogSongSchema,
@@ -27,8 +26,6 @@ export function createCatalogAdminApi(userId: string) {
       (await api.request("/songs", songResponse, { method: "POST", body: input })).song,
     update: async (id: string, input: CatalogSongInput, revision: number) =>
       (await api.request(path(id), songResponse, { method: "PUT", body: input, ifMatch: revision })).song,
-    updateVideo: async (id: string, video: CatalogVideoInput | null, revision: number) =>
-      (await api.request(`${path(id)}/video`, songResponse, { method: "PUT", body: { video }, ifMatch: revision })).song,
     publish: async (song: CatalogSong) =>
       (await api.request(`${path(song.id)}/publish`, songResponse, { method: "POST", ifMatch: song.revision })).song,
     unpublish: async (song: CatalogSong) =>

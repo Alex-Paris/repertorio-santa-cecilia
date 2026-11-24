@@ -4,7 +4,7 @@ import { cn } from "cn";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FocusEvent, type FormEvent } from "react";
 
 import { FormError } from "@/components/layout/form-error";
 import { ContentSkeleton } from "@/components/layout/page-skeleton";
@@ -16,9 +16,11 @@ import { getLibraryErrorMessage, LibraryError } from "@/features/library/domain/
 import { ChordProEditor } from "@/features/songs/components/chordpro-editor";
 import { MUSICAL_KEYS, type MusicalKey } from "@/features/songs/domain/musical-key";
 import { CONTENT_TYPE_LABELS } from "@/features/songs/domain/song";
+import { youTubeWatchUrl } from "@/features/songs/domain/video-reference";
 import { showToast } from "@/lib/utils/toast";
 
 import { createCatalogAdminApi } from "../data/catalog-admin-api";
+import { catalogVideoInputSchema } from "../domain/catalog-video";
 import { CatalogClassificationEditor, CatalogReviewPanel } from "./catalog-classification-editor";
 import {
   CATALOG_STATUSES,
@@ -132,6 +134,8 @@ interface FormState {
   originalKey: MusicalKey | "";
   chordPro: string;
   sourceUrl: string;
+  videoUrl: string;
+  videoTitle: string;
   basis: RightsBasis;
   evidence: string;
   displayChordPro: boolean;
@@ -149,6 +153,8 @@ const EMPTY: FormState = {
   originalKey: "",
   chordPro: "",
   sourceUrl: "",
+  videoUrl: "",
+  videoTitle: "",
   basis: "public-metadata",
   evidence: "",
   displayChordPro: false,
@@ -173,6 +179,8 @@ function toFormState(song: CatalogSong): FormState {
     originalKey: song.originalKey ?? "",
     chordPro: song.contentType === "original" || song.contentType === "authorized" ? (song.chordPro ?? "") : "",
     sourceUrl: song.contentType === "external-link" ? song.sourceUrl : "",
+    videoUrl: song.video ? youTubeWatchUrl(song.video.videoId) : "",
+    videoTitle: song.video?.title ?? "",
     basis: song.rights.basis,
     evidence: song.rights.evidence,
     displayChordPro: song.rights.displayChordPro,
@@ -198,6 +206,9 @@ function toInput(state: FormState): CatalogSongInput {
           };
   return {
     song,
+    video: state.videoUrl.trim()
+      ? { url: state.videoUrl.trim(), ...(state.videoTitle.trim() ? { title: state.videoTitle.trim() } : {}) }
+      : null,
     ...(state.compositionReference.trim() ? { compositionReference: state.compositionReference.trim() } : {}),
     metadataSources: state.metadataSources
       .filter((source) => source.title.trim())
@@ -217,10 +228,19 @@ function toInput(state: FormState): CatalogSongInput {
 }
 
 const CONTENT_CHOICES: { value: ContentChoice; label: string; hint: string }[] = [
-  { value: "metadata-only", label: "Somente metadados", hint: "Música conhecida, sem cifra nem link autorizados. O público vê “Cifra ainda não disponível”." },
+  { value: "metadata-only", label: "Somente metadados", hint: "Identificação da música, sem cifra nem link para cifra. O vídeo de referência pode ser informado abaixo." },
   { value: "external-link", label: "Link para cifra externa", hint: "Aponta para a fonte original. O público vê “Consultar cifra na fonte original”, se o link for permitido." },
   { value: "hosted", label: "Cifra própria ou autorizada", hint: "A cifra fica no catálogo. Exibir e redistribuir dependem dos direitos abaixo." },
 ];
+
+/** Em telas pequenas, mantém o campo em edição acima da barra fixa de salvar. */
+function revealVideoField(event: FocusEvent<HTMLInputElement>): void {
+  const field = event.currentTarget;
+  const actions = field.form?.querySelector<HTMLElement>(".form-actions");
+  if (actions && field.getBoundingClientRect().bottom > actions.getBoundingClientRect().top) {
+    field.scrollIntoView({ block: "center" });
+  }
+}
 
 const STEPS = [
   { id: "identificacao", label: "A. Identificação" },
@@ -326,6 +346,13 @@ export function CatalogSongEditor({ userId, songId }: { userId: string; songId?:
       return;
     }
     const input = toInput(state as FormState);
+    if (input.video) {
+      const video = catalogVideoInputSchema.safeParse(input.video);
+      if (!video.success) {
+        setError(video.error.issues[0]?.message ?? "Confira o link do YouTube.");
+        return;
+      }
+    }
     void run(
       () => (song ? api.update(song.id, input, song.revision) : api.create(input)),
       song ? "Alterações salvas." : "Rascunho criado. Continue nas próximas etapas quando quiser.",
@@ -491,6 +518,26 @@ export function CatalogSongEditor({ userId, songId }: { userId: string; songId?:
               <Input type="url" value={state.sourceUrl} onChange={(event) => set("sourceUrl", event.target.value)} className="h-10" />
             </label>
           )}
+          <fieldset className="space-y-3 rounded-xl border p-4">
+            <legend className="px-1 text-sm font-medium">Vídeo de referência</legend>
+            <p id="catalog-video-hint" className="text-sm text-muted-foreground">
+              Cole o link do vídeo correspondente à música, mesmo se ela ainda não tiver cifra.
+              Para remover um vídeo salvo, apague o link e salve as alterações.
+            </p>
+            <label className="block space-y-1 text-sm font-medium">
+              Link do YouTube (opcional)
+              <Input type="url" value={state.videoUrl} maxLength={2048} disabled={pending}
+                onFocus={revealVideoField}
+                onChange={(event) => set("videoUrl", event.target.value)}
+                placeholder="https://www.youtube.com/watch?v=…" aria-describedby="catalog-video-hint" className="h-10" />
+            </label>
+            <label className="block space-y-1 text-sm font-medium">
+              Título do vídeo (opcional)
+              <Input value={state.videoTitle} maxLength={200} disabled={pending}
+                onFocus={revealVideoField}
+                onChange={(event) => set("videoTitle", event.target.value)} className="h-10" />
+            </label>
+          </fieldset>
         </section>
 
         <fieldset id="direitos" className="scroll-mt-32 space-y-3 rounded-xl border p-4">
