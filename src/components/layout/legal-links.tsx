@@ -12,6 +12,7 @@ export function LegalLinks() {
       <Link href="/exclusao-de-dados" className="inline-flex min-h-10 items-center rounded-sm underline underline-offset-4 hover:text-foreground">
         Exclusão de dados
       </Link>
+      <Link href="/creditos-das-imagens" className="inline-flex min-h-11 items-center rounded-sm underline underline-offset-4 hover:text-foreground">Créditos das imagens</Link>
     </nav>
   );
 }

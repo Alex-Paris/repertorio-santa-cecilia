@@ -1,0 +1,477 @@
+{
+  "quality": 80,
+  "assets": [
+    {
+      "id": "santa-cecilia-igreja",
+      "file": "Saint Cecilia in the Golden Sanctuary.png",
+      "title": "Santa Cecília no interior da igreja",
+      "status": "acervo-do-projeto",
+      "author": "Autoria não informada; fornecida pelo responsável pelo site",
+      "license": "Acervo fornecido pelo responsável para a identidade visual do projeto. Autoria externa e licença pública não informadas.",
+      "source": "imagens/Saint Cecilia in the Golden Sanctuary.png",
+      "checkedAt": "2026-11-25",
+      "original": {
+        "bytes": 2435831,
+        "width": 1672,
+        "height": 941,
+        "alpha": false,
+        "sha256": "1ca4e455a9ba0f80deea5d6df42ff1c17ea9dcb3b43e5d223ddad0d4dcedd8c3"
+      },
+      "changes": "Redimensionamento sem ampliação, orientação EXIF aplicada, conversão WebP, remoção de metadados. Sem recorte no arquivo; enquadramento apenas por CSS na interface.",
+      "variants": [
+        {
+          "file": "santa-cecilia-igreja-640.webp",
+          "width": 640,
+          "height": 360,
+          "bytes": 40144,
+          "sha256": "790e2549a4fd84e7ba795e330b2c4686d36607d570e76fcbc1e8c12a4b855ca2"
+        },
+        {
+          "file": "santa-cecilia-igreja-960.webp",
+          "width": 960,
+          "height": 540,
+          "bytes": 73060,
+          "sha256": "ed36380482b1f020e5eb6a5c5bb81e287474fcdbe5414b25d0b6e95782a8dcdf"
+        },
+        {
+          "file": "santa-cecilia-igreja-1600.webp",
+          "width": 1600,
+          "height": 900,
+          "bytes": 147340,
+          "sha256": "6fd9a4fa37bfebe2d35724ff00d942b7764b3776a4846ef177edc5f5caf48057"
+        }
+      ]
+    },
+    {
+      "id": "santa-cecilia-lira",
+      "file": "Saint Cecilia with Golden Lyre-2.png",
+      "title": "Santa Cecília com lira, fundo transparente",
+      "status": "acervo-do-projeto",
+      "author": "Autoria não informada; fornecida pelo responsável pelo site",
+      "license": "Acervo fornecido pelo responsável para a identidade visual do projeto. Autoria externa e licença pública não informadas.",
+      "source": "imagens/Saint Cecilia with Golden Lyre-2.png",
+      "checkedAt": "2026-11-25",
+      "original": {
+        "bytes": 2520088,
+        "width": 1086,
+        "height": 1448,
+        "alpha": true,
+        "sha256": "1374df4f1989e6ffd708f12823c5f62df1a308229064b2b04da1a2396a2dba04"
+      },
+      "changes": "Redimensionamento sem ampliação, orientação EXIF aplicada, conversão WebP, remoção de metadados. Sem recorte no arquivo; enquadramento apenas por CSS na interface.",
+      "variants": [
+        {
+          "file": "santa-cecilia-lira-240.webp",
+          "width": 240,
+          "height": 320,
+          "bytes": 28176,
+          "sha256": "cb934aeb9004ce963d7b2a3bf43a2db31b2736dcc49568eada2624b3872be93b"
+        },
+        {
+          "file": "santa-cecilia-lira-480.webp",
+          "width": 480,
+          "height": 640,
+          "bytes": 80372,
+          "sha256": "06377914e3b77f4293758afdccaebeb8cc3a3a745bbc3028761ffb95155a7cda"
+        },
+        {
+          "file": "santa-cecilia-lira-960.webp",
+          "width": 960,
+          "height": 1280,
+          "bytes": 262268,
+          "sha256": "615d6ba7b5dcd9cf8ca342937a48ac28f9bd4f3d4aae0bee25972ef73e70f892"
+        }
+      ]
+    },
+    {
+      "id": "tempo-comum",
+      "file": "Ordinary Time Bible and Crucifix.png",
+      "title": "Bíblia, crucifixo e tecido verde",
+      "status": "acervo-do-projeto",
+      "author": "Autoria não informada; fornecida pelo responsável pelo site",
+      "license": "Acervo fornecido pelo responsável para a identidade visual do projeto. Autoria externa e licença pública não informadas.",
+      "source": "imagens/Ordinary Time Bible and Crucifix.png",
+      "checkedAt": "2026-11-25",
+      "original": {
+        "bytes": 2102857,
+        "width": 1672,
+        "height": 941,
+        "alpha": false,
+        "sha256": "cf2d391ef85443ee63e8e5adab4c904a79e6654323dbdfd412bbdd308c5b4f4a"
+      },
+      "changes": "Redimensionamento sem ampliação, orientação EXIF aplicada, conversão WebP, remoção de metadados. Sem recorte no arquivo; enquadramento apenas por CSS na interface.",
+      "variants": [
+        {
+          "file": "tempo-comum-640.webp",
+          "width": 640,
+          "height": 360,
+          "bytes": 25402,
+          "sha256": "49f8307fc4b5f8017c3016e6343ee7369611dedb0cc4ed36e525fe16a2bca56d"
+        },
+        {
+          "file": "tempo-comum-960.webp",
+          "width": 960,
+          "height": 540,
+          "bytes": 45296,
+          "sha256": "46fc1da283af5dde63f92cfd7fa6353181cb80328a3d1e4a9a9ed7808fe65505"
+        },
+        {
+          "file": "tempo-comum-1600.webp",
+          "width": 1600,
+          "height": 900,
+          "bytes": 94634,
+          "sha256": "44b0730846e6e8d0ecf2d450f1971998ea3c12701d6ed60ed1b1b72466d64878"
+        }
+      ]
+    },
+    {
+      "id": "triduo-pascal",
+      "file": "Paschal Triduum_ From Sacrifice to Dawn.png",
+      "title": "Elementos do Tríduo Pascal",
+      "status": "acervo-do-projeto",
+      "author": "Autoria não informada; fornecida pelo responsável pelo site",
+      "license": "Acervo fornecido pelo responsável para a identidade visual do projeto. Autoria externa e licença pública não informadas.",
+      "source": "imagens/Paschal Triduum_ From Sacrifice to Dawn.png",
+      "checkedAt": "2026-11-25",
+      "original": {
+        "bytes": 2540498,
+        "width": 1672,
+        "height": 941,
+        "alpha": false,
+        "sha256": "277b86e042e8b8034fb1843f7b8d843c7d8977bc6c56a76235bcf89f42fd186c"
+      },
+      "changes": "Redimensionamento sem ampliação, orientação EXIF aplicada, conversão WebP, remoção de metadados. Sem recorte no arquivo; enquadramento apenas por CSS na interface.",
+      "variants": [
+        {
+          "file": "triduo-pascal-640.webp",
+          "width": 640,
+          "height": 360,
+          "bytes": 27614,
+          "sha256": "b3d3f9ca2f465259752ee1304f5f5b5c64a811c4cf3a5aa0532feb78fb9838eb"
+        },
+        {
+          "file": "triduo-pascal-960.webp",
+          "width": 960,
+          "height": 540,
+          "bytes": 54344,
+          "sha256": "98af08c14608b19da4a5953da8852ae7a0151b5cac63de9681482d150ada29df"
+        },
+        {
+          "file": "triduo-pascal-1600.webp",
+          "width": 1600,
+          "height": 900,
+          "bytes": 120744,
+          "sha256": "07671f2e02229ff5a9c03773c44ab61ee2581a144ba3e18219c1080c10d4e17d"
+        }
+      ]
+    },
+    {
+      "id": "pascoa",
+      "file": "Golden Dawn at the Empty Tomb.png",
+      "title": "Círio pascal e sepulcro vazio",
+      "status": "acervo-do-projeto",
+      "author": "Autoria não informada; fornecida pelo responsável pelo site",
+      "license": "Acervo fornecido pelo responsável para a identidade visual do projeto. Autoria externa e licença pública não informadas.",
+      "source": "imagens/Golden Dawn at the Empty Tomb.png",
+      "checkedAt": "2026-11-25",
+      "original": {
+        "bytes": 2403521,
+        "width": 1672,
+        "height": 941,
+        "alpha": false,
+        "sha256": "370bf7cd031f3c6aa2ae303ac31e0e88b2ce65e5786aedf8b0d4e3c44243d293"
+      },
+      "changes": "Redimensionamento sem ampliação, orientação EXIF aplicada, conversão WebP, remoção de metadados. Sem recorte no arquivo; enquadramento apenas por CSS na interface.",
+      "variants": [
+        {
+          "file": "pascoa-640.webp",
+          "width": 640,
+          "height": 360,
+          "bytes": 31218,
+          "sha256": "68cac3c1abe6b1c3a65d7248a8f7cb9f8e8f7ba55ca74eb483b3e0961ca57e32"
+        },
+        {
+          "file": "pascoa-960.webp",
+          "width": 960,
+          "height": 540,
+          "bytes": 58894,
+          "sha256": "cda62a793d1362c5f3f02539e74591cca126e8a4e840d450d1065a2f74deb5e9"
+        },
+        {
+          "file": "pascoa-1600.webp",
+          "width": 1600,
+          "height": 900,
+          "bytes": 121894,
+          "sha256": "c4200a8852f970b1608e33e81d966e899b901ce9850650f7e33ebfbd7a7495cf"
+        }
+      ]
+    },
+    {
+      "id": "natal",
+      "file": "natal.jpg",
+      "title": "NaplesNativityScene — presépio napolitano",
+      "author": "Jonathunder (fotografia); escultores do século XVIII não identificados na página",
+      "license": "Domínio público — obra por idade e fotografia liberada pelo autor",
+      "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/",
+      "source": "https://commons.wikimedia.org/wiki/File:NaplesNativityScene.jpg",
+      "download": "https://upload.wikimedia.org/wikipedia/commons/d/d5/NaplesNativityScene.jpg",
+      "status": "licenca-verificada",
+      "checkedAt": "2026-11-25",
+      "original": {
+        "bytes": 3753005,
+        "width": 2933,
+        "height": 2270,
+        "alpha": false,
+        "sha256": "b7c76a1fe74cbbf9c3dd0779abe3db7acf40bde6166b845fd5d6096294fef0d4"
+      },
+      "changes": "Redimensionamento sem ampliação, orientação EXIF aplicada, conversão WebP, remoção de metadados. Sem recorte no arquivo; enquadramento apenas por CSS na interface.",
+      "variants": [
+        {
+          "file": "natal-640.webp",
+          "width": 640,
+          "height": 495,
+          "bytes": 60016,
+          "sha256": "d9d8c068d78d5bb62c6871bea37391c76afd5650b0d27c32c7129a189fe2e9b4"
+        },
+        {
+          "file": "natal-960.webp",
+          "width": 960,
+          "height": 743,
+          "bytes": 106726,
+          "sha256": "fa972aceb08d0ab8b7d26680493ca94ce5555355ef3d5f3c4ebb0c63c8e87b67"
+        },
+        {
+          "file": "natal-1600.webp",
+          "width": 1600,
+          "height": 1238,
+          "bytes": 220366,
+          "sha256": "34dab6fc52287b137d1f47b6db1870de210318298eeb9bf5d9f7f44b2e292ed6"
+        }
+      ]
+    },
+    {
+      "id": "advento",
+      "file": "advento.jpg",
+      "title": "Advent wreath with violet and rose candles 1",
+      "author": "PHILIP János",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "source": "https://commons.wikimedia.org/wiki/File:Advent_wreath_with_violet_and_rose_candles_1.jpg",
+      "download": "https://upload.wikimedia.org/wikipedia/commons/6/61/Advent_wreath_with_violet_and_rose_candles_1.jpg",
+      "status": "licenca-verificada",
+      "checkedAt": "2026-11-25",
+      "original": {
+        "bytes": 5205002,
+        "width": 3750,
+        "height": 2500,
+        "alpha": false,
+        "sha256": "f572613399d8c59d5b25bddba0072cea1b73635a74a03b775f9f06fb2f5902af"
+      },
+      "changes": "Redimensionamento sem ampliação, orientação EXIF aplicada, conversão WebP, remoção de metadados. Sem recorte no arquivo; enquadramento apenas por CSS na interface.",
+      "variants": [
+        {
+          "file": "advento-640.webp",
+          "width": 640,
+          "height": 427,
+          "bytes": 35576,
+          "sha256": "66e8a0fe28af8ac9fb431744c8c3ee1120b93bbb7d272ff4e52cfd52343fb471"
+        },
+        {
+          "file": "advento-960.webp",
+          "width": 960,
+          "height": 640,
+          "bytes": 67028,
+          "sha256": "f4aebde5749c16a5f9c477e25996745e27754851d168c89002565a012525b2a7"
+        },
+        {
+          "file": "advento-1600.webp",
+          "width": 1600,
+          "height": 1067,
+          "bytes": 149868,
+          "sha256": "31ab8ce45b0f16fb40de5ffef88b108396ef334d43d4cbb7dab77deaaaccbb0c"
+        }
+      ]
+    },
+    {
+      "id": "quaresma",
+      "file": "quaresma.jpg",
+      "title": "High Altar in Lent",
+      "author": "Elapl",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "source": "https://commons.wikimedia.org/wiki/File:High_Altar_in_Lent.jpg",
+      "download": "https://upload.wikimedia.org/wikipedia/commons/b/ba/High_Altar_in_Lent.jpg",
+      "status": "licenca-verificada",
+      "checkedAt": "2026-11-25",
+      "original": {
+        "bytes": 18872700,
+        "width": 6662,
+        "height": 4441,
+        "alpha": false,
+        "sha256": "5759896e997e87542f00da5f24d8d86ccb2545845b241ff6b218b8f5a0ace42f"
+      },
+      "changes": "Redimensionamento sem ampliação, orientação EXIF aplicada, conversão WebP, remoção de metadados. Sem recorte no arquivo; enquadramento apenas por CSS na interface.",
+      "variants": [
+        {
+          "file": "quaresma-640.webp",
+          "width": 640,
+          "height": 427,
+          "bytes": 60728,
+          "sha256": "def24f0bbea91ae3d91754a4aceca3ec55c467ebdd492ed15b14b43cee179962"
+        },
+        {
+          "file": "quaresma-960.webp",
+          "width": 960,
+          "height": 640,
+          "bytes": 124782,
+          "sha256": "d557ee35abf590817b314b6150783ff44d9b6fbb0ed350f7421b161314627655"
+        },
+        {
+          "file": "quaresma-1600.webp",
+          "width": 1600,
+          "height": 1066,
+          "bytes": 295412,
+          "sha256": "1e9037bcee63dcb6e7f4ceaf2aa897e57f59ddf947159cda789d8a2bcb2d638b"
+        }
+      ]
+    },
+    {
+      "id": "pentecostes",
+      "file": "pentecostes.jpg",
+      "title": "Coming of the Holy Spirit at Pentecost — Saint Gabriel Church",
+      "author": "Nheyob",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "source": "https://commons.wikimedia.org/wiki/File:Saint_Gabriel_Church_(Connersville,_Indiana)_-_stained_glass,_Coming_of_the_Holy_Spirit_at_Pentecost.jpg",
+      "download": "https://upload.wikimedia.org/wikipedia/commons/c/c4/Saint_Gabriel_Church_%28Connersville%2C_Indiana%29_-_stained_glass%2C_Coming_of_the_Holy_Spirit_at_Pentecost.jpg",
+      "status": "licenca-verificada",
+      "checkedAt": "2026-11-25",
+      "original": {
+        "bytes": 3416241,
+        "width": 3669,
+        "height": 5765,
+        "alpha": false,
+        "sha256": "2f0b125534ca11491dcd716108f1036c995f2a240d24ecb890b7bc4d9c42c2f7"
+      },
+      "changes": "Redimensionamento sem ampliação, orientação EXIF aplicada, conversão WebP, remoção de metadados. Sem recorte no arquivo; enquadramento apenas por CSS na interface.",
+      "variants": [
+        {
+          "file": "pentecostes-240.webp",
+          "width": 240,
+          "height": 377,
+          "bytes": 25834,
+          "sha256": "ec5d3b899184c7642fcdfe113f116dd10ebe759d4c1bbdf89a8c77496da4ee17"
+        },
+        {
+          "file": "pentecostes-480.webp",
+          "width": 480,
+          "height": 754,
+          "bytes": 88110,
+          "sha256": "be768f62af5eaa8180760e3a3117ead751ff20fdf7260a5d8e7eb1db5404bfb0"
+        },
+        {
+          "file": "pentecostes-640.webp",
+          "width": 640,
+          "height": 1006,
+          "bytes": 147172,
+          "sha256": "7ddda051a1cc2cd8b525536712551478c53b43f6044e00aad113d178128078e1"
+        }
+      ]
+    },
+    {
+      "id": "anjo-com-lira-pendente",
+      "file": "AV93a_-DzJn5AuBUpUifgKy4A8S_uJZB8KEsJJmIgyq1guzNEsBlHZ7CRKuXohFRyVrl0XrE2BrlK6_Myvar69hZFX19BmFapcWC8hc9CBDH_QJltu2GkG5s8W9fcDrjxTsA9L9JrvNwjzYS_LtEtuqYfVZHVcNQLAppT2IRlLa7IQzt97rY8_Uyuw49EjOV.jpeg",
+      "title": "Pintura de anjo com lira; origem não identificada",
+      "status": "licenca-pendente",
+      "author": "Não confirmado",
+      "license": "Não confirmada; não aplicar no site.",
+      "source": "imagens/AV93a_-DzJn5AuBUpUifgKy4A8S_uJZB8KEsJJmIgyq1guzNEsBlHZ7CRKuXohFRyVrl0XrE2BrlK6_Myvar69hZFX19BmFapcWC8hc9CBDH_QJltu2GkG5s8W9fcDrjxTsA9L9JrvNwjzYS_LtEtuqYfVZHVcNQLAppT2IRlLa7IQzt97rY8_Uyuw49EjOV.jpeg",
+      "checkedAt": "2026-11-25",
+      "original": {
+        "bytes": 163053,
+        "width": 1000,
+        "height": 563,
+        "alpha": false,
+        "sha256": "b39599ff85c659225e9ca12b1c88c53d8546deb4d58080200de41e9037415166"
+      },
+      "changes": "Redimensionamento sem ampliação, orientação EXIF aplicada, conversão WebP, remoção de metadados. Sem recorte no arquivo; enquadramento apenas por CSS na interface.",
+      "variants": []
+    },
+    {
+      "id": "coroa-advento-pendente",
+      "file": "ipicture-christmas-9870003.jpg",
+      "title": "Coroa com velas; origem não confirmada",
+      "status": "licenca-pendente",
+      "author": "Não confirmado",
+      "license": "Não confirmada; não aplicar no site.",
+      "source": "imagens/ipicture-christmas-9870003.jpg",
+      "checkedAt": "2026-11-25",
+      "original": {
+        "bytes": 700316,
+        "width": 3000,
+        "height": 2000,
+        "alpha": false,
+        "sha256": "f6b99700cbd888ae843810cf4c75a5e513a14febeda2e0e93ce90beee515208c"
+      },
+      "changes": "Redimensionamento sem ampliação, orientação EXIF aplicada, conversão WebP, remoção de metadados. Sem recorte no arquivo; enquadramento apenas por CSS na interface.",
+      "variants": []
+    },
+    {
+      "id": "igreja-fotografia-pendente",
+      "file": "nguyen-huong--4Fdin9A_bA-unsplash.jpg",
+      "title": "Interior de igreja; origem não confirmada",
+      "status": "licenca-pendente",
+      "author": "Não confirmado",
+      "license": "Não confirmada; não aplicar no site.",
+      "source": "imagens/nguyen-huong--4Fdin9A_bA-unsplash.jpg",
+      "checkedAt": "2026-11-25",
+      "original": {
+        "bytes": 921324,
+        "width": 2000,
+        "height": 3000,
+        "alpha": false,
+        "sha256": "1d6413931a74ed6d622f0ea17366174a677288a919449ac8ef827bcec3de4caa"
+      },
+      "changes": "Redimensionamento sem ampliação, orientação EXIF aplicada, conversão WebP, remoção de metadados. Sem recorte no arquivo; enquadramento apenas por CSS na interface.",
+      "variants": []
+    },
+    {
+      "id": "quaresma-fotografia-pendente",
+      "file": "pexels-peter-marie-2160417128-36708050.jpg",
+      "title": "Cruz e símbolos quaresmais; autoria divergente nos metadados",
+      "status": "licenca-pendente",
+      "author": "Não confirmado",
+      "license": "Não confirmada; não aplicar no site.",
+      "source": "imagens/pexels-peter-marie-2160417128-36708050.jpg",
+      "checkedAt": "2026-11-25",
+      "original": {
+        "bytes": 3959613,
+        "width": 6105,
+        "height": 3856,
+        "alpha": false,
+        "sha256": "da88cdaa4aaed71acf60b4dd274af0b7d4962d46506f16ddbc1cddf8356210b1"
+      },
+      "changes": "Redimensionamento sem ampliação, orientação EXIF aplicada, conversão WebP, remoção de metadados. Sem recorte no arquivo; enquadramento apenas por CSS na interface.",
+      "variants": []
+    },
+    {
+      "id": "presepio-pendente",
+      "file": "vandesart-birth-9214235.jpg",
+      "title": "Presépio; origem não confirmada",
+      "status": "licenca-pendente",
+      "author": "Não confirmado",
+      "license": "Não confirmada; não aplicar no site.",
+      "source": "imagens/vandesart-birth-9214235.jpg",
+      "checkedAt": "2026-11-25",
+      "original": {
+        "bytes": 1717328,
+        "width": 4608,
+        "height": 3072,
+        "alpha": false,
+        "sha256": "465d7eb570c5a168128414393929617d1e8467e6ad9c72363efd1b6fed7d3ea0"
+      },
+      "changes": "Redimensionamento sem ampliação, orientação EXIF aplicada, conversão WebP, remoção de metadados. Sem recorte no arquivo; enquadramento apenas por CSS na interface.",
+      "variants": []
+    }
+  ]
+}

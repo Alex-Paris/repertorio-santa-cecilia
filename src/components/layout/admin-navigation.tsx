@@ -25,8 +25,8 @@ function Navigation({ pathname }: { pathname: string | null }) {
           <p className="hidden text-xs text-muted-foreground lg:block">Cuidar do acervo</p>
         </div>
       </div>
-      <nav aria-label="Navegação administrativa" className="min-w-0 overflow-x-auto rounded-xl border bg-card p-1.5 lg:overflow-visible lg:border-0 lg:bg-transparent lg:p-0">
-        <ul className="flex w-max gap-1 lg:w-full lg:flex-col lg:gap-1.5">
+      <nav aria-label="Navegação administrativa" className="min-w-0 rounded-xl border bg-card p-1.5 lg:overflow-visible lg:border-0 lg:bg-transparent lg:p-0">
+        <ul className="grid grid-cols-2 gap-1 sm:grid-cols-3 lg:flex lg:w-full lg:flex-col lg:gap-1.5">
           {sections.map((item) => (
             <li key={item.href} className="min-w-0">
               <Link href={item.href} aria-current={active === item.href ? "page" : undefined} className={cn(

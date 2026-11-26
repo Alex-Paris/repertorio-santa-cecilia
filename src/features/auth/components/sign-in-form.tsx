@@ -95,7 +95,7 @@ export function SignInForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate aria-busy={submitting || resending} className="w-full max-w-sm space-y-5">
+    <form onSubmit={handleSubmit} noValidate aria-busy={submitting || resending} className="w-full space-y-5">
       {awaitingVerification && (
         <p role="status" className="text-sm text-muted-foreground">
           Confira seu e-mail para concluir o cadastro. Se já possui uma conta, entre com sua senha.
@@ -114,7 +114,7 @@ export function SignInForm() {
           autoComplete="email"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
-          className="h-10"
+          className="h-12"
         />
       </FormField>
 
@@ -126,7 +126,7 @@ export function SignInForm() {
           autoComplete="current-password"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
-          className="h-10"
+          className="h-12"
         />
       </FormField>
 
@@ -137,7 +137,7 @@ export function SignInForm() {
         </p>
       )}
 
-      <Button type="submit" size="lg" disabled={submitting || resending} className="h-10 px-4">
+      <Button type="submit" size="lg" disabled={submitting || resending} className="h-12 w-full px-4">
         {submitting ? "Entrando…" : "Entrar"}
       </Button>
 
@@ -149,7 +149,7 @@ export function SignInForm() {
 
       <p className="text-sm text-muted-foreground">
         Ainda não tem uma conta?{" "}
-        <Link href={withAuthReturn("/cadastro", returnTo)} className="text-foreground underline underline-offset-3">
+        <Link href={withAuthReturn("/cadastro", returnTo)} className="inline-flex min-h-11 items-center font-semibold text-primary underline underline-offset-3">
           Criar conta
         </Link>
       </p>

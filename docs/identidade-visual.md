@@ -1,5 +1,7 @@
 # Identidade visual
 
+A interface vigente segue o [Redesign 3.0](redesign-3.md). O detalhamento de cores e referências abaixo registra a etapa anterior de 24/11/2026. Créditos atuais em [image-credits.md](image-credits.md).
+
 Identidade da Etapa 2E.4A, a partir das referências aprovadas (`referencia-01-inicio-preparar-missa.png`, `referencia-02-catalogo-leitor.png`) e do logotipo do Grupo de Canto Santa Cecília, refinada em **24/11/2026**. A pasta `repertorio-redesign-referencias/`, com essas imagens, o logotipo original e o briefing, saiu do projeto depois da Etapa 2F.1 e continua no histórico do Git (commit `07e76bc`). Esta revisão visual preserva contratos HTTP, MongoDB, direitos, revisões (`If-Match`) e regras litúrgicas.
 
 ## Nome
@@ -66,7 +68,7 @@ Tipografia: Fraunces (serifa, tamanho óptico 72, sem as formas "suaves") para t
 
 | Componente | Arquivo | Zona da referência |
 | --- | --- | --- |
-| Cabeçalho, marca, busca, menu "Conta" | `components/layout/app-shell.tsx`, `brand.tsx`, `header-search.tsx`, `account-menu.tsx`, `navigation.tsx` | Faixa oliva das duas telas |
+| Cabeçalho, marca, busca, menu "Conta" | `components/layout/app-shell.tsx`, `brand.tsx`, `account-menu.tsx`, `navigation.tsx` | Marca à esquerda, navegação central e ações à direita no desktop |
 | Topo com ilustração | `components/layout/page-hero.tsx`, `components/brand/*` | Título, subtítulo e cruz |
 | Escolha da missa | `features/liturgy/components/celebration-chooser.tsx` (`CelebrationChooser`) | Cartão "Data da missa · Celebração · Tempo · Cor" |
 | Sugestões em abas | `features/liturgy/components/mass-planner.tsx` | Abas de momentos e cartões |

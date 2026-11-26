@@ -1,3 +1,5 @@
+import { getRepertoireAction } from "@/test/repertoire-actions";
+import { clickReaderControl } from "@/test/reader-actions";
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -143,8 +145,10 @@ describe("leitura pública do catálogo", () => {
   it("transpõe só na tela e não altera a música", () => {
     render(<CatalogSongScreen song={ESTRADA} />);
 
+    fireEvent.click(screen.getByRole("button", {name:/^Alterar tom:/}));
     expect(screen.getByText("Ajuste temporário: a música do catálogo não é alterada.")).toBeDefined();
-    fireEvent.click(screen.getByRole("button", { name: "Aumentar um semitom" }));
+    fireEvent.click(screen.getByRole("button", {name:"Fechar painel"}));
+    clickReaderControl("Aumentar um semitom");
 
     expect(screen.getAllByText("G#").length).toBeGreaterThan(0);
     expect(ESTRADA.chordPro).toBe("[G]Vou pela [D]estrada");
@@ -196,6 +200,17 @@ describe("leitura pública do catálogo", () => {
 });
 
 describe("adicionar a partir do leitor", () => {
+  it("adiciona uma música particular mantendo sua origem e a cifra na biblioteca", async () => {
+    const before=fakeAccount.library().songs.find(song=>song.id==="song-caminhos");
+    render(<SongDetailScreen songId="song-caminhos" />);
+    await screen.findByRole("heading",{level:1,name:"Caminhos"});
+    fireEvent.click(screen.getByRole("button",{name:"Adicionar ao repertório"}));
+    fireEvent.change(await screen.findByLabelText("Repertório"),{target:{value:ENSAIO}});
+    fireEvent.click(screen.getByRole("button",{name:"Adicionar"}));
+    await waitFor(()=>expect(storedItems().find(item=>item.songId==="song-caminhos")).toMatchObject({source:"personal",transposeSemitones:0}));
+    expect(fakeAccount.library().songs.find(song=>song.id==="song-caminhos")).toEqual(before);
+  });
+
   async function openPanel(song = ESTRADA): Promise<void> {
     render(<CatalogSongScreen song={song} />);
     fireEvent.click(screen.getByRole("button", { name: "Adicionar ao repertório" }));
@@ -294,9 +309,9 @@ describe("leitura no contexto do repertório", () => {
 
   it("o tom fica no item do repertório; a música do catálogo não muda", async () => {
     render(<RepertoireDetailScreen repertoireId={ENSAIO} />);
-    fireEvent.click(await screen.findByRole("button", { name: "Ajustar tom e anotações de Estrada do Catálogo" }));
-    fireEvent.click(screen.getByRole("button", { name: "Aumentar um semitom" }));
-    fireEvent.click(screen.getByRole("button", { name: "Aumentar um semitom" }));
+    fireEvent.click(getRepertoireAction("Ajustar tom e anotações de Estrada do Catálogo"));
+    clickReaderControl("Aumentar um semitom");
+    clickReaderControl("Aumentar um semitom");
 
     await waitFor(() => expect(storedItems().find((item) => item.id === catalogItemId())?.transposeSemitones).toBe(2));
     expect(ESTRADA.originalKey).toBe("G");
@@ -345,7 +360,7 @@ describe("resultados da busca", () => {
     expect(screen.queryByText("Consultar cifra na fonte original")).toBeNull();
     expect(within(rows[3]).getByText("Autoria não informada")).toBeDefined();
     // Escolher uma música abre o painel central, mantendo a busca e a página no endereço.
-    expect(within(rows[0]).getByRole("link").getAttribute("href")).toBe("/catalogo?q=ca&page=2&musica=a");
+    expect(within(rows[0]).getByRole("link").getAttribute("href")).toBe("/catalogo/a?retorno=%2Fcatalogo%3Fq%3Dca%26page%3D2");
     expect(screen.getByRole("link", { name: /Anterior/ }).getAttribute("href")).toBe("/catalogo?q=ca");
     expect(screen.getByRole("link", { name: /Próxima/ }).getAttribute("href")).toBe("/catalogo?q=ca&page=3");
   });

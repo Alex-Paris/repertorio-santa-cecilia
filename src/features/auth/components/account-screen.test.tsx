@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({ isAdmin: false }));
@@ -28,13 +28,14 @@ describe("Minha conta (Etapa 2F.2B)", () => {
   it("agrupa as ações em seções: Conta, Biblioteca e repertórios, Contribuições", async () => {
     await renderAccount();
     expect(screen.getAllByRole("heading", { level: 2 }).map((heading) => heading.textContent)).toEqual([
-      "Conta",
+      "Ana Teste",
       "Biblioteca e repertórios",
       "Contribuições",
     ]);
-    const conta = screen.getByRole("region", { name: "Conta" });
+    const conta = screen.getByRole("region", { name: "Seu perfil" });
     expect(within(conta).getByText("ana@exemplo.org")).toBeDefined();
-    expect(within(conta).getByRole("button", { name: /Sair da conta/ })).toBeDefined();
+    fireEvent.click(screen.getByText("Sessão e acesso à conta"));
+    expect(screen.getByRole("button", { name: /Sair da conta/ })).toBeDefined();
 
     const biblioteca = screen.getByRole("region", { name: "Biblioteca e repertórios" });
     expect(within(biblioteca).getAllByRole("link").map((link) => link.getAttribute("href"))).toEqual([

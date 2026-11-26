@@ -21,12 +21,12 @@ export function ChordReader({ chordPro, originalKey, semitones, fontSize, readin
   return (
     <>
       <div role="group" aria-label="Controles da cifra"
-        className="sticky top-14 z-10 mb-3 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border bg-card/95 px-3 py-2 backdrop-blur md:top-16 lg:top-[4.6rem] [@media(max-height:520px)]:top-0">
+        className="sticky top-16 z-10 mb-6 flex flex-wrap items-center gap-2 border-y bg-background py-3 lg:top-[4.5rem] [@media(max-height:520px)]:top-0">
         <ReadingModeToggle compact />
         {readingMode === "chords" && <TransposeControls originalKey={originalKey} semitones={semitones} onChange={onSemitonesChange} hint={adjustmentHint} compact />}
         <FontSizeControls fontSize={fontSize} compact />
       </div>
-      <article className="overflow-x-auto rounded-xl border bg-card p-5 md:p-8">
+      <article className="overflow-x-auto py-4">
         <ChordSheet source={chordPro} semitones={semitones} fontSize={fontSize} mode={readingMode} />
       </article>
     </>

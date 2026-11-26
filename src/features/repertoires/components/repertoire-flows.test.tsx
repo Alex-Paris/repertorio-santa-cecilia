@@ -1,3 +1,4 @@
+import { getRepertoireAction } from "@/test/repertoire-actions";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -143,16 +144,17 @@ describe("músicas do repertório", () => {
   it("remove a música do repertório", async () => {
     await openEnsaio();
 
-    fireEvent.click(screen.getByRole("button", { name: "Remover Maré de Setembro do repertório" }));
+    fireEvent.click(getRepertoireAction("Remover Maré de Setembro do repertório"));
 
     await waitFor(() => expect(renderedTitles()).toEqual(["Estrada de Terra", "Coração de Vento"]));
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: "Mais ações de Coração de Vento" }));
   });
 
   it("reordena com controles acessíveis e persiste ao reabrir", async () => {
     await openEnsaio();
     expect(renderedTitles()).toEqual(["Estrada de Terra", "Maré de Setembro", "Coração de Vento"]);
 
-    fireEvent.click(screen.getByRole("button", { name: "Mover Coração de Vento para cima" }));
+    fireEvent.click(getRepertoireAction("Mover Coração de Vento para cima"));
 
     await waitFor(() =>
       expect(renderedTitles()).toEqual(["Estrada de Terra", "Coração de Vento", "Maré de Setembro"]),
@@ -167,18 +169,18 @@ describe("músicas do repertório", () => {
     await openEnsaio();
 
     expect(
-      (screen.getByRole("button", { name: "Mover Estrada de Terra para cima" }) as HTMLButtonElement)
+      (getRepertoireAction("Mover Estrada de Terra para cima") as HTMLButtonElement)
         .disabled,
     ).toBe(true);
     expect(
-      (screen.getByRole("button", { name: "Mover Coração de Vento para baixo" }) as HTMLButtonElement)
+      (getRepertoireAction("Mover Coração de Vento para baixo") as HTMLButtonElement)
         .disabled,
     ).toBe(true);
   });
 
   it("mantém o foco do teclado no controle após mover", async () => {
     await openEnsaio();
-    const button = screen.getByRole("button", { name: "Mover Estrada de Terra para baixo" });
+    const button = getRepertoireAction("Mover Estrada de Terra para baixo");
     button.focus();
 
     fireEvent.click(button);

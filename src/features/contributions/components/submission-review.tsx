@@ -340,6 +340,8 @@ export function SubmissionReview({ userId, submissionId }: { userId: string; sub
               onApproved={(next) => updated(next, "Sugestão aprovada.")}
               onFailure={handleFailure}
             />
+            <details className="rounded-2xl border bg-card p-4">
+            <summary className="flex min-h-11 cursor-pointer items-center font-semibold">Pedir correções ao colaborador</summary>
             <NotePanel
               title="Pedir correções"
               action="Pedir correções"
@@ -353,6 +355,9 @@ export function SubmissionReview({ userId, submissionId }: { userId: string; sub
                 }
               }}
             />
+            </details>
+            <details className="rounded-2xl border bg-card p-4">
+            <summary className="flex min-h-11 cursor-pointer items-center font-semibold">Recusar esta sugestão</summary>
             <NotePanel
               title="Recusar"
               action="Recusar sugestão"
@@ -366,6 +371,7 @@ export function SubmissionReview({ userId, submissionId }: { userId: string; sub
                 }
               }}
             />
+            </details>
           </>
         )}
         {!decidable && submission.review && (

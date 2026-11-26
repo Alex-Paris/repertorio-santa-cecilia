@@ -1,4 +1,6 @@
 import { connection } from "next/server";
+import { Suspense } from "react";
+import { PageSkeleton } from "@/components/layout/page-skeleton";
 
 import { SharePrintScreen } from "@/features/printing/components/print-screens";
 import { parsePrintFormat, parseSemitones } from "@/features/printing/domain/print-model";
@@ -14,7 +16,7 @@ interface PageProps {
  * Impressão de um link público: o mesmo retrato e a mesma validação da página do link. Revogado
  * ou inválido, não há folha; só entra a cifra que o proprietário autorizou ao publicar.
  */
-export default async function SharePrintPage({ params, searchParams }: PageProps) {
+async function SharePrintPageContent({ params, searchParams }: PageProps) {
   await connection();
   const [{ shareToken }, query] = await Promise.all([params, searchParams]);
   const result = await loadPublicShare(shareToken);
@@ -29,4 +31,8 @@ export default async function SharePrintPage({ params, searchParams }: PageProps
     case "failed":
       return <ShareTemporarilyUnavailable />;
   }
+}
+
+export default function SharePrintPage(props: PageProps) {
+  return <Suspense fallback={<PageSkeleton />}><SharePrintPageContent {...props} /></Suspense>;
 }

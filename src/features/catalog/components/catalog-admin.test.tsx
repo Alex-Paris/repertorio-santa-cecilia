@@ -242,7 +242,7 @@ describe("cadastro simplificado", () => {
     expect(screen.queryByRole("checkbox", { name: /Exibir a letra e a cifra/ })).toBeNull();
   });
 
-  it("rascunho sem evidência de direitos não pode ser publicado, e as etapas C e D aparecem", async () => {
+  it("rascunho sem evidência de direitos não pode ser publicado, e classificação e revisão aparecem", async () => {
     stubServer(() => json({ song: draft }));
     vi.stubGlobal(
       "fetch",
@@ -252,7 +252,7 @@ describe("cadastro simplificado", () => {
 
     expect(await screen.findByText("Registre a evidência dos direitos antes de publicar.")).toBeDefined();
     expect((screen.getByRole("button", { name: "Publicar" }) as HTMLButtonElement).disabled).toBe(true);
-    expect(screen.getByRole("heading", { name: "C. Classificação litúrgica" })).toBeDefined();
+    expect(screen.getByRole("heading", { name: "Classificação litúrgica" })).toBeDefined();
     expect(screen.getByText(/Classifique a música \(etapa C\)/)).toBeDefined();
   });
 });

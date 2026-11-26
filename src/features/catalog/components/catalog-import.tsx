@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useId, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 
 import { FormError } from "@/components/layout/form-error";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,8 @@ interface CatalogImportProps {
 
 /** Importação em dois passos: prévia sem gravar e confirmação explícita. */
 export function CatalogImport({ userId, bundled }: CatalogImportProps) {
+  const resultRef = useRef<HTMLElement>(null);
+  const errorRef = useRef<HTMLDivElement>(null);
   const api = useMemo(() => createCatalogAdminApi(userId), [userId]);
   const textId = useId();
   const confirmId = useId();
@@ -69,10 +71,18 @@ export function CatalogImport({ userId, bundled }: CatalogImportProps) {
     }
   }
 
+  useEffect(() => {
+    const target = error ? errorRef.current : resultRef.current;
+    if (error || preview || result) {
+      target?.focus({preventScroll:true});
+      target?.scrollIntoView?.({block:"start", behavior:"instant"});
+    }
+  }, [error, preview, result]);
+
   const creatable = preview?.counts.new ?? 0;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-24">
       <section aria-labelledby="importar-origem" className="space-y-3">
         <h2 id="importar-origem" className="font-display text-lg font-semibold">
           1. Arquivo
@@ -85,7 +95,7 @@ export function CatalogImport({ userId, bundled }: CatalogImportProps) {
           <Button type="button" variant="outline" onClick={() => change(JSON.stringify(bundled, null, 2))}>
             Usar o catálogo editorial inicial
           </Button>
-          <label className="inline-flex h-9 cursor-pointer items-center rounded-md border px-3 text-sm font-medium hover:bg-muted">
+          <label className="inline-flex min-h-12 cursor-pointer items-center rounded-xl border border-input px-4 text-sm font-medium hover:bg-muted focus-within:outline-3 focus-within:outline-ring focus-within:outline-offset-2">
             Escolher arquivo JSON
             <input
               type="file"
@@ -113,10 +123,10 @@ export function CatalogImport({ userId, bundled }: CatalogImportProps) {
         </Button>
       </section>
 
-      {error && <FormError message={error} />}
+      {error && <div tabIndex={-1} ref={errorRef}><FormError message={error} /></div>}
 
       {preview && !result && (
-        <section aria-labelledby="importar-previa" className="space-y-3">
+        <section ref={resultRef} tabIndex={-1} aria-labelledby="importar-previa" className="space-y-3">
           <h2 id="importar-previa" className="font-display text-lg font-semibold">
             2. Prévia
           </h2>
@@ -155,7 +165,7 @@ export function CatalogImport({ userId, bundled }: CatalogImportProps) {
       )}
 
       {result && (
-        <section aria-labelledby="importar-resultado" className="space-y-3">
+        <section ref={resultRef} tabIndex={-1} aria-labelledby="importar-resultado" className="space-y-3">
           <h2 id="importar-resultado" className="font-display text-lg font-semibold">
             Importação concluída
           </h2>

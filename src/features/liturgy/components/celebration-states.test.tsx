@@ -103,7 +103,7 @@ describe("sugestões provisórias", () => {
       />,
     );
     // Sem sugestões carregadas para o momento, a aba busca a lista dele no mesmo endereço.
-    fireEvent.click(screen.getByRole("tab", { name: "Comunhão" }));
+    fireEvent.change(screen.getByRole("combobox", {name:"Momento da missa"}), {target:{value:"comunhao"}});
     expect(router.push).toHaveBeenCalledWith("/preparar-missa?data=2026-12-25&celebracao=natal-noite&momento=comunhao", {
       scroll: false,
     });

@@ -1,3 +1,4 @@
+import { LITURGICAL_MOMENTS } from "../domain/vocabulary";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -93,8 +94,10 @@ function renderPlanner(options: { repertoireId?: string | null; moment?: Liturgi
 
 /** Momentos em abas (Etapa 2E.4A): escolhe a aba e devolve o painel dela. */
 function openMoment(name: string): HTMLElement {
-  fireEvent.click(screen.getByRole("tab", { name }));
-  return screen.getByRole("tabpanel", { name });
+  const moment = LITURGICAL_MOMENTS.find(item => item.label === name);
+  if (!moment) throw new Error(`Momento desconhecido: ${name}`);
+  fireEvent.change(screen.getByRole("combobox", {name:"Momento da missa"}), {target:{value:moment.id}});
+  return screen.getByRole("region", {name:`Sugestões para ${name}`});
 }
 
 function lastToast(): string | undefined {
@@ -148,15 +151,15 @@ describe("sugestões por momento", () => {
   it("a celebração e o tema ordenam antes do título", () => {
     renderPlanner();
     const titles = within(openMoment("Comunhão"))
-      .getAllByRole("link", { name: /^Abrir a cifra de/ })
-      .map((link) => link.getAttribute("aria-label"));
-    expect(titles).toEqual(["Abrir a cifra de Pastor que Reina", "Abrir a cifra de Mesa do Caminho"]);
+      .getAllByRole("link").filter(link => link.getAttribute("href")?.startsWith("/catalogo/"))
+      .map(link => link.textContent);
+    expect(titles).toEqual(["Pastor que ReinaGrupo Imaginário", "Mesa do CaminhoBanda Imaginária"]);
   });
 
   it("abre a cifra guardando o caminho de volta para a celebração", () => {
     renderPlanner();
     openMoment("Comunhão");
-    expect(screen.getByRole("link", { name: "Abrir a cifra de Pastor que Reina" }).getAttribute("href")).toBe(
+    expect(screen.getByRole("link", { name: /Pastor que ReinaGrupo Imaginário/ }).getAttribute("href")).toBe(
       "/catalogo/cat-pastor?missa=2026-11-22",
     );
   });
@@ -185,32 +188,37 @@ describe("sugestões por momento", () => {
   it("o filtro por momento mantém a data e o repertório no endereço", () => {
     router.push.mockClear();
     renderPlanner({ repertoireId: "rep-1", moment: "comunhao" });
-    const tabs = screen.getByRole("tablist", { name: "Momentos da missa" });
-
-    expect(within(tabs).getByRole("tab", { name: "Comunhão" }).getAttribute("aria-selected")).toBe("true");
-    expect(screen.getByRole("tabpanel", { name: "Comunhão" })).toBeDefined();
-    expect(screen.queryByRole("tabpanel", { name: "Entrada" })).toBeNull();
-    // A lista completa traz só este momento: os outros são buscados com o mesmo endereço.
-    fireEvent.click(within(tabs).getByRole("tab", { name: "Entrada" }));
+    const selector = screen.getByRole("combobox", {name:"Momento da missa"}) as HTMLSelectElement;
+    expect(selector.value).toBe("comunhao");
+    expect(screen.getByRole("region", {name:"Sugestões para Comunhão"})).toBeDefined();
+    expect(screen.queryByRole("region", {name:"Sugestões para Entrada"})).toBeNull();
+    fireEvent.change(selector, {target:{value:"entrada"}});
     expect(router.push).toHaveBeenCalledWith("/preparar-missa?data=2026-11-22&momento=entrada&repertorio=rep-1", { scroll: false });
     expect(screen.getByRole("link", { name: "Ver todos os momentos" }).getAttribute("href")).toBe(
       "/preparar-missa?data=2026-11-22&repertorio=rep-1",
     );
   });
 
-  it("as abas seguem o padrão de teclado: setas, Home e End", () => {
+  it("o seletor possui rótulo, onze opções e troca o momento carregado", () => {
     renderPlanner();
-    const entry = screen.getByRole("tab", { name: "Entrada" });
-    expect(entry.getAttribute("aria-selected")).toBe("true");
-    expect(entry.getAttribute("tabindex")).toBe("0");
+    const selector = screen.getByRole("combobox", {name:"Momento da missa"}) as HTMLSelectElement;
+    expect(selector.value).toBe("entrada");
+    expect(within(selector).getAllByRole("option").map(option => [option.getAttribute("value"),option.textContent])).toEqual(LITURGICAL_MOMENTS.map(moment => [moment.id,moment.label]));
+    openMoment("Comunhão");
+    expect(selector.value).toBe("comunhao");
+    expect(screen.getByRole("region", {name:"Sugestões para Comunhão"})).toBeDefined();
+  });
 
-    fireEvent.keyDown(entry, { key: "ArrowRight" });
-    expect(screen.getByRole("tab", { name: "Ato penitencial" }).getAttribute("aria-selected")).toBe("true");
-    expect(document.activeElement).toBe(screen.getByRole("tab", { name: "Ato penitencial" }));
-    fireEvent.keyDown(document.activeElement as Element, { key: "End" });
-    expect(screen.getByRole("tab", { name: "Encerramento" }).getAttribute("aria-selected")).toBe("true");
-    fireEvent.keyDown(document.activeElement as Element, { key: "Home" });
-    expect(screen.getByRole("tabpanel", { name: "Entrada" })).toBeDefined();
+  it("acompanha o momento recebido após navegação sem remontar ou gravar no repertório", () => {
+    const entrance = suggestForCelebration(KING, CANDIDATES, { moments: ["entrada"] });
+    const communion = suggestForCelebration(KING, CANDIDATES, { moments: ["comunhao"] });
+    const view = render(<MassPlanner celebration={CELEBRATION} moments={entrance} activeMoment="entrada" repertoireId={null} />);
+    view.rerender(<MassPlanner celebration={CELEBRATION} moments={communion} activeMoment="comunhao" repertoireId={null} />);
+    expect((screen.getByRole("combobox", { name: "Momento da missa" }) as HTMLSelectElement).value).toBe("comunhao");
+    expect(screen.getByRole("region", { name: "Sugestões para Comunhão" })).toBeDefined();
+    view.rerender(<MassPlanner celebration={CELEBRATION} moments={entrance} activeMoment="entrada" repertoireId={null} />);
+    expect((screen.getByRole("combobox", { name: "Momento da missa" }) as HTMLSelectElement).value).toBe("entrada");
+    expect(writes()).toEqual([]);
   });
 
   it("catálogo fora do ar não é mostrado como falta de sugestões", () => {
@@ -230,7 +238,7 @@ describe("repertório da missa", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Adicionar Pastor que Reina ao repertório (Comunhão)" }));
 
-    const panel = screen.getByRole("region", { name: "Repertório desta missa" });
+    const panel = screen.getByRole("dialog", { name: "Repertório em construção" });
     expect(await within(panel).findByRole("link", { name: "Entrar" })).toBeDefined();
     expect(within(panel).getByText("Entre na sua conta para montar o repertório desta missa.")).toBeDefined();
     expect(writes().length).toBe(before);
@@ -274,21 +282,21 @@ describe("repertório da missa", () => {
     fireEvent.click(screen.getByRole("button", { name: "Adicionar Portas Abertas da Manhã ao repertório (Entrada)" }));
     await waitFor(() => expect(massRepertoires()[0].items).toHaveLength(2));
 
-    // A entrada vem antes da comunhão, mesmo adicionada depois; só a referência é gravada.
+    // Preserva a ordem de inclusão, independentemente do momento; só a referência é gravada.
     expect(massRepertoires()[0].items.map((item) => [item.songId, item.source, item.moment])).toEqual([
-      ["cat-entrada", "catalog", "entrada"],
       ["cat-pastor", "catalog", "comunhao"],
+      ["cat-entrada", "catalog", "entrada"],
     ]);
     expect(JSON.stringify(fakeAccount.library())).not.toContain("[C]Letra");
     openMoment("Comunhão");
     expect(await screen.findByRole("button", { name: "Pastor que Reina já está no repertório" })).toBeDefined();
 
-    fireEvent.click(screen.getByRole("button", { name: /Repertório em construção/ }));
-    const panel = screen.getByRole("region", { name: "Repertório desta missa" });
+    fireEvent.click(screen.getByRole("button", { name: /^Abrir repertório desta missa,/i }));
+    const panel = screen.getByRole("dialog", { name: "Repertório em construção" });
     const rows = within(panel).getAllByRole("listitem");
     expect(rows.map((row) => row.textContent)).toEqual([
-      expect.stringContaining("1. Portas Abertas da ManhãEntrada"),
-      expect.stringContaining("2. Pastor que ReinaComunhão"),
+      expect.stringContaining("1. Pastor que ReinaComunhão"),
+      expect.stringContaining("2. Portas Abertas da ManhãEntrada"),
     ]);
 
     fireEvent.click(within(panel).getByRole("button", { name: "Aumentar um semitom de Pastor que Reina" }));
@@ -401,7 +409,7 @@ describe("ausência de sugestões explicada", () => {
     const communion = openMoment("Comunhão");
     expect(within(communion).queryByText(/classificação conferida pela equipe/)).toBeNull();
     expect(within(communion).queryByText(/cifra ainda não disponível/)).toBeNull();
-    expect(within(communion).getByRole("link", { name: "Abrir a cifra de Mesa do Caminho" }).textContent).toBe("Abrir música");
+    expect(within(communion).getByRole("link", { name: /Mesa do CaminhoBanda Imaginária/ }).getAttribute("href")).toBe("/catalogo/cat-mesa?missa=2026-11-22");
   });
 });
 

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { startTransition, useState } from "react";
 
+import { AddToRepertoire } from "@/features/catalog/components/add-to-repertoire";
 import { EmptyState } from "@/components/layout/empty-state";
 import { MENU_ITEM_CLASS, MoreActionsMenu } from "@/components/layout/more-actions-menu";
 import { PageSkeleton } from "@/components/layout/page-skeleton";
@@ -195,6 +196,7 @@ function SongDetail({
                 )}
           actions={
             <>
+              <AddToRepertoire songId={song.id} source={source} title={song.title} originalKey={song.originalKey} contentType={song.contentType} primary />
               {video && <VideoReference key={`${song.id}:${video.videoId}:${video.startSeconds ?? 0}`} title={song.title} videoId={video.videoId} videoTitle={video.title} startSeconds={video.startSeconds} />}
               {canPresent && (
                 <Button size="lg" onClick={startPresentation}>

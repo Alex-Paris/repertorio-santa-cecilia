@@ -1,3 +1,4 @@
+import { getRepertoireAction } from "@/test/repertoire-actions";
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -58,7 +59,7 @@ beforeEach(async () => {
 });
 
 describe("repertório de missa", () => {
-  it("mostra a celebração, a data e o momento de cada música, na ordem da missa", async () => {
+  it("mostra a celebração, a data e o momento de cada música, na ordem de inclusão", async () => {
     render(<RepertoireDetailScreen repertoireId={massId} />);
     await screen.findByRole("heading", { level: 1, name: "Missa de Cristo Rei" });
 
@@ -69,14 +70,14 @@ describe("repertório de missa", () => {
     );
     const rows = within(screen.getByRole("list")).getAllByRole("listitem");
     expect(rows.map((row) => row.textContent)).toEqual([
-      expect.stringContaining("EntradaCaminhos"),
       expect.stringContaining("ComunhãoPastor que Reina"),
+      expect.stringContaining("EntradaCaminhos"),
     ]);
   });
 
   it("alterar o tom preserva o momento litúrgico", async () => {
     render(<RepertoireDetailScreen repertoireId={massId} />);
-    fireEvent.click(await screen.findByRole("button", { name: "Ajustar tom e anotações de Pastor que Reina" }));
+    fireEvent.click(getRepertoireAction("Ajustar tom e anotações de Pastor que Reina"));
     fireEvent.click(screen.getByRole("button", { name: "Aumentar um semitom" }));
 
     await waitFor(() =>
@@ -90,14 +91,14 @@ describe("repertório de missa", () => {
 
   it("troca e remove o momento de um item, sem mudar a ordem", async () => {
     render(<RepertoireDetailScreen repertoireId={massId} />);
-    fireEvent.click(await screen.findByRole("button", { name: "Ajustar tom e anotações de Pastor que Reina" }));
+    fireEvent.click(getRepertoireAction("Ajustar tom e anotações de Pastor que Reina"));
 
     fireEvent.change(screen.getByLabelText("Momento da missa"), { target: { value: "acao-de-gracas" } });
-    await waitFor(() => expect(stored(massId).items[1].moment).toBe("acao-de-gracas"));
+    await waitFor(() => expect(stored(massId).items[0].moment).toBe("acao-de-gracas"));
 
     fireEvent.change(screen.getByLabelText("Momento da missa"), { target: { value: "" } });
-    await waitFor(() => expect(stored(massId).items[1]).not.toHaveProperty("moment"));
-    expect(stored(massId).items.map((item) => item.songId)).toEqual(["song-caminhos", PASTOR.id]);
+    await waitFor(() => expect(stored(massId).items[0]).not.toHaveProperty("moment"));
+    expect(stored(massId).items.map((item) => item.songId)).toEqual([PASTOR.id,"song-caminhos"]);
   });
 });
 
@@ -107,7 +108,7 @@ describe("repertórios antigos", () => {
     await screen.findByRole("heading", { level: 1, name: "Ensaio Acústico" });
 
     expect(screen.queryByRole("link", { name: "Ver a celebração e as sugestões" })).toBeNull();
-    fireEvent.click(screen.getAllByRole("button", { name: /^Ajustar tom e anotações de/ })[0]);
+    fireEvent.click(getRepertoireAction(/^Ajustar tom e anotações de/));
     expect(screen.queryByLabelText("Momento da missa")).toBeNull();
     expect(stored(ENSAIO)).not.toHaveProperty("mass");
     expect(stored(ENSAIO).items.every((item) => !("moment" in item))).toBe(true);
@@ -153,7 +154,7 @@ describe("formulário do repertório", () => {
 
     await waitFor(() => expect(stored(massId)).not.toHaveProperty("mass"));
     // Os momentos já escolhidos ficam nos itens: desvincular não apaga escolhas.
-    expect(stored(massId).items.map((item) => item.moment)).toEqual(["entrada", "comunhao"]);
+    expect(stored(massId).items.map((item) => item.moment)).toEqual(["comunhao", "entrada"]);
   });
 });
 

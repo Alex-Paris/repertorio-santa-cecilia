@@ -1,10 +1,11 @@
 "use client";
 
 import { cn } from "cn";
-import { ListPlus } from "lucide-react";
+import { ListPlus, Plus } from "lucide-react";
 import Link from "next/link";
 import { useId, useState, type FormEvent } from "react";
 
+import { OverlayPanel } from "@/components/layout/overlay-panel";
 import { FormError } from "@/components/layout/form-error";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
@@ -14,7 +15,7 @@ import { getLibraryErrorMessage } from "@/features/library/domain/library-errors
 import { pickCurrentRepertoire } from "@/features/repertoires/components/repertoire-builder";
 import { hasSongInRepertoire } from "@/features/repertoires/services/repertoire-items";
 import type { MusicalKey } from "@/features/songs/domain/musical-key";
-import type { CatalogContentType } from "@/features/songs/domain/song";
+import type { CatalogContentType, SongSource } from "@/features/songs/domain/song";
 import { LITURGICAL_MOMENTS, type LiturgicalMomentId } from "@/features/liturgy/domain/vocabulary";
 import {
   formatSemitoneOffset,
@@ -41,6 +42,8 @@ interface AddToRepertoireProps {
   primary?: boolean;
   /** Painel flutuante sob o botão, sem empurrar a barra de controles da cifra. */
   popover?: boolean;
+  iconOnly?: boolean;
+  source?: SongSource;
 }
 
 const OFFSETS = Array.from(
@@ -61,44 +64,19 @@ export function AddToRepertoire({
   preferCurrent,
   primary = false,
   popover = false,
+  iconOnly = false,
+  source = "catalog",
 }: AddToRepertoireProps) {
   const [open, setOpen] = useState(false);
-  const panelId = useId();
 
-  return (
-    <div className={cn(popover && "relative")}>
-      <Button
-        variant={primary ? "default" : "outline"}
-        size="lg"
-        className={cn(popover && "h-9 px-3")}
-        aria-expanded={open}
-        aria-controls={panelId}
-        onClick={() => setOpen((current) => !current)}
-      >
-        <ListPlus data-icon="inline-start" aria-hidden />
-        Adicionar ao repertório
-      </Button>
-      {open && (
-        <div
-          id={panelId}
-          className={cn(
-            "rounded-xl border bg-card p-4",
-            popover ? "absolute top-full right-0 z-30 mt-2 w-[min(22rem,calc(100vw-2rem))] shadow-xl" : "mt-3",
-          )}
-        >
-          <AddToRepertoirePanel
-            songId={songId}
-            title={title}
-            originalKey={originalKey}
-            contentType={contentType}
-            suggestedMoments={suggestedMoments}
-            preferCurrent={preferCurrent}
-            onDone={() => setOpen(false)}
-          />
-        </div>
-      )}
-    </div>
-  );
+  return <OverlayPanel open={open} onOpenChange={setOpen} title="Adicionar ao repertório" description={title}
+    trigger={<Button variant={primary ? "default" : "outline"} size={iconOnly ? "icon" : "lg"}
+      className={cn(popover && !iconOnly && "px-3")} aria-label={iconOnly ? `Adicionar ${title} ao repertório` : "Adicionar ao repertório"}>
+      {iconOnly ? <Plus aria-hidden /> : <><ListPlus data-icon="inline-start" aria-hidden />Adicionar</>}
+    </Button>}>
+    {open && <AddToRepertoirePanel songId={songId} title={title} originalKey={originalKey} contentType={contentType}
+      suggestedMoments={suggestedMoments} preferCurrent={preferCurrent} source={source} onDone={() => setOpen(false)} />}
+  </OverlayPanel>;
 }
 
 function AddToRepertoirePanel({
@@ -109,6 +87,7 @@ function AddToRepertoirePanel({
   suggestedMoments = [],
   preferCurrent,
   onDone,
+  source = "catalog",
 }: AddToRepertoireProps & { onDone: () => void }) {
   const snapshot = useLibrary();
   const [repertoireId, setRepertoireId] = useState(() =>
@@ -163,7 +142,7 @@ function AddToRepertoirePanel({
       setError("Escolha um repertório.");
       return;
     }
-    if (hasSongInRepertoire(repertoire.items, "catalog", songId)) {
+    if (hasSongInRepertoire(repertoire.items, source, songId)) {
       setError("Esta música já está neste repertório.");
       return;
     }
@@ -174,10 +153,10 @@ function AddToRepertoirePanel({
         repertoire.id,
         songId,
         repertoire.revision,
-        "catalog",
+        source,
         moment || undefined,
       );
-      const added = updated.items.find((item) => item.source === "catalog" && item.songId === songId);
+      const added = updated.items.find((item) => item.source === source && item.songId === songId);
       if (added && semitones !== 0) {
         // O tom fica no item deste repertório; a música do catálogo não muda.
         await repertoireRepository.updateItem(repertoire.id, added.id, { transposeSemitones: semitones }, updated.revision);

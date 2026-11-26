@@ -3,17 +3,14 @@
 import { cn } from "cn";
 import { ArrowLeft, ChevronDown, FileMusic, MonitorPlay, Music2 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 
 import { EmptyState } from "@/components/layout/empty-state";
 import { Button } from "@/components/ui/button";
 import type { CatalogSongView } from "@/features/library/domain/library";
 import { ClassificationSummary } from "@/features/liturgy/components/classification-summary";
-import { MomentTag, SeasonTag } from "@/features/liturgy/components/liturgy-tags";
-import { themeLabel } from "@/features/liturgy/domain/vocabulary";
 import { ChordSheet } from "@/features/songs/components/chord-sheet";
 import { ExternalSourceNotice } from "@/features/songs/components/external-source-notice";
-import { KeyLabel } from "@/features/songs/components/key-label";
 import { PresentationStage } from "@/features/songs/components/presentation-stage";
 import { PrintMenu } from "@/features/printing/components/print-menu";
 import { FontSizeControls, ReadingModeToggle } from "@/features/songs/components/reader-controls";
@@ -36,6 +33,7 @@ interface CatalogSongDetailProps {
   /** No painel central do catálogo, que rola por conta própria (a barra de controles se prende ao topo dele). */
   contained?: boolean;
   className?: string;
+  repertoirePanel?: ReactNode;
 }
 
 /**
@@ -50,6 +48,7 @@ export function CatalogSongDetail({
   currentRepertoire,
   contained = false,
   className,
+  repertoirePanel,
 }: CatalogSongDetailProps) {
   const { fontSize, readingMode } = useReaderPreferences();
   const [semitones, setSemitones] = useState(0);
@@ -57,19 +56,18 @@ export function CatalogSongDetail({
   const chordPro = song.contentType === "external-link" ? undefined : song.chordPro;
   const Heading = headingLevel === 1 ? "h1" : "h2";
   const liturgy = song.liturgy;
-  const themes = liturgy?.themes ?? [];
 
   return (
     <>
       <article
         data-app-chrome
         aria-labelledby="musica-titulo"
-        className={cn("min-w-0 rounded-2xl border bg-card p-4 shadow-[0_1px_3px_rgb(71_45_27/0.06)] md:p-5", className)}
+        className={cn("min-w-0", className)}
       >
         {back && (
           <Link
             href={back.href}
-            className="mb-3 inline-flex items-center gap-1.5 rounded-md text-sm text-muted-foreground transition-colors hover:text-foreground"
+            className="mb-3 inline-flex min-h-11 items-center gap-1.5 rounded-md text-sm text-muted-foreground transition-colors hover:text-foreground"
           >
             <ArrowLeft className="size-4" aria-hidden />
             {back.label}
@@ -81,7 +79,7 @@ export function CatalogSongDetail({
           <div className="min-w-0 flex-1">
             <Heading
               id="musica-titulo"
-              className="font-display text-[1.5rem] leading-tight font-semibold text-balance text-heading md:text-[1.85rem]"
+              className="text-3xl leading-tight font-semibold text-balance text-heading md:text-4xl"
             >
               {song.title}
             </Heading>
@@ -98,27 +96,8 @@ export function CatalogSongDetail({
           </div>
         </header>
 
-        {/* Etiquetas da classificação e, na mesma linha, as ações sobre a música. */}
+        {/* As classificações completas ficam no painel de fontes abaixo da leitura. */}
         <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-2">
-          {liturgy && (liturgy.moments.length > 0 || liturgy.seasons.length > 0 || themes.length > 0) && (
-            <ul aria-label="Classificação litúrgica" className="flex min-w-[min(100%,14rem)] flex-[1_1_14rem] flex-wrap gap-1.5">
-              {liturgy.moments.map((moment) => (
-                <li key={moment}>
-                  <MomentTag moment={moment} />
-                </li>
-              ))}
-              {liturgy.seasons.map((season) => (
-                <li key={season}>
-                  <SeasonTag season={season} />
-                </li>
-              ))}
-              {themes.length > 0 && (
-                <li className="inline-flex items-center rounded-full border bg-background/60 px-2.5 py-0.5 text-[0.8rem] text-muted-foreground">
-                  {themes.map(themeLabel).join(" · ")}
-                </li>
-              )}
-            </ul>
-          )}
           {/* Ações sobre a música; os controles de leitura ficam na barra presa sobre a cifra. */}
           <div className="ml-auto flex max-w-full flex-wrap items-center justify-end gap-2">
             {chordPro && (
@@ -150,6 +129,8 @@ export function CatalogSongDetail({
           </div>
         </div>
 
+        {repertoirePanel}
+
         {/*
           Barra de controles presa ao topo enquanto a cifra rola: no catálogo (zona central com
           rolagem própria) fica no topo da zona; na página própria, sob o cabeçalho.
@@ -158,18 +139,12 @@ export function CatalogSongDetail({
           role="group"
           aria-label="Controles da cifra"
           className={cn(
-            "sticky z-10 -mx-4 mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 border-y border-gold/25 bg-card/95 px-4 py-2 backdrop-blur md:-mx-5 md:px-5",
-            contained ? "top-14 md:top-0" : "top-14 md:top-16 lg:top-[4.6rem]",
+            "sticky z-10 -mx-4 mt-3 flex flex-wrap items-center gap-2 border-y bg-background px-4 py-3 md:-mx-5 md:px-5",
+            contained ? "top-16 md:top-0" : "top-16 lg:top-[4.5rem]",
             // Em telas baixas o cabeçalho não fica preso: a barra encosta no topo.
             "[@media(max-height:520px)]:top-0",
           )}
         >
-          {song.contentType !== "external-link" && song.originalKey && (
-            <p className="flex items-baseline gap-1.5 text-sm">
-              <span aria-hidden>Tom original:</span>
-              <KeyLabel musicalKey={song.originalKey} />
-            </p>
-          )}
           {chordPro && <ReadingModeToggle compact />}
           {/* Na letra não há acordes a transpor; o tom escolhido volta igual na cifra. */}
           {chordPro && song.originalKey && readingMode === "chords" && (
@@ -202,7 +177,7 @@ export function CatalogSongDetail({
             {chordPro && (
               // Letra e acordes em serifa, como na referência; os acordes seguem em colunas sobre a sílaba.
               // Sem rolagem própria: a cifra usa toda a altura da zona (ou da página).
-              <div className="overflow-x-auto rounded-xl border bg-background/40 px-5 py-4 font-display md:px-7 md:py-5 [&_.font-mono]:font-display [&_.font-mono]:text-[0.95em]">
+              <div className="overflow-x-auto py-4">
                 <ChordSheet source={chordPro} semitones={semitones} fontSize={fontSize} mode={readingMode} />
               </div>
             )}

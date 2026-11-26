@@ -1,3 +1,4 @@
+import { clickReaderControl } from "@/test/reader-actions";
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -132,7 +133,7 @@ describe("leitor público", () => {
 
   it("imprime somente a música aberta e mantém o tom temporário escolhido", () => {
     openSong(id("a"));
-    fireEvent.click(screen.getByRole("button", { name: "Aumentar um semitom" }));
+    clickReaderControl("Aumentar um semitom");
     fireEvent.click(screen.getByRole("button", { name: "Imprimir" }));
     expect(screen.getByRole("link", { name: "Com cifra" }).getAttribute("href")).toBe(`/s/${TOKEN}/imprimir?formato=cifras&item=${id("a")}&tom=3`);
   });
@@ -148,7 +149,7 @@ describe("leitor público", () => {
   it("o ajuste de tom é temporário e não faz nenhuma requisição", () => {
     openSong(id("a"));
 
-    fireEvent.click(screen.getByRole("button", { name: "Aumentar um semitom" }));
+    clickReaderControl("Aumentar um semitom");
 
     expect(screen.getAllByText("A#").length).toBeGreaterThan(0);
     expect(fetchSpy).not.toHaveBeenCalled();

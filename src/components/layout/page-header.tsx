@@ -15,7 +15,7 @@ export function PageHeader({ title, description, back, actions }: PageHeaderProp
       {back && (
         <Link
           href={back.href}
-          className="mb-3 inline-flex items-center gap-1.5 rounded-md text-sm text-muted-foreground transition-colors hover:text-foreground"
+          className="mb-3 inline-flex min-h-11 items-center gap-1.5 rounded-md text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
           <ArrowLeft className="size-4" aria-hidden />
           {back.label}
@@ -27,7 +27,7 @@ export function PageHeader({ title, description, back, actions }: PageHeaderProp
       */}
       <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
         <div className="min-w-0 flex-[1_1_20rem]">
-          <h1 className="font-display text-3xl leading-tight font-semibold tracking-tight text-balance text-heading md:text-4xl">{title}</h1>
+          <h1 className="text-3xl leading-tight font-semibold tracking-tight text-balance text-heading md:text-4xl">{title}</h1>
           {description && <div className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base">{description}</div>}
         </div>
         {actions && <div className="flex max-w-full flex-wrap gap-2">{actions}</div>}

@@ -8,7 +8,6 @@ import {
   BookOpen,
   Check,
   ChevronDown,
-  ChevronUp,
   ListMusic,
   LoaderCircle,
   Minus,
@@ -19,6 +18,7 @@ import {
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
 
+import { OverlayPanel } from "@/components/layout/overlay-panel";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { useLibrary } from "@/features/library/components/use-library";
 import { repertoireRepository } from "@/features/library/data/browser-library";
@@ -29,8 +29,10 @@ import { KeyLabel } from "@/features/songs/components/key-label";
 import { transposableKey } from "@/features/songs/domain/song";
 import { MAX_TRANSPOSE_SEMITONES, MIN_TRANSPOSE_SEMITONES, transposeKey } from "@/features/songs/domain/transposition";
 import { showToast } from "@/lib/utils/toast";
+import { useKeyboardOpen } from "@/lib/utils/use-keyboard-open";
 
 import type { Repertoire } from "../domain/repertoire";
+import { getRepertoireSongHref } from "../services/repertoire-reading-context";
 import { buildRepertoireEntries, type RepertoireEntry } from "../services/repertoire-service";
 import type { MoveDirection } from "../services/repertoire-items";
 import { saveSemitones, useItemSemitones } from "./save-item-semitones";
@@ -73,6 +75,7 @@ interface RepertoireBuilderProps {
   /** Conteúdo complementar sob o painel (dicas), só no computador. */
   aside?: ReactNode;
   className?: string;
+  finalFocus?: () => HTMLElement | boolean | null;
 }
 
 /**
@@ -97,79 +100,35 @@ export function RepertoireBuilder({
   addMore,
   aside,
   className,
+  finalFocus,
 }: RepertoireBuilderProps) {
   const count = repertoire?.items.length ?? 0;
+  const keyboardOpen = useKeyboardOpen();
   const summary = repertoire
     ? `${repertoire.name} · ${count === 1 ? "1 música" : `${count} músicas`}`
     : status === "signed-out"
       ? "Entre para montar um repertório"
       : emptySummary;
-  const bodyId = `${label.replace(/\W+/g, "-").toLowerCase()}-conteudo`;
-
   return (
-    <div
-      className={cn(
-        "fixed inset-x-3 bottom-[calc(4.6rem+env(safe-area-inset-bottom))] z-20 md:inset-x-auto md:right-4 md:bottom-4 md:w-[25rem]",
-        "[@media(max-height:520px)]:bottom-[calc(3.6rem+env(safe-area-inset-bottom))] md:[@media(max-height:520px)]:bottom-3",
-        "xl:sticky xl:top-[5.6rem] xl:right-auto xl:bottom-auto xl:z-auto xl:w-auto xl:self-start",
-        className,
-      )}
-    >
-      <section
-        aria-label={label}
-        className="flex max-h-[calc(100dvh-9rem)] flex-col overflow-hidden rounded-2xl border bg-card shadow-xl xl:max-h-[calc(100dvh-6.6rem)] xl:shadow-sm"
-      >
-        <button
-          type="button"
-          aria-expanded={open}
-          aria-controls={bodyId}
-          onClick={onToggle}
-          className="flex w-full items-center gap-3 bg-header px-4 py-2.5 text-left text-header-foreground xl:hidden [@media(max-height:520px)]:py-1.5"
-        >
-          <ListMusic className="size-5 shrink-0 text-header-accent" aria-hidden />
-          {/* Uma linha só na barra recolhida: o tipo e o resumo lado a lado. */}
-          <span className="flex min-w-0 flex-1 items-baseline gap-2">
-            <span className="shrink-0 text-xs text-header-muted">{repertoire ? title : "Repertório"}</span>
-            <span className="truncate font-medium">{summary}</span>
-          </span>
-          {open ? <ChevronDown className="size-5 shrink-0" aria-hidden /> : <ChevronUp className="size-5 shrink-0" aria-hidden />}
-        </button>
-
-        <div aria-hidden className="hidden items-center gap-3 bg-header px-5 py-3.5 text-header-foreground xl:flex">
-          <ListMusic className="size-9 shrink-0 stroke-[1.4] text-header-accent" />
-          <div className="min-w-0">
-            <p className="font-display text-[1.45rem] leading-tight font-semibold">{title}</p>
-            <p className="truncate text-sm text-header-muted">{subtitle ?? (repertoire ? repertoire.name : "Nenhum repertório escolhido")}</p>
-          </div>
+    <section aria-label={label} className={cn("repertoire-dock", className)} style={{ display:keyboardOpen && !open ? "none" : undefined }} data-print-hide>
+      <OverlayPanel keepMounted open={open} finalFocus={finalFocus} onOpenChange={next => { if(next !== open) onToggle(); }} title={title} description={subtitle ?? repertoire?.name}
+        trigger={<button type="button" className="repertoire-dock-trigger" aria-label={`Abrir ${label.toLowerCase()}, ${summary}`}>
+          <ListMusic className="size-5 shrink-0 text-primary" aria-hidden />
+          <span className="min-w-0 flex-1 text-left"><strong className="block text-sm">Repertório ativo</strong><span className="block truncate text-xs text-muted-foreground">{summary}</span></span>
+          <span className="grid size-7 shrink-0 place-items-center rounded-full bg-secondary text-xs font-semibold text-primary">{count}</span>
+          <ChevronDown className="size-5 shrink-0" aria-hidden />
+        </button>}>
+        <div className="space-y-4" role="region" aria-label={label + " aberto"}>
+          {hint && <p role="status" className="text-sm font-medium">{hint}</p>}
+          {status === "loading" && <p className="text-sm text-muted-foreground">Verificando sua conta…</p>}
+          {status === "signed-out" && <SignInInvite />}
+          {status === "remote-error" && <p className="text-sm">Sua biblioteca está indisponível no momento. Nada foi alterado.</p>}
+          {library && !repertoire && chooser}
+          {library && repertoire && <BuildingList library={library} repertoire={repertoire} emptyText={emptyText} addMore={addMore} onChange={onChangeRepertoire} />}
+          {aside}
         </div>
-
-        <div id={bodyId} className={cn("min-h-0 flex-1 flex-col overflow-y-auto", open ? "flex" : "hidden", "xl:flex")}>
-          <div className="space-y-3 px-3 py-3 xl:px-4">
-            {hint && (
-              <p role="status" className="text-sm font-medium">
-                {hint}
-              </p>
-            )}
-            {status === "loading" && <p className="text-sm text-muted-foreground">Verificando sua conta…</p>}
-            {status === "signed-out" && <SignInInvite />}
-            {status === "remote-error" && (
-              <p className="text-sm">Sua biblioteca está indisponível no momento. Nada foi alterado.</p>
-            )}
-            {library && !repertoire && chooser}
-            {library && repertoire && (
-              <BuildingList
-                library={library}
-                repertoire={repertoire}
-                emptyText={emptyText}
-                addMore={addMore}
-                onChange={onChangeRepertoire}
-              />
-            )}
-          </div>
-        </div>
-      </section>
-      {aside && <div className="mt-3 hidden xl:block">{aside}</div>}
-    </div>
+      </OverlayPanel>
+    </section>
   );
 }
 
@@ -290,7 +249,7 @@ function BuildingList({ library, repertoire, emptyText, addMore, onChange }: Bui
           {entries.length > 0 && (
             <Link
               href={`/repertorios/${repertoire.id}/imprimir`}
-              className="inline-flex h-8 items-center gap-1 rounded-md px-2 text-xs underline-offset-3 hover:underline"
+              className="inline-flex min-h-11 items-center gap-1 rounded-md px-2 text-xs underline-offset-3 hover:underline"
             >
               <Printer className="size-3.5" aria-hidden />
               Imprimir
@@ -321,7 +280,7 @@ function BuildingItem({ repertoire, entry, number, first, last, busy, onMove, on
   const semitones = useItemSemitones({ repertoireId: repertoire.id, itemId: item.id }, item.transposeSemitones);
   const title = song?.title ?? "Música indisponível";
   const key = song ? transposableKey(song) : null;
-  const iconButton = "size-8 text-muted-foreground hover:text-foreground";
+  const iconButton = "size-11 text-muted-foreground hover:text-foreground";
 
   function change(delta: number): void {
     void saveSemitones(repertoire.id, item.id, semitones + delta, repertoire.revision);
@@ -336,20 +295,20 @@ function BuildingItem({ repertoire, entry, number, first, last, busy, onMove, on
         {number}
       </span>
       <div className="min-w-0 flex-1">
-        <p className="font-display text-[0.98rem] leading-snug font-semibold wrap-break-word text-heading">
+        <p className="text-base leading-snug font-semibold wrap-break-word text-heading">
           <span className="sr-only">{number}. </span>
-          {title}
+          {song ? <Link className="inline-flex min-h-11 items-center hover:underline" href={getRepertoireSongHref(repertoire.id, item)}>{title}</Link> : title}
         </p>
         <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1.5">
           {item.moment && <p className="text-xs text-muted-foreground">{momentLabel(item.moment)}</p>}
-          <div className="ml-auto flex items-center gap-1">
+          <div className="ml-auto flex max-w-full flex-wrap items-center gap-1">
             {key && (
               <div role="group" aria-label={`Tom de ${title}`} className="flex items-center rounded-full border bg-background/60">
                 <Button
                   type="button"
                   variant="ghost"
                   size="icon-lg"
-                  className="size-8 rounded-full"
+                  className="size-11 rounded-full"
                   aria-label={`Diminuir um semitom de ${title}`}
                   disabled={semitones <= MIN_TRANSPOSE_SEMITONES}
                   onClick={() => change(-1)}
@@ -363,7 +322,7 @@ function BuildingItem({ repertoire, entry, number, first, last, busy, onMove, on
                   type="button"
                   variant="ghost"
                   size="icon-lg"
-                  className="size-8 rounded-full"
+                  className="size-11 rounded-full"
                   aria-label={`Aumentar um semitom de ${title}`}
                   disabled={semitones >= MAX_TRANSPOSE_SEMITONES}
                   onClick={() => change(1)}

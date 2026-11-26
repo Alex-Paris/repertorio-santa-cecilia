@@ -8,7 +8,7 @@ import { buttonVariants } from "@/components/ui/button";
 
 /** Aparência de um item do menu, para links e botões que entram nele. */
 export const MENU_ITEM_CLASS =
-  "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-popover-foreground hover:bg-muted focus-visible:bg-muted [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-muted-foreground";
+  "flex min-h-11 w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-popover-foreground hover:bg-muted focus-visible:bg-muted [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-muted-foreground";
 
 interface MoreActionsMenuProps {
   children: ReactNode;
@@ -16,6 +16,7 @@ interface MoreActionsMenuProps {
   label?: string;
   align?: "start" | "end";
   className?: string;
+  iconOnly?: boolean;
 }
 
 /**
@@ -27,7 +28,7 @@ interface MoreActionsMenuProps {
  * devolver o foco. Fecha com Esc, com um clique fora e ao seguir um link; enquanto um diálogo
  * aberto a partir dele estiver na tela, fica aberto.
  */
-export function MoreActionsMenu({ children, label = "Mais ações", align = "end", className }: MoreActionsMenuProps) {
+export function MoreActionsMenu({ children, label = "Mais ações", align = "end", className, iconOnly = false }: MoreActionsMenuProps) {
   const [open, setOpen] = useState(false);
   const panelId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
@@ -35,7 +36,7 @@ export function MoreActionsMenu({ children, label = "Mais ações", align = "end
 
   useEffect(() => {
     if (!open) return;
-    const dialogOpen = () => document.querySelector('[role="alertdialog"], [role="dialog"]') !== null;
+    const dialogOpen = () => document.querySelector('[role="alertdialog"]:not([hidden]), [role="dialog"]:not([hidden])') !== null;
     function onPointer(event: PointerEvent): void {
       if (dialogOpen()) return;
       if (!rootRef.current?.contains(event.target as Node)) setOpen(false);
@@ -58,15 +59,16 @@ export function MoreActionsMenu({ children, label = "Mais ações", align = "end
     <div ref={rootRef} data-print-hide className={cn("relative inline-flex", className)}>
       <button
         ref={buttonRef}
+        data-more-trigger
         type="button"
         aria-label={label}
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => setOpen((value) => !value)}
-        className={cn(buttonVariants({ variant: "outline", size: "lg" }))}
+        className={cn(buttonVariants({ variant: "outline", size: iconOnly ? "icon" : "lg" }))}
       >
         <MoreHorizontal data-icon="inline-start" aria-hidden />
-        Mais
+        {!iconOnly && "Mais"}
       </button>
       <div
         id={panelId}

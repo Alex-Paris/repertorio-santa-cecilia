@@ -1,3 +1,4 @@
+import { LITURGICAL_MOMENTS } from "../domain/vocabulary";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -43,10 +44,13 @@ function renderPlanner(candidates: SuggestionCandidate[]) {
   );
 }
 
-const openMoment = (name: string) => {
-  fireEvent.click(screen.getByRole("tab", { name }));
-  return screen.getByRole("tabpanel", { name });
-};
+function openMoment(name: string): HTMLElement {
+  const moment = LITURGICAL_MOMENTS.find(item => item.label === name);
+  if (!moment) throw new Error(`Momento desconhecido: ${name}`);
+  fireEvent.change(screen.getByRole("combobox", {name:"Momento da missa"}), {target:{value:moment.id}});
+  return screen.getByRole("region", {name:`Sugestões para ${name}`});
+}
+
 
 beforeEach(async () => {
   router.push.mockClear();
@@ -102,13 +106,14 @@ describe("aviso editorial único", () => {
 });
 
 describe("sugestões conforme a quantidade", () => {
-  it("uma música ocupa a largura; várias viram cartões compactos em grade", () => {
+  it("uma ou várias músicas mantêm a lista legível e suas ações", () => {
     renderPlanner([ENTRADA, COMUNHAO_A, COMUNHAO_B]);
-    const entrance = screen.getByRole("tabpanel", { name: "Entrada" });
-    expect(entrance.querySelector("ul.grid")?.className).not.toContain("grid-cols");
+    const entrance = screen.getByRole("region", { name: "Sugestões para Entrada" });
+    expect(within(entrance).getAllByRole("button",{name:/^Adicionar .* ao repertório/})).toHaveLength(1);
 
     const communion = openMoment("Comunhão");
-    expect(communion.querySelector("ul.grid")?.className).toContain("grid-cols-2");
+    expect(within(communion).getByText("Mesa Fictícia")).toBeDefined();
+    expect(within(communion).getByText("Pão Fictício")).toBeDefined();
     expect(within(communion).getAllByRole("button", { name: /^Adicionar .* ao repertório/ })).toHaveLength(2);
   });
 
@@ -121,31 +126,23 @@ describe("sugestões conforme a quantidade", () => {
     );
 
     fireEvent.click(within(offertory).getByRole("button", { name: /Comunhão/ }));
-    expect(screen.getByRole("tab", { name: "Comunhão" }).getAttribute("aria-selected")).toBe("true");
-    expect(document.activeElement).toBe(screen.getByRole("tab", { name: "Comunhão" }));
+    expect((screen.getByRole("combobox", {name:"Momento da missa"}) as HTMLSelectElement).value).toBe("comunhao");
+    expect(document.activeElement).toBe(screen.getByRole("combobox", {name:"Momento da missa"}));
   });
 });
 
 describe("navegação pelos onze momentos", () => {
-  it("todas as abas existem, com a contagem visível e o nome acessível limpo", () => {
-    renderPlanner([ENTRADA, COMUNHAO_A, COMUNHAO_B]);
-    const tabs = screen.getAllByRole("tab");
-    expect(tabs).toHaveLength(11);
-    const communion = screen.getByRole("tab", { name: "Comunhão" });
-    expect(communion.textContent).toBe("Comunhão2");
-    expect(screen.getByRole("tab", { name: "Santo" }).className).toContain("border-dashed");
+  it("oferece os onze momentos sem esconder opções numa fileira horizontal", () => {
+    renderPlanner([ENTRADA,COMUNHAO_A,COMUNHAO_B]);
+    const selector=screen.getByRole("combobox",{name:"Momento da missa"});
+    expect(within(selector).getAllByRole("option")).toHaveLength(11);
+    expect(within(selector).getAllByRole("option").map(option=>option.textContent)).toEqual(LITURGICAL_MOMENTS.map(moment=>moment.label));
   });
-
-  it("no celular, setas rolam a fileira; elas não entram na ordem do Tab", () => {
+  it("o seletor permanece na ordem normal de foco", () => {
     renderPlanner([ENTRADA]);
-    const next = screen.getByRole("button", { name: "Ver próximos momentos" });
-    const previous = screen.getByRole("button", { name: "Ver momentos anteriores" });
-    expect(next.getAttribute("tabindex")).toBe("-1");
-    expect(previous.getAttribute("tabindex")).toBe("-1");
-    const row = screen.getByRole("tablist", { name: "Momentos da missa" });
-    row.scrollBy = vi.fn();
-    fireEvent.click(next);
-    expect(row.scrollBy).toHaveBeenCalled();
+    const selector=screen.getByRole("combobox",{name:"Momento da missa"});
+    expect(selector.tabIndex).toBe(0);
+    expect(screen.queryByRole("button",{name:"Ver próximos momentos"})).toBeNull();
   });
 });
 
@@ -153,7 +150,7 @@ describe("repertório em construção", () => {
   it("estado inicial simples: uma frase, o nome e o botão de criar", async () => {
     renderPlanner([ENTRADA]);
     fireEvent.click(screen.getByRole("button", { name: /Montar o repertório desta missa/ }));
-    const panel = screen.getByRole("region", { name: "Repertório desta missa" });
+    const panel = screen.getByRole("dialog", { name: "Repertório em construção" });
     expect(await within(panel).findByText(/Crie o repertório desta missa/)).toBeDefined();
     expect(within(panel).getByLabelText("Nome do repertório")).toBeDefined();
     expect(within(panel).getByRole("button", { name: "Criar repertório" })).toBeDefined();
@@ -174,7 +171,8 @@ describe("repertório em construção", () => {
         repertoireId={created.id}
       />,
     );
-    const panel = screen.getByRole("region", { name: "Repertório desta missa" });
+    fireEvent.click(screen.getByRole("button",{name:/^Abrir repertório desta missa,/i}));
+    const panel = screen.getByRole("dialog", { name: "Repertório em construção" });
     expect((await within(panel).findByRole("status")).textContent).toContain("Salvo na sua conta");
     expect(within(panel).getByRole("button", { name: "Trocar de repertório" })).toBeDefined();
     expect(within(panel).queryByText(/Tudo o que aparece aqui/)).toBeNull();

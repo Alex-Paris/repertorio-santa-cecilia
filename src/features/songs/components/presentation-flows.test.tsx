@@ -1,3 +1,4 @@
+import { clickReaderControl } from "@/test/reader-actions";
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -90,7 +91,9 @@ function activeView(): ReturnType<typeof within> {
 }
 
 function click(name: string | RegExp): void {
-  fireEvent.click(activeView().getByRole("button", { name }));
+  if (typeof name === "string" && /fonte|tamanho padrão/.test(name) && activeView().queryByRole("button", {name:"Tamanho do texto e ajustes"})) {
+    clickReaderControl(name);
+  } else fireEvent.click(activeView().getByRole("button", { name }));
 }
 
 async function openSong(
@@ -183,13 +186,17 @@ describe("tamanho da fonte no leitor", () => {
       click("Aumentar fonte");
     }
     expect(sheetFontSize(sheet)).toBe("30px");
+    fireEvent.click(screen.getByRole("button", {name:"Tamanho do texto e ajustes"}));
     expect(screen.getByRole("button", { name: "Aumentar fonte" }).getAttribute("aria-disabled")).toBe("true");
+    fireEvent.click(screen.getByRole("button", {name:"Fechar painel"}));
 
     for (let i = 0; i < 12; i++) {
       click("Diminuir fonte");
     }
     expect(sheetFontSize(sheet)).toBe("14px");
+    fireEvent.click(screen.getByRole("button", {name:"Tamanho do texto e ajustes"}));
     expect(screen.getByRole("button", { name: "Diminuir fonte" }).getAttribute("aria-disabled")).toBe("true");
+    fireEvent.click(screen.getByRole("button", {name:"Fechar painel"}));
   });
 
   it("restaura o tamanho padrão", async () => {

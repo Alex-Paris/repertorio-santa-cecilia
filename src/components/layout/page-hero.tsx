@@ -30,7 +30,7 @@ export function PageHero({ title, subtitle, align = "center", children, classNam
         <div className="relative mx-auto w-full max-w-[1448px] px-4 pt-[var(--page-top)] pb-2">
           <h1
             id="titulo-da-pagina"
-            className="font-display text-[1.6rem] leading-tight font-semibold text-balance text-heading [font-variation-settings:'opsz'_72,'SOFT'_0,'WONK'_0] md:text-[2rem]"
+            className="text-[1.6rem] leading-tight font-semibold text-balance text-heading [font-variation-settings:'opsz'_72,'SOFT'_0,'WONK'_0] md:text-[2rem]"
           >
             {title}
           </h1>

@@ -1,3 +1,4 @@
+import { getRepertoireAction } from "@/test/repertoire-actions";
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -190,7 +191,7 @@ describe("itens do repertório", () => {
   }
 
   function openEditor(index = 0): void {
-    fireEvent.click(screen.getAllByRole("button", { name: /^Ajustar tom e anotações/ })[index]);
+    fireEvent.click(getRepertoireAction(/^Ajustar tom e anotações/, index));
   }
 
   it("anotação com versão antiga detecta conflito e pode ser refeita sobre a atual", async () => {
@@ -265,8 +266,9 @@ describe("itens do repertório", () => {
       .otherDevice()
       .repertoires.update(ENSAIO, { name: "Outro nome", description: "" }, storedRepertoire().revision);
 
+    const move = getRepertoireAction(/^Mover .* para baixo$/);
     await act(async () => {
-      fireEvent.click(screen.getAllByRole("button", { name: /^Mover .* para baixo$/ })[0]);
+      fireEvent.click(move);
     });
 
     await waitFor(() => expect(toasts().at(-1)).toMatch(/alterado em outro dispositivo/));

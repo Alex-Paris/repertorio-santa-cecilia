@@ -1,4 +1,6 @@
 import { connection } from "next/server";
+import { Suspense } from "react";
+import { PageSkeleton } from "@/components/layout/page-skeleton";
 
 import { PublicShareView } from "@/features/sharing/components/public-share-view";
 import {
@@ -12,7 +14,7 @@ interface PublicSharePageProps {
 }
 
 // Sem `use cache`: uma revogação precisa valer já na próxima requisição.
-export default async function PublicSharePage({ params }: PublicSharePageProps) {
+async function PublicSharePageContent({ params }: PublicSharePageProps) {
   await connection();
   const { shareToken } = await params;
 
@@ -26,4 +28,8 @@ export default async function PublicSharePage({ params }: PublicSharePageProps) 
     case "failed":
       return <ShareTemporarilyUnavailable />;
   }
+}
+
+export default function PublicSharePage(props: PublicSharePageProps) {
+  return <Suspense fallback={<PageSkeleton />}><PublicSharePageContent {...props} /></Suspense>;
 }

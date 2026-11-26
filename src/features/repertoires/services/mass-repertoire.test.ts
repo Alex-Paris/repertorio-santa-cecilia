@@ -27,22 +27,23 @@ const order = (items: RepertoireItem[]) => items.map((entry) => entry.id);
 describe("música adicionada com momento litúrgico", () => {
   const base = [item("entrada", 1, "entrada"), item("oferendas", 2, "preparacao-das-oferendas"), item("final", 3, "encerramento")];
 
-  it("entra na ordem da missa", () => {
+  it("entra no fim sem mudar a ordem existente", () => {
     const next = appendRepertoireItem(base, "s", "comunhao", "catalog", "comunhao");
 
-    expect(order(next)).toEqual(["entrada", "oferendas", "comunhao", "final"]);
+    expect(order(next)).toEqual(["entrada", "oferendas", "final", "comunhao"]);
     expect(next.map((entry) => entry.position)).toEqual([1, 2, 3, 4]);
-    expect(next[2]).toMatchObject({ moment: "comunhao", source: "catalog", transposeSemitones: 0 });
+    expect(order(base)).toEqual(["entrada", "oferendas", "final"]);
+    expect(next[3]).toMatchObject({ moment: "comunhao", source: "catalog", transposeSemitones: 0 });
   });
 
-  it("fica depois de outra música do mesmo momento", () => {
+  it("mesmo com momento já usado, entra no fim", () => {
     const next = appendRepertoireItem(base, "s", "outra-entrada", "catalog", "entrada");
-    expect(order(next)).toEqual(["entrada", "outra-entrada", "oferendas", "final"]);
+    expect(order(next)).toEqual(["entrada", "oferendas", "final", "outra-entrada"]);
   });
 
-  it("antes de todas, quando o momento é anterior a todos", () => {
+  it("preserva a ordem mesmo quando o momento seria anterior a todos", () => {
     const later = [item("comunhao", 1, "comunhao"), item("final", 2, "encerramento")];
-    expect(order(appendRepertoireItem(later, "s", "entrada", "catalog", "entrada"))).toEqual(["entrada", "comunhao", "final"]);
+    expect(order(appendRepertoireItem(later, "s", "entrada", "catalog", "entrada"))).toEqual(["comunhao", "final", "entrada"]);
   });
 
   it("sem momento, vai para o fim, como antes", () => {
@@ -54,9 +55,9 @@ describe("música adicionada com momento litúrgico", () => {
     const mixed = [item("livre-1", 1), item("comunhao", 2, "comunhao"), item("livre-2", 3)];
     expect(order(appendRepertoireItem(mixed, "s", "entrada", "catalog", "entrada"))).toEqual([
       "livre-1",
-      "entrada",
       "comunhao",
       "livre-2",
+      "entrada",
     ]);
   });
 
@@ -125,13 +126,13 @@ describe("dados da missa no repertório", () => {
     const first = await repertoires.addSong(created.id, "cat-final", created.revision, "catalog", "encerramento");
     const second = await repertoires.addSong(created.id, "cat-entrada", first.revision, "catalog", "entrada");
     expect(second.items.map((entry) => [entry.songId, entry.moment])).toEqual([
-      ["cat-entrada", "entrada"],
       ["cat-final", "encerramento"],
+      ["cat-entrada", "entrada"],
     ]);
 
-    const toned = await repertoires.updateItem(created.id, second.items[0].id, { transposeSemitones: 3 }, second.revision);
-    expect(toned.items[0]).toMatchObject({ moment: "entrada", transposeSemitones: 3 });
-    expect(toned.items[1]).toMatchObject({ moment: "encerramento", transposeSemitones: 0 });
+    const toned = await repertoires.updateItem(created.id, second.items[1].id, { transposeSemitones: 3 }, second.revision);
+    expect(toned.items[1]).toMatchObject({ moment: "entrada", transposeSemitones: 3 });
+    expect(toned.items[0]).toMatchObject({ moment: "encerramento", transposeSemitones: 0 });
   });
 });
 

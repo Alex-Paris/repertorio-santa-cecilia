@@ -74,7 +74,7 @@ export function SignUpForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate aria-busy={submitting} className="w-full max-w-sm space-y-5">
+    <form onSubmit={handleSubmit} noValidate aria-busy={submitting} className="w-full space-y-5">
       <FormField id="signup-name" label="Nome" error={errors.name}>
         <Input
           {...getFieldA11yProps("signup-name", errors.name)}
@@ -82,7 +82,7 @@ export function SignUpForm() {
           autoComplete="name"
           value={values.name}
           onChange={(event) => setField("name", event.target.value)}
-          className="h-10"
+          className="h-12"
         />
       </FormField>
 
@@ -94,7 +94,7 @@ export function SignUpForm() {
           autoComplete="email"
           value={values.email}
           onChange={(event) => setField("email", event.target.value)}
-          className="h-10"
+          className="h-12"
         />
       </FormField>
 
@@ -111,7 +111,7 @@ export function SignUpForm() {
           autoComplete="new-password"
           value={values.password}
           onChange={(event) => setField("password", event.target.value)}
-          className="h-10"
+          className="h-12"
         />
       </FormField>
 
@@ -123,18 +123,18 @@ export function SignUpForm() {
           autoComplete="new-password"
           value={values.confirmation}
           onChange={(event) => setField("confirmation", event.target.value)}
-          className="h-10"
+          className="h-12"
         />
       </FormField>
 
       {formError && <FormError message={formError} />}
 
-      <Button type="submit" size="lg" disabled={submitting} className="h-10 px-4">
+      <Button type="submit" size="lg" disabled={submitting} className="h-12 w-full px-4">
         {submitting ? "Criando…" : "Criar conta"}
       </Button>
 
       <p className="text-sm text-muted-foreground">
-        <Link href={withAuthReturn("/entrar", returnTo)} className="text-foreground underline underline-offset-3">
+        <Link href={withAuthReturn("/entrar", returnTo)} className="inline-flex min-h-11 items-center font-semibold text-primary underline underline-offset-3">
           Já tenho uma conta
         </Link>
       </p>

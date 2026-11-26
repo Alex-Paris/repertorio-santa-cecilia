@@ -103,8 +103,8 @@ export function CatalogAdminList({ userId }: { userId: string }) {
             <li key={song.id}>
               <Link href={`/admin/catalogo/${song.id}`} className="flex min-h-20 items-center gap-3 px-5 py-4 transition-colors hover:bg-muted/60">
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate font-medium">{song.title}</span>
-                  <span className="block truncate text-sm text-muted-foreground">{song.artist}</span>
+                  <span className="block wrap-break-word font-medium">{song.title}</span>
+                  <span className="block wrap-break-word text-sm text-muted-foreground">{song.artist}</span>
                 </span>
                 <span className={cn("shrink-0 rounded-full border px-2.5 py-1 text-xs font-medium", STATUS_TONES[song.status])}>{STATUS_LABELS[song.status]}</span>
               </Link>
@@ -246,24 +246,24 @@ function revealVideoField(event: FocusEvent<HTMLInputElement>): void {
 }
 
 const STEPS = [
-  { id: "identificacao", label: "A. Identificação" },
-  { id: "conteudo", label: "B. Conteúdo" },
-  { id: "classificacao", label: "C. Classificação litúrgica" },
-  { id: "revisao", label: "D. Direitos e revisão" },
+  { id: "identificacao", label: "Identificação" },
+  { id: "conteudo", label: "Conteúdo" },
+  { id: "classificacao", label: "Classificação litúrgica" },
+  { id: "revisao", label: "Direitos e revisão" },
 ] as const;
 
 function Steps({ available }: { available: boolean }) {
   return (
-    <nav aria-label="Etapas do cadastro" className="sticky top-14 z-10 -mx-4 overflow-x-auto border-b bg-background/95 px-4 py-2 backdrop-blur md:top-16 md:mx-0 md:px-0">
-      <ol className="flex gap-2 text-sm">
+    <nav aria-label="Etapas do cadastro" className="relative z-10 -mx-4 border-b bg-background px-4 py-2 md:mx-0 md:px-0">
+      <ol className="flex flex-wrap gap-2 text-sm">
         {STEPS.map((step, index) => (
           <li key={step.id}>
             {available || index < 2 ? (
-              <a href={`#${step.id}`} className="inline-flex h-9 items-center rounded-full border bg-card px-3 whitespace-nowrap hover:bg-muted">
+              <a href={`#${step.id}`} className="inline-flex min-h-11 items-center rounded-full border bg-card px-3 whitespace-nowrap hover:bg-muted">
                 {step.label}
               </a>
             ) : (
-              <span className="inline-flex h-9 items-center rounded-full border border-dashed px-3 whitespace-nowrap text-muted-foreground">
+              <span className="inline-flex min-h-11 items-center rounded-full border border-dashed px-3 whitespace-nowrap text-muted-foreground">
                 {step.label}
               </span>
             )}
@@ -388,7 +388,7 @@ export function CatalogSongEditor({ userId, songId }: { userId: string; songId?:
       <form onSubmit={handleSubmit} noValidate aria-label="Dados da música" className="admin-editor">
         <section className="space-y-4">
           <SectionTitle id="identificacao" hint="Só o título é obrigatório para criar o rascunho. O que a fonte não confirma fica em branco.">
-            A. Identificação
+            Identificação
           </SectionTitle>
           <label className="block space-y-1 text-sm font-medium">
             Título
@@ -455,7 +455,7 @@ export function CatalogSongEditor({ userId, songId }: { userId: string; songId?:
 
         <section className="space-y-4">
           <SectionTitle id="conteudo" hint="Nenhum conteúdo é copiado de outros sites: sem autorização, registre só os metadados.">
-            B. Conteúdo
+            Conteúdo
           </SectionTitle>
           <fieldset className="space-y-2">
             <legend className="text-sm font-medium">O que o catálogo terá desta música</legend>
@@ -558,7 +558,7 @@ export function CatalogSongEditor({ userId, songId }: { userId: string; songId?:
         </section>
 
         <fieldset id="direitos" className="scroll-mt-32 space-y-3 rounded-xl border p-4">
-          <legend className="px-1 text-sm font-medium">Direitos (parte da etapa D)</legend>
+          <legend className="px-1 text-sm font-medium">Direitos de uso</legend>
           <p className="text-xs text-muted-foreground">
             Cada permissão é separada. Os metadados aparecem com a publicação; nenhuma permissão vem da classificação litúrgica, e
             subsídios da CNBB não são licença geral de reprodução.
@@ -615,14 +615,12 @@ export function CatalogSongEditor({ userId, songId }: { userId: string; songId?:
       {song ? (
         <>
           <section className="space-y-4">
-            <SectionTitle id="classificacao" hint="Pode ser salva incompleta. Classificação salva ou importada nunca conta como conferida.">
-              C. Classificação litúrgica
-            </SectionTitle>
+            <p id="classificacao" className="scroll-mt-32 text-sm text-muted-foreground">Pode ser salva incompleta. Classificação salva ou importada nunca conta como conferida.</p>
             <CatalogClassificationEditor key={`${song.id}-${song.revision}`} api={api} song={song} onSaved={setSong} />
           </section>
 
           <section className="space-y-4">
-            <SectionTitle id="revisao">D. Revisão</SectionTitle>
+            <SectionTitle id="revisao">Revisão</SectionTitle>
             <CatalogReviewPanel key={`revisao-${song.revision}`} api={api} song={song} onSaved={setSong} />
             <div className="space-y-2 rounded-xl border p-4">
               <h3 className="font-medium">Publicação</h3>

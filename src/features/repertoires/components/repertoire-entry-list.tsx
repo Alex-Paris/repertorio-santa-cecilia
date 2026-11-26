@@ -3,6 +3,7 @@
 import { ArrowDown, ArrowUp, ListMusic, SlidersHorizontal, X } from "lucide-react";
 import { useLayoutEffect, useRef, useState } from "react";
 
+import { MoreActionsMenu, MENU_ITEM_CLASS } from "@/components/layout/more-actions-menu";
 import { EmptyState } from "@/components/layout/empty-state";
 import { Button } from "@/components/ui/button";
 import { repertoireRepository } from "@/features/library/data/browser-library";
@@ -52,7 +53,7 @@ export function RepertoireEntryList({ repertoireId, revision, entries, forMass =
       );
       const button =
         row?.querySelector<HTMLElement>(`[data-move="${direction}"]:not(:disabled)`) ??
-        row?.querySelector<HTMLElement>("[data-move]:not(:disabled)");
+        row?.querySelector<HTMLElement>("[data-move]:not(:disabled)") ?? row?.querySelector<HTMLElement>("[data-more-trigger]");
       button?.focus();
     };
 
@@ -70,7 +71,7 @@ export function RepertoireEntryList({ repertoireId, revision, entries, forMass =
 
     restoreFocus.current = (list) => {
       const row = list.children[Math.min(removedIndex, list.children.length - 1)];
-      row?.querySelector<HTMLElement>("[data-remove]")?.focus();
+      row?.querySelector<HTMLElement>("[data-more-trigger]")?.focus();
     };
 
     try {
@@ -94,7 +95,7 @@ export function RepertoireEntryList({ repertoireId, revision, entries, forMass =
 
   return (
     <>
-      <ol ref={listRef} className="divide-y overflow-hidden rounded-xl border bg-card">
+      <ol ref={listRef} className="divide-y rounded-2xl border bg-card">
         {entries.map((entry, index) => {
           const label = getSongLabel(entry);
           const isEditing = editingItemId === entry.item.id;
@@ -116,46 +117,50 @@ export function RepertoireEntryList({ repertoireId, revision, entries, forMass =
                 )
               }
               controls={
-                <>
+                <MoreActionsMenu iconOnly label={`Mais ações de ${label}`}>
                   <Button
                     variant="ghost"
-                    size="icon-lg"
+                    size="lg"
+                    className={MENU_ITEM_CLASS}
                     aria-label={`Ajustar tom e anotações de ${label}`}
                     aria-expanded={isEditing}
                     onClick={() => setEditingItemId(isEditing ? null : entry.item.id)}
                   >
-                    <SlidersHorizontal aria-hidden />
+                    <SlidersHorizontal aria-hidden />Tom e anotações
                   </Button>
                   <Button
                     variant="ghost"
-                    size="icon-lg"
+                    size="lg"
+                    className={MENU_ITEM_CLASS}
                     data-move="up"
                     disabled={index === 0}
                     aria-label={`Mover ${label} para cima`}
                     onClick={() => handleMove(entry, "up")}
                   >
-                    <ArrowUp aria-hidden />
+                    <ArrowUp aria-hidden />Mover para cima
                   </Button>
                   <Button
                     variant="ghost"
-                    size="icon-lg"
+                    size="lg"
+                    className={MENU_ITEM_CLASS}
                     data-move="down"
                     disabled={index === entries.length - 1}
                     aria-label={`Mover ${label} para baixo`}
                     onClick={() => handleMove(entry, "down")}
                   >
-                    <ArrowDown aria-hidden />
+                    <ArrowDown aria-hidden />Mover para baixo
                   </Button>
                   <Button
                     variant="ghost"
-                    size="icon-lg"
+                    size="lg"
+                    className={MENU_ITEM_CLASS}
                     data-remove
                     aria-label={`Remover ${label} do repertório`}
                     onClick={() => handleRemove(entry)}
                   >
-                    <X aria-hidden />
+                    <X aria-hidden />Remover do repertório
                   </Button>
-                </>
+                </MoreActionsMenu>
               }
             />
           );

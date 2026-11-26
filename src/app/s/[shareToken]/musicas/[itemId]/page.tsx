@@ -1,4 +1,6 @@
 import { connection } from "next/server";
+import { Suspense } from "react";
+import { PageSkeleton } from "@/components/layout/page-skeleton";
 
 import { PublicSongScreen } from "@/features/sharing/components/public-song-screen";
 import {
@@ -12,7 +14,7 @@ interface PublicSongPageProps {
 }
 
 // Sem `use cache`: uma revogação precisa valer já na próxima requisição.
-export default async function PublicSongPage({ params }: PublicSongPageProps) {
+async function PublicSongPageContent({ params }: PublicSongPageProps) {
   await connection();
   const { shareToken, itemId } = await params;
 
@@ -26,4 +28,8 @@ export default async function PublicSongPage({ params }: PublicSongPageProps) {
     case "failed":
       return <ShareTemporarilyUnavailable />;
   }
+}
+
+export default function PublicSongPage(props: PublicSongPageProps) {
+  return <Suspense fallback={<PageSkeleton />}><PublicSongPageContent {...props} /></Suspense>;
 }

@@ -1,8 +1,10 @@
 "use client";
 
 import { cn } from "cn";
-import { Minus, Plus, RotateCcw } from "lucide-react";
+import { ChevronDown, Minus, Plus, RotateCcw } from "lucide-react";
 
+import { useState } from "react";
+import { OverlayPanel } from "@/components/layout/overlay-panel";
 import { Button } from "@/components/ui/button";
 
 import type { MusicalKey } from "../domain/musical-key";
@@ -35,6 +37,7 @@ export function TransposeControls({
   className,
   compact = false,
 }: TransposeControlsProps) {
+  const [open, setOpen] = useState(false);
   function change(next: number): void {
     const clamped = clampTransposeSemitones(next);
     if (clamped !== semitones) {
@@ -43,54 +46,14 @@ export function TransposeControls({
   }
 
   if (compact) {
-    return (
-      <div className={className}>
-        <div role="group" aria-label="Tom de leitura" className="flex items-center gap-2 text-sm">
-          <span aria-hidden>Transpor:</span>
-          <span className="flex items-center rounded-full border bg-background/70">
-            <Button
-              variant="ghost"
-              size="icon-lg"
-              className={cn("size-9 rounded-full", DISABLED_LOOK)}
-              aria-label="Diminuir um semitom"
-              focusableWhenDisabled
-              disabled={semitones <= MIN_TRANSPOSE_SEMITONES}
-              onClick={() => change(semitones - 1)}
-            >
-              <Minus aria-hidden />
-            </Button>
-            <output aria-live="polite" className="min-w-12 text-center font-medium">
-              <span className="sr-only">Tom: </span>
-              <span className="font-mono text-base font-semibold text-chord">{transposeKey(originalKey, semitones)}</span>
-              {semitones !== 0 && <span className="ml-1 text-xs text-muted-foreground">({formatSemitoneOffset(semitones)})</span>}
-            </output>
-            <Button
-              variant="ghost"
-              size="icon-lg"
-              className={cn("size-9 rounded-full", DISABLED_LOOK)}
-              aria-label="Aumentar um semitom"
-              focusableWhenDisabled
-              disabled={semitones >= MAX_TRANSPOSE_SEMITONES}
-              onClick={() => change(semitones + 1)}
-            >
-              <Plus aria-hidden />
-            </Button>
-          </span>
-          {semitones !== 0 && (
-            <Button
-              variant="ghost"
-              size="icon-lg"
-              className="size-9"
-              aria-label="Restaurar tom original"
-              onClick={() => change(0)}
-            >
-              <RotateCcw aria-hidden />
-            </Button>
-          )}
-        </div>
-        {hint && <p className={cn("mt-1 text-xs text-muted-foreground", semitones === 0 && "sr-only")}>{hint}</p>}
-      </div>
-    );
+    return <div role="group" aria-label="Tom de leitura" className={className}>
+      <OverlayPanel open={open} onOpenChange={setOpen} title="Tom da música" description={`Tom original: ${originalKey}`} trigger={
+        <Button variant="outline" className="min-h-11 gap-1.5 px-2.5" aria-label={`Alterar tom: ${transposeKey(originalKey, semitones)}`}>
+          Tom <output aria-live="polite"><span className="sr-only">Tom: </span><strong className="font-mono text-chord">{transposeKey(originalKey, semitones)}</strong>{semitones !== 0 && <span className="sr-only">({formatSemitoneOffset(semitones)})</span>}</output><ChevronDown className="size-4" aria-hidden />
+        </Button>}>
+        <TransposeControls originalKey={originalKey} semitones={semitones} onChange={onChange} hint={hint} />
+      </OverlayPanel>
+    </div>;
   }
 
   return (

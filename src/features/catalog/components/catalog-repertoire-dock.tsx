@@ -4,7 +4,7 @@ import { cn } from "cn";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { buttonVariants } from "@/components/ui/button";
 import { useLibrary } from "@/features/library/components/use-library";
@@ -19,18 +19,23 @@ interface CatalogRepertoireDockProps {
   locationHref: string;
   /** "Adicionar música": no catálogo, volta à busca; fora dele, abre o catálogo. */
   addMore: "search" | "catalog";
+  inline?: boolean;
 }
 
 function withRepertoire(href: string, id: string): string {
-  return `${href}${href.includes("?") ? "&" : "?"}repertorio=${encodeURIComponent(id)}`;
+  const [pathname, search] = href.split("?");
+  const params = new URLSearchParams(search);
+  params.set("repertorio", id);
+  return `${pathname}?${params}`;
 }
 
 /** Repertório atual, ao lado do catálogo: o que já está salvo na conta, com tom, ordem e remoção. */
-export function CatalogRepertoireDock({ repertoireId, locationHref, addMore }: CatalogRepertoireDockProps) {
+export function CatalogRepertoireDock({ repertoireId, locationHref, addMore, inline = false }: CatalogRepertoireDockProps) {
   const router = useRouter();
   const snapshot = useLibrary();
   const [open, setOpen] = useState(false);
   const [choosing, setChoosing] = useState(false);
+  const focusSearchOnClose = useRef(false);
   const library = snapshot.status === "ready" ? snapshot.library : null;
   const current = choosing ? null : pickCurrentRepertoire(library, repertoireId);
 
@@ -40,9 +45,7 @@ export function CatalogRepertoireDock({ repertoireId, locationHref, addMore }: C
   }
 
   function focusSearch(): void {
-    const field = document.getElementById("catalogo-busca");
-    field?.scrollIntoView({ block: "center", behavior: "smooth" });
-    field?.focus({ preventScroll: true });
+    focusSearchOnClose.current = true;
     setOpen(false);
   }
 
@@ -50,6 +53,14 @@ export function CatalogRepertoireDock({ repertoireId, locationHref, addMore }: C
 
   return (
     <RepertoireBuilder
+      className={inline ? "repertoire-dock-inline" : undefined}
+      finalFocus={() => {
+        if (!focusSearchOnClose.current) return true;
+        focusSearchOnClose.current = false;
+        const field = document.getElementById("catalogo-busca");
+        field?.scrollIntoView?.({ block:"center", behavior:"instant" });
+        return field;
+      }}
       label="Repertório atual"
       title="Repertório atual"
       subtitle={subtitle}

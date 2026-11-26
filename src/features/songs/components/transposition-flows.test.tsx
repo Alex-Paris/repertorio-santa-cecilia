@@ -1,3 +1,5 @@
+import { getRepertoireAction } from "@/test/repertoire-actions";
+import { clickReaderControl } from "@/test/reader-actions";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -54,7 +56,8 @@ function currentKey(): string {
 }
 
 function clickButton(name: string): void {
-  fireEvent.click(screen.getByRole("button", { name }));
+  if (/semitom|Restaurar tom original/.test(name)) clickReaderControl(name);
+  else fireEvent.click(/^(Ajustar tom e anotações|Mover |Remover )/.test(name) ? getRepertoireAction(name) : screen.getByRole("button", { name }));
 }
 
 const up = () => clickButton("Aumentar um semitom");
@@ -164,22 +167,26 @@ describe("transposição no leitor da música", () => {
       up();
     }
     expect(currentKey()).toContain("(+11)");
+    fireEvent.click(screen.getByRole("button", {name:/^Alterar tom:/}));
     expect(screen.getByRole("button", { name: "Aumentar um semitom" }).getAttribute("aria-disabled")).toBe("true");
+    fireEvent.click(screen.getByRole("button", {name:"Fechar painel"}));
 
     restore();
     for (let i = 0; i < 13; i++) {
       down();
     }
     expect(currentKey()).toContain("(-11)");
+    fireEvent.click(screen.getByRole("button", {name:/^Alterar tom:/}));
     expect(screen.getByRole("button", { name: "Diminuir um semitom" }).getAttribute("aria-disabled")).toBe("true");
+    fireEvent.click(screen.getByRole("button", {name:"Fechar painel"}));
   });
 
   it("só oferece a restauração quando o tom foi alterado", async () => {
     // Barra compacta do leitor: no tom original não há o que restaurar, e o botão não aparece.
     await openSong("song-caminhos");
     expect(screen.queryByRole("button", { name: "Restaurar tom original" })).toBeNull();
-    fireEvent.click(screen.getByRole("button", { name: "Aumentar um semitom" }));
-    fireEvent.click(screen.getByRole("button", { name: "Restaurar tom original" }));
+    clickReaderControl("Aumentar um semitom");
+    clickReaderControl("Restaurar tom original");
     expect(screen.queryByRole("button", { name: "Restaurar tom original" })).toBeNull();
   });
 

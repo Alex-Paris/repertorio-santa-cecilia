@@ -1,14 +1,14 @@
 "use client";
 
-import { cn } from "cn";
-import { ChevronLeft, ChevronRight, FileMusic, Music2, Plus, SearchX } from "lucide-react";
+import { Check, LoaderCircle, Music2, Plus, SearchX } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useId, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode } from "react";
+import { useId, useState, type FormEvent, type ReactNode } from "react";
 
 import { FormError } from "@/components/layout/form-error";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { NativeSelect } from "@/components/ui/native-select";
 import { useLibrary } from "@/features/library/components/use-library";
 import { repertoireRepository } from "@/features/library/data/browser-library";
 import type { Library } from "@/features/library/domain/library";
@@ -26,7 +26,6 @@ function numericDate(date: string): string {
 }
 import type { CatalogCoverage, MomentSuggestions, SongSuggestion } from "../domain/recommendation";
 import { LITURGICAL_MOMENTS, MOMENT_KIND_LABELS, momentLabel, type LiturgicalMomentId } from "../domain/vocabulary";
-import { MOMENT_ICONS } from "./liturgy-tags";
 
 export interface PlannerCelebration {
   date: string;
@@ -82,8 +81,8 @@ function initialMoment(moments: MomentSuggestions[] | null, active: LiturgicalMo
 }
 
 /**
- * Sugestões por momento em abas, o repertório em construção ao lado (no computador) ou preso ao
- * rodapé (no celular). As sugestões vêm do servidor; aqui só se escolhe o que mostrar e se grava
+ * Sugestões por momento em seletor e repertório em painel sobreposto. As sugestões vêm do
+ * servidor; aqui só se escolhe o que mostrar e se grava
  * o repertório na conta, sempre com a revisão carregada.
  */
 export function MassPlanner({
@@ -103,8 +102,11 @@ export function MassPlanner({
   const [panelOpen, setPanelOpen] = useState(false);
   const [panelHint, setPanelHint] = useState<string | null>(null);
   const [adding, setAdding] = useState<string | null>(null);
-  const [selected, setSelected] = useState<LiturgicalMomentId>(() => initialMoment(moments, activeMoment));
-  const tabsRef = useRef<HTMLDivElement>(null);
+  const selectionContext = `${celebration.date}:${celebration.celebrationId}:${activeMoment ?? "todos"}`;
+  const [selection, setSelection] = useState(() => ({ context: selectionContext, moment: initialMoment(moments, activeMoment) }));
+  // O Next preserva o componente durante a navegação: uma nova resposta deve refletir seu momento.
+  // A seleção local só vale para o contexto em que foi feita; os rascunhos do painel permanecem.
+  const selected = selection.context === selectionContext ? selection.moment : initialMoment(moments, activeMoment);
 
   const library = snapshot.status === "ready" ? snapshot.library : null;
   const repertoire = library?.repertoires.find((candidate) => candidate.id === repertoireId) ?? null;
@@ -118,28 +120,13 @@ export function MassPlanner({
   /** Momento já carregado: troca na hora. Os demais (na lista completa de um momento) são buscados. */
   function choose(moment: LiturgicalMomentId, focus = false): void {
     if (loaded.has(moment)) {
-      setSelected(moment);
-      const tab = tabsRef.current?.querySelector<HTMLElement>(`[data-moment-tab="${moment}"]`);
-      // No celular a fileira rola: a aba escolhida sempre volta à vista.
-      tab?.scrollIntoView?.({ block: "nearest", inline: "nearest" });
-      if (focus) {
-        tab?.focus();
-      }
+      setSelection({ context: selectionContext, moment });
+      if (focus) document.getElementById("mass-moment")?.focus();
     } else {
       router.push(plannerHref(celebration, moment, repertoireId), { scroll: false });
     }
   }
 
-  function onTabKey(event: KeyboardEvent<HTMLDivElement>): void {
-    const index = LITURGICAL_MOMENTS.findIndex((moment) => moment.id === selected);
-    const last = LITURGICAL_MOMENTS.length - 1;
-    const target =
-      event.key === "ArrowRight" ? Math.min(index + 1, last) : event.key === "ArrowLeft" ? Math.max(index - 1, 0) : event.key === "Home" ? 0 : event.key === "End" ? last : null;
-    if (target !== null) {
-      event.preventDefault();
-      choose(LITURGICAL_MOMENTS[target].id, true);
-    }
-  }
 
   async function add(suggestion: SongSuggestion, moment: LiturgicalMomentId): Promise<void> {
     if (!repertoire) {
@@ -167,72 +154,21 @@ export function MassPlanner({
   const current = moments?.find((entry) => entry.moment === selected) ?? null;
 
   return (
-    <div className="mt-2 grid grid-cols-1 gap-6 pb-24 xl:grid-cols-[minmax(0,1fr)_25rem] xl:gap-5 xl:pb-0 hd:grid-cols-[minmax(0,1fr)_27rem]">
-      <div className="@container min-w-0 space-y-6">
+    <div className="workspace-content">
+      <div className="workspace-body @container min-w-0 space-y-4" tabIndex={0} role="region" aria-label="Sugestões da celebração">
         {intro}
         <section aria-labelledby="sugestoes-titulo">
-          <h2 id="sugestoes-titulo" className="flex items-center gap-2.5 font-display text-[1.35rem] leading-tight font-semibold tracking-tight text-heading md:text-[1.6rem]">
+          <h2 id="sugestoes-titulo" className="sr-only">
             <Music2 className="size-6 shrink-0 text-gold md:size-7" aria-hidden />
             Sugestões por momento da Missa
           </h2>
-          <p className="mt-0.5 text-sm text-muted-foreground">
-            Sugestões editoriais, a partir da classificação do catálogo. Não representam aprovação oficial da Igreja.
-          </p>
 
-          <div className="relative mt-3">
-            {/* No celular, a fileira rola: setas e bordas esmaecidas mostram que há mais momentos. */}
-            <ScrollButton direction="previous" target={tabsRef} />
-            <div
-              ref={tabsRef}
-              role="tablist"
-              aria-label="Momentos da missa"
-              onKeyDown={onTabKey}
-              className="-mx-4 flex snap-x scroll-px-10 gap-1 overflow-x-auto scroll-smooth px-10 pb-1 [mask-image:linear-gradient(to_right,transparent,black_2.5rem,black_calc(100%-2.5rem),transparent)] md:mx-0 md:flex-wrap md:overflow-visible md:px-0 md:[mask-image:none]"
-            >
-              {LITURGICAL_MOMENTS.map((moment) => {
-                const Icon = MOMENT_ICONS[moment.id];
-                const isSelected = moment.id === selected;
-                const entry = moments?.find((candidate) => candidate.moment === moment.id);
-                const omitted = entry?.guidance.status === "omitted";
-                return (
-                  <button
-                    key={moment.id}
-                    type="button"
-                    role="tab"
-                    id={`aba-${moment.id}`}
-                    data-moment-tab={moment.id}
-                    aria-selected={isSelected}
-                    aria-controls={loaded.has(moment.id) ? `momento-painel-${moment.id}` : undefined}
-                    title={omitted ? "Sem canto nesta celebração" : entry?.total === 0 ? "Sem sugestões no catálogo" : undefined}
-                    tabIndex={isSelected ? 0 : -1}
-                    onClick={() => choose(moment.id)}
-                    className={cn(
-                      "relative flex h-10 shrink-0 snap-start items-center gap-1 rounded-lg border px-2 font-display text-[0.88rem] font-medium whitespace-nowrap transition-colors md:px-2.5",
-                      isSelected
-                        ? "border-primary bg-primary text-primary-foreground shadow-sm"
-                        : "border-gold/35 bg-card text-heading hover:bg-surface-alt",
-                      // Momento omitido ou sem sugestões: continua escolhível, mas visualmente secundário.
-                      (omitted || entry?.total === 0) && !isSelected && "border-dashed opacity-70",
-                    )}
-                  >
-                    <Icon className={cn("size-3.5", isSelected ? "text-primary-foreground" : "text-gold-strong")} aria-hidden />
-                    {moment.label}
-                    {entry && !omitted && entry.total > 0 && (
-                      <span
-                        aria-hidden
-                        className={cn(
-                          "min-w-4 rounded-full px-1 text-center font-sans text-[0.68rem] leading-4 tabular-nums",
-                          isSelected ? "bg-primary-foreground/20" : "bg-surface-alt text-muted-foreground",
-                        )}
-                      >
-                        {entry.total}
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-            <ScrollButton direction="next" target={tabsRef} />
+
+          <div className="mt-5 max-w-lg space-y-2">
+            <label htmlFor="mass-moment" className="block text-sm font-semibold">Momento da missa</label>
+            <NativeSelect id="mass-moment" value={selected} onChange={event => choose(event.target.value as LiturgicalMomentId)}>
+              {LITURGICAL_MOMENTS.map(moment => <option key={moment.id} value={moment.id}>{moment.label}</option>)}
+            </NativeSelect>
           </div>
           {activeMoment && (
             <Link
@@ -295,9 +231,11 @@ export function MassPlanner({
         </section>
 
         {children}
+        <p className="text-sm text-muted-foreground">Sugestões editoriais, a partir da classificação do catálogo. Não representam aprovação oficial da Igreja.</p>
       </div>
 
       <RepertoireBuilder
+        className="repertoire-dock-inline"
         label="Repertório desta missa"
         title="Repertório em construção"
         subtitle={`${celebration.title} · ${numericDate(celebration.date)}`}
@@ -314,28 +252,6 @@ export function MassPlanner({
         addMore={repertoire ? { href: `/catalogo?repertorio=${encodeURIComponent(repertoire.id)}` } : undefined}
       />
     </div>
-  );
-}
-
-/** Seta de rolagem da fileira de abas, só no celular. Não entra na ordem do Tab: as setas do teclado já navegam. */
-function ScrollButton({ direction, target }: { direction: "previous" | "next"; target: React.RefObject<HTMLDivElement | null> }) {
-  const Icon = direction === "previous" ? ChevronLeft : ChevronRight;
-  return (
-    <button
-      type="button"
-      tabIndex={-1}
-      aria-label={direction === "previous" ? "Ver momentos anteriores" : "Ver próximos momentos"}
-      onClick={() => {
-        const row = target.current;
-        row?.scrollBy?.({ left: (direction === "previous" ? -1 : 1) * row.clientWidth * 0.7, behavior: "smooth" });
-      }}
-      className={cn(
-        "absolute top-0 z-10 flex size-10 items-center justify-center rounded-lg border bg-card text-heading shadow-sm md:hidden",
-        direction === "previous" ? "-left-1" : "-right-1",
-      )}
-    >
-      <Icon className="size-4" aria-hidden />
-    </button>
   );
 }
 
@@ -393,18 +309,14 @@ function MomentPanel({
 
   return (
     <section
-      role="tabpanel"
+      role="region"
       id={`momento-painel-${entry.moment}`}
-      aria-labelledby={`aba-${entry.moment}`}
+      aria-label={`Sugestões para ${label}`}
       hidden={hidden}
       className="mt-4"
     >
-      <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-1 border-b border-gold/25 pb-2">
-        <h3 id={`momento-${entry.moment}`} className="font-display text-[1.2rem] font-semibold tracking-tight text-heading md:text-[1.45rem]">
-          Músicas sugeridas para {moment ? forMoment(moment.to) : label}
-        </h3>
-        {moment && <p className="sr-only">{MOMENT_KIND_LABELS[moment.kind]}</p>}
-      </div>
+      <h3 id={`momento-${entry.moment}`} className="sr-only">Músicas sugeridas para {moment ? forMoment(moment.to) : label}</h3>
+      {moment && <p className="sr-only">{MOMENT_KIND_LABELS[moment.kind]}</p>}
 
       {entry.guidance.note && (
         <p className="mt-2 text-sm text-muted-foreground">
@@ -448,11 +360,10 @@ function MomentPanel({
         </div>
       ) : (
         // Uma música ocupa a largura; várias viram cartões compactos em grade.
-        <ul className={cn("mt-3 grid gap-3", entry.suggestions.length > 1 && "@lg:grid-cols-2 @3xl:grid-cols-3")}>
+        <ul className={"mt-3 divide-y overflow-hidden rounded-2xl border bg-card"}>
           {entry.suggestions.map((suggestion) => (
             <SuggestionCard
               key={suggestion.song.id}
-              layout={entry.suggestions.length === 1 ? "wide" : "compact"}
               suggestion={suggestion}
               moment={entry.moment}
               date={celebration.date}
@@ -477,7 +388,6 @@ function MomentPanel({
 }
 
 interface SuggestionCardProps {
-  layout: "wide" | "compact";
   suggestion: SongSuggestion;
   moment: LiturgicalMomentId;
   date: string;
@@ -486,61 +396,21 @@ interface SuggestionCardProps {
   onAdd: (suggestion: SongSuggestion, moment: LiturgicalMomentId) => Promise<void>;
 }
 
-function SuggestionCard({ layout, suggestion, moment, date, included, busy, onAdd }: SuggestionCardProps) {
+function SuggestionCard({ suggestion, moment, date, included, busy, onAdd }: SuggestionCardProps) {
   const { song } = suggestion;
-  const wide = layout === "wide";
-
-  const actions = (
-    <div className={cn("flex flex-wrap items-center gap-2", wide ? "@3xl:justify-end" : "justify-between")}>
-      <Link
-        href={`/catalogo/${encodeURIComponent(song.id)}?missa=${date}`}
-        className="inline-flex h-9 items-center gap-1.5 rounded-lg px-1 text-sm font-medium text-heading underline-offset-3 hover:underline"
-        aria-label={`Abrir a cifra de ${song.title}`}
-      >
-        <FileMusic className="size-4 text-gold-strong" aria-hidden />
-        {song.hasChordPro ? "Ver letra e cifra" : "Abrir música"}
-      </Link>
-      <Button
-        type="button"
-        size="sm"
-        className="h-9 px-3.5"
-        disabled={included || busy}
-        aria-label={included ? `${song.title} já está no repertório` : `Adicionar ${song.title} ao repertório (${momentLabel(moment)})`}
-        onClick={() => void onAdd(suggestion, moment)}
-      >
-        {!included && <Plus data-icon="inline-start" aria-hidden />}
-        {included ? "No repertório" : busy ? "Adicionando…" : "Adicionar"}
-      </Button>
-    </div>
-  );
-
   return (
-    <li
-      className={cn(
-        "flex rounded-xl border bg-card shadow-[0_1px_2px_rgb(71_45_27/0.06)]",
-        wide ? "flex-col gap-3 p-4 @3xl:flex-row @3xl:items-center @3xl:gap-5" : "flex-col p-3",
-      )}
-    >
-      <div className={cn("flex min-w-0 items-start gap-2.5", wide && "@3xl:flex-1")}>
-        {song.video ? <VideoReference variant="play" videoId={song.video.videoId} videoTitle={song.video.title} startSeconds={song.video.startSeconds} title={song.title} /> : <span aria-hidden className="flex size-9 shrink-0 items-center justify-center rounded-full bg-surface-alt text-gold-strong">
-          <Music2 className="size-5" />
-        </span>}
-        <div className="min-w-0 flex-1">
-          <p className="font-display text-[1.05rem] leading-snug font-semibold wrap-break-word text-heading">{song.title}</p>
-          <p className="text-[0.8rem] text-muted-foreground wrap-break-word">
-            {song.artist || "Autoria não informada"}
-            {song.contentType !== "external-link" && song.originalKey && (
-              <>
-                {" · "}
-                <span className="sr-only">Tom </span>
-                <KeyLabel musicalKey={song.originalKey} />
-              </>
-            )}
-          </p>
-        </div>
-      </div>
-
-      <div className={cn(!wide && "mt-auto pt-2.5")}>{actions}</div>
+    <li className="flex items-center gap-3 px-3 py-4 sm:px-5">
+      <Link href={`/catalogo/${encodeURIComponent(song.id)}?missa=${date}`} className="flex min-h-12 min-w-0 flex-1 flex-col justify-center">
+        <span className="font-semibold text-heading wrap-break-word">{song.title}</span>
+        <span className="mt-1 text-sm text-muted-foreground">{song.artist || "Autoria não informada"}</span>
+      </Link>
+      {song.contentType !== "external-link" && song.originalKey && <span className="hidden text-sm text-chord sm:block"><KeyLabel musicalKey={song.originalKey} /></span>}
+      {song.video && <VideoReference variant="play" videoId={song.video.videoId} videoTitle={song.video.title} startSeconds={song.video.startSeconds} title={song.title} />}
+      <Button type="button" variant={included ? "secondary" : "outline"} size="icon" disabled={included || busy}
+        aria-label={included ? `${song.title} já está no repertório` : `Adicionar ${song.title} ao repertório (${momentLabel(moment)})`}
+        onClick={() => void onAdd(suggestion, moment)}>
+        {busy ? <LoaderCircle className="animate-spin" aria-hidden /> : included ? <Check aria-hidden /> : <Plus aria-hidden />}
+      </Button>
     </li>
   );
 }

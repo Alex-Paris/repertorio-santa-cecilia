@@ -8,7 +8,6 @@ import { AppShell } from "./app-shell";
 
 vi.mock("./navigation", () => ({ TopNav: () => null, BottomNav: () => null }));
 vi.mock("./account-menu", () => ({ AccountMenu: () => null }));
-vi.mock("./header-search", () => ({ HeaderSearch: () => null }));
 vi.mock("./theme-toggle", () => ({ ThemeToggle: () => null }));
 vi.mock("./toaster", () => ({ Toaster: () => null }));
 vi.mock("./brand", () => ({ Brand: () => <span>Repertório Santa Cecília</span> }));
@@ -17,7 +16,7 @@ describe("links públicos no rodapé", () => {
   it.each([
     { name: "aplicação", Layout: AppShell },
     { name: "repertório compartilhado", Layout: PublicShareLayout },
-  ])("oferece as três páginas na $name", ({ Layout }) => {
+  ])("oferece as páginas legais e os créditos na $name", ({ Layout }) => {
     render(<Layout><p>Conteúdo da página</p></Layout>);
     const footer = screen.getByRole("contentinfo");
     const nav = within(footer).getByRole("navigation", { name: "Privacidade e termos" });
@@ -25,6 +24,7 @@ describe("links públicos no rodapé", () => {
       ["Privacidade", "/privacidade"],
       ["Termos de uso", "/termos-de-uso"],
       ["Exclusão de dados", "/exclusao-de-dados"],
+      ["Créditos das imagens", "/creditos-das-imagens"],
     ]);
     expect(footer.hasAttribute("data-print-hide")).toBe(true);
   });

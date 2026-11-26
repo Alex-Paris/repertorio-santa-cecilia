@@ -437,7 +437,7 @@ function SuggestionDiagnostics({ api, celebrationId }: { api: LiturgyAdminApi; c
             Músicas publicadas e classificadas para cada momento, quantas passam pelas regras desta celebração e por
             que as demais ficam de fora.{data.truncated && " O catálogo classificado excede o limite de análise: os números são parciais."}
           </p>
-          <div className="overflow-x-auto rounded-xl border bg-card">
+          <div tabIndex={0} role="region" aria-label="Diagnóstico das sugestões" className="overflow-x-auto rounded-xl border bg-card">
             <table className="w-full text-sm">
               <thead className="text-left text-xs text-muted-foreground">
                 <tr>

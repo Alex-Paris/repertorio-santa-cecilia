@@ -2,6 +2,7 @@ import { cn } from "cn";
 import { Check, ChevronRight, Search, SlidersHorizontal, X } from "lucide-react";
 import Link from "next/link";
 
+import { AddToRepertoire } from "./add-to-repertoire";
 import { EmptyState } from "@/components/layout/empty-state";
 import { buttonVariants } from "@/components/ui/button";
 import { VideoReference } from "@/features/songs/components/video-reference";
@@ -135,15 +136,15 @@ export function CatalogSearchForm({ query, filters = {}, repertoireId, explore, 
           defaultValue={query}
           maxLength={100}
           placeholder="Título ou autoria"
-          className="h-12 w-full min-w-0 rounded-xl border border-input bg-field pr-24 pl-11 text-base"
+          className="h-14 w-full min-w-0 rounded-xl border border-input bg-field pr-24 pl-11 text-base"
         />
-        <button type="submit" className={cn(buttonVariants({ size: "sm" }), "absolute top-1/2 right-1.5 h-9 -translate-y-1/2 px-3")}>
+        <button type="submit" className={cn(buttonVariants({ size: "sm" }), "absolute top-1/2 right-1.5 h-11 -translate-y-1/2 px-3")}>
           Buscar
         </button>
       </div>
       <div className="flex flex-wrap items-start gap-2">
       <details className="group shrink-0 rounded-xl border border-transparent open:basis-full open:border-border open:bg-background/50 open:p-3">
-        <summary className="inline-flex h-9 cursor-pointer list-none items-center gap-2 rounded-full border border-gold/40 bg-card px-3 text-sm font-medium whitespace-nowrap text-heading [&::-webkit-details-marker]:hidden">
+        <summary className="inline-flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-full border border-gold/40 bg-card px-3 text-sm font-medium whitespace-nowrap text-heading [&::-webkit-details-marker]:hidden">
           <SlidersHorizontal className="size-4 text-gold-strong" aria-hidden />
           Filtros litúrgicos{activeCount > 0 && ` (${activeCount})`}
         </summary>
@@ -207,7 +208,7 @@ export function CatalogQuickFilters({ location, facets }: QuickFiltersProps) {
               aria-current={chip.active ? "true" : undefined}
               aria-label={chip.active ? `Retirar o filtro ${chip.label}` : `Filtrar por ${chip.label}`}
               className={cn(
-                "inline-flex h-9 items-center gap-1.5 rounded-full border px-3 text-[0.82rem] font-medium whitespace-nowrap transition-colors",
+                "inline-flex min-h-11 items-center gap-1.5 rounded-full border px-3 text-[0.82rem] font-medium whitespace-nowrap transition-colors",
                 chip.active
                   ? "border-primary bg-primary text-primary-foreground"
                   : "border-gold/40 bg-card text-heading hover:bg-surface-alt",
@@ -300,17 +301,17 @@ export function CatalogResults({ query, filters = {}, result, selectedId, repert
           return (
             <li key={song.id} className={cn("flex items-center", current && "bg-surface-alt")}>
               <Link
-                href={catalogHref({ ...location, selected: song.id })}
+                href={`/catalogo/${encodeURIComponent(song.id)}?${new URLSearchParams({ retorno: catalogHref(location), ...(repertoireId ? { repertorio: repertoireId } : {}) })}`}
                 aria-current={current ? "true" : undefined}
                 className={cn(
-                  "group flex min-w-0 flex-1 items-center gap-2.5 px-3 py-2 transition-colors hover:bg-surface-alt/60",
+                  "group flex min-h-20 min-w-0 flex-1 items-center gap-3 px-4 py-4 transition-colors hover:bg-surface-alt/60",
                   current && "bg-surface-alt shadow-[inset_3px_0_0_var(--gold)]",
                 )}
               >
                 <span className="min-w-0 flex-1">
-                  <span className="flex flex-wrap items-baseline gap-x-2">
-                    <span className="font-display text-[1rem] leading-snug font-semibold wrap-break-word text-heading">{song.title}</span>
-                    <span className="text-[0.8rem] text-muted-foreground wrap-break-word">{song.artist || "Autoria não informada"}</span>
+                  <span className="flex flex-col gap-1">
+                    <span className="text-base leading-snug font-semibold wrap-break-word text-heading">{song.title}</span>
+                    <span className="text-sm text-muted-foreground wrap-break-word">{song.artist || "Autoria não informada"}</span>
                   </span>
                   {((song.moments && song.moments.length > 0) || (song.seasons && song.seasons.length > 0)) && (
                     <span className="mt-1 flex flex-wrap items-center gap-1.5">
@@ -325,7 +326,8 @@ export function CatalogResults({ query, filters = {}, result, selectedId, repert
                   className={cn("size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5", current && "text-gold-strong")}
                 />}
               </Link>
-              {song.video && <VideoReference variant="play" videoId={song.video.videoId} videoTitle={song.video.title} startSeconds={song.video.startSeconds} title={song.title} className="mr-2" />}
+              {song.video && <VideoReference variant="play" videoId={song.video.videoId} videoTitle={song.video.title} startSeconds={song.video.startSeconds} title={song.title} className="mr-1" />}
+              <div className="mr-3"><AddToRepertoire iconOnly songId={song.id} title={song.title} originalKey={song.originalKey} contentType={song.contentType} suggestedMoments={song.moments} preferCurrent={{repertoireId:repertoireId ?? null}} /></div>
             </li>
           );
         })}
@@ -387,7 +389,7 @@ function ExploreGroup({
           <li key={entry.id}>
             <Link
               href={`/catalogo?${param}=${encodeURIComponent(entry.id)}`}
-              className="inline-flex min-h-10 items-center gap-1.5 rounded-full border bg-card px-3.5 py-1.5 text-sm font-medium hover:bg-muted"
+              className="inline-flex min-h-11 items-center gap-1.5 rounded-full border bg-card px-3.5 py-1.5 text-sm font-medium hover:bg-muted"
             >
               {label(entry.id)}
               <span className="text-xs font-normal text-muted-foreground tabular-nums">

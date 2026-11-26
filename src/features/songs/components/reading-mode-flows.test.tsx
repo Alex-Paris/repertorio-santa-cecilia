@@ -1,3 +1,4 @@
+import { clickReaderControl } from "@/test/reader-actions";
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -51,8 +52,8 @@ describe("modo Letra no leitor", () => {
 
   it("ao voltar para Cifra, restaura o tom em que a pessoa estava", async () => {
     await openCaminhos();
-    fireEvent.click(screen.getByRole("button", { name: "Aumentar um semitom" }));
-    fireEvent.click(screen.getByRole("button", { name: "Aumentar um semitom" }));
+    clickReaderControl("Aumentar um semitom");
+    clickReaderControl("Aumentar um semitom");
     expect(chords().slice(0, 2)).toEqual(["A", "E"]);
 
     fireEvent.click(screen.getByRole("button", { name: "Letra" }));
@@ -72,7 +73,7 @@ describe("modo Letra no leitor", () => {
 
   it("o menu Imprimir leva às duas folhas, no tom da leitura", async () => {
     await openCaminhos();
-    fireEvent.click(screen.getByRole("button", { name: "Aumentar um semitom" }));
+    clickReaderControl("Aumentar um semitom");
     fireEvent.click(screen.getByRole("button", { name: /Imprimir/ }));
     expect(screen.getAllByRole("link", { name: /Com cifra|Somente letra/ }).map((link) => link.getAttribute("href"))).toEqual([
       "/musicas/song-caminhos/imprimir?modo=cifra&tom=1",

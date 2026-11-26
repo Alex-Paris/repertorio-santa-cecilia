@@ -121,8 +121,9 @@ export function HomeMassStart({ next }: { next: CelebrationSummary[] | null }) {
  */
 export function HomeStart({ next }: { next: CelebrationSummary[] | null }) {
   return (
-    <div className="mt-6 grid grid-cols-1 gap-8 md:mt-8 xl:grid-cols-[minmax(0,1fr)_25rem] xl:gap-6 hd:grid-cols-[minmax(0,1fr)_27rem]">
-      <MassExplore upcoming={next ?? []} season={next?.[0]?.season} seasonNote="tempo da próxima celebração" stacked className="content-start border-t-0 pt-0" />
+    <div className="mt-6 space-y-8">
+      <div className="grid items-start gap-6 lg:grid-cols-[1.15fr_1fr]">
+      <HomeMassStart next={next} />
       <section aria-labelledby="seus-repertorios" className="rounded-2xl border bg-card">
         <h2
           id="seus-repertorios"
@@ -135,6 +136,11 @@ export function HomeStart({ next }: { next: CelebrationSummary[] | null }) {
           <HomePersonal />
         </div>
       </section>
+      </div>
+      <details className="rounded-2xl border bg-card p-5">
+        <summary className="flex min-h-11 cursor-pointer items-center text-lg font-semibold text-heading">Explorar cantos e celebrações</summary>
+        <MassExplore upcoming={next ?? []} season={next?.[0]?.season} seasonNote="tempo da próxima celebração" stacked className="mt-4 content-start border-t-0 pt-0" />
+      </details>
     </div>
   );
 }

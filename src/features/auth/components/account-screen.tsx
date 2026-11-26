@@ -33,7 +33,7 @@ interface AccountLink {
 function AccountSection({ id, title, description, children }: { id: string; title: string; description?: string; children: ReactNode }) {
   return (
     <section aria-labelledby={id} className="flex flex-col rounded-2xl border bg-card p-4 shadow-sm md:p-5">
-      <h2 id={id} className="font-display text-xl font-semibold text-heading">
+      <h2 id={id} className="text-xl font-semibold text-heading">
         {title}
       </h2>
       {description && <p className="mt-0.5 text-sm text-muted-foreground">{description}</p>}
@@ -108,32 +108,11 @@ export async function AccountScreen() {
   const isAdmin = await isCatalogAdmin(user.id).catch(() => false);
 
   return (
-    <div className="grid gap-4 md:grid-cols-2">
-      <AccountSection id="secao-conta" title="Conta" description="Suas músicas e repertórios ficam salvos nesta conta.">
-        <dl className="space-y-2.5 text-sm">
-          <div>
-            <dt className="text-muted-foreground">Nome</dt>
-            <dd className="font-medium wrap-break-word">{user.name}</dd>
-          </div>
-          <div>
-            <dt className="text-muted-foreground">E-mail</dt>
-            <dd className="font-medium wrap-break-word">{user.email}</dd>
-          </div>
-          <div>
-            <dt className="text-muted-foreground">Sessão</dt>
-            <dd className="font-medium">
-              Ativa até{" "}
-              <time dateTime={expiresAt.toISOString()}>
-                {expiresAt.toLocaleDateString("pt-BR", { timeZone: "UTC" })}
-              </time>
-            </dd>
-          </div>
-        </dl>
-        <div className="mt-4 border-t pt-3">
-          <SignOutButton />
-        </div>
-      </AccountSection>
-
+    <div className="mx-auto max-w-3xl space-y-6">
+      <section className="flex items-center gap-4 rounded-2xl border bg-card p-5" aria-label="Seu perfil">
+        <span aria-hidden="true" className="grid size-14 shrink-0 place-items-center rounded-full bg-secondary text-xl font-semibold text-primary">{user.name.trim().slice(0,1).toUpperCase()}</span>
+        <div className="min-w-0"><h2 className="text-lg font-semibold wrap-break-word">{user.name}</h2><p className="text-sm text-muted-foreground wrap-break-word">{user.email}</p></div>
+      </section>
       <AccountSection id="secao-biblioteca" title="Biblioteca e repertórios">
         <LinkList links={LIBRARY_LINKS} />
       </AccountSection>
@@ -151,7 +130,11 @@ export async function AccountScreen() {
           </div>
           <LinkList links={ADMIN_LINKS} />
         </AccountSection>
-      )}
+      )}      <details className="rounded-2xl border bg-card p-5">
+        <summary className="flex min-h-11 cursor-pointer items-center text-sm font-semibold">Sessão e acesso à conta</summary>
+        <p className="mt-3 text-sm text-muted-foreground">Sessão ativa até <time dateTime={expiresAt.toISOString()}>{expiresAt.toLocaleDateString("pt-BR", {timeZone:"UTC"})}</time>.</p>
+        <div className="mt-4"><SignOutButton /></div>
+      </details>
     </div>
   );
 }

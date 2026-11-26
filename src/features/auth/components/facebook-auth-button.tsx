@@ -43,12 +43,12 @@ export function FacebookAuthButton() {
   }
 
   return (
-    <div className="w-full max-w-sm space-y-3">
+    <div className="w-full space-y-3">
       <Button
         type="button"
         variant="outline"
         size="lg"
-        className="h-11 w-full gap-3"
+        className="h-12 w-full gap-3"
         disabled={submitting}
         aria-busy={submitting}
         onClick={() => void handleSignIn()}

@@ -1,5 +1,5 @@
 import { LibraryError } from "@/features/library/domain/library-errors";
-import { momentOrder, type LiturgicalMomentId } from "@/features/liturgy/domain/vocabulary";
+import { type LiturgicalMomentId } from "@/features/liturgy/domain/vocabulary";
 import type { SongId, SongSource } from "@/features/songs/domain/song";
 
 import {
@@ -29,24 +29,7 @@ export function requireRepertoireItem(
   return item;
 }
 
-/**
- * Onde um item com momento entra: depois do último item de momento igual ou anterior; sem
- * nenhum assim, antes do primeiro de momento posterior. Itens sem momento não são movidos.
- */
-function insertionIndex(sorted: readonly RepertoireItem[], moment: LiturgicalMomentId | undefined): number {
-  if (!moment) {
-    return sorted.length;
-  }
-  const order = momentOrder(moment);
-  const lastBefore = sorted.findLastIndex((item) => item.moment !== undefined && momentOrder(item.moment) <= order);
-  if (lastBefore !== -1) {
-    return lastBefore + 1;
-  }
-  const firstAfter = sorted.findIndex((item) => item.moment !== undefined && momentOrder(item.moment) > order);
-  return firstAfter === -1 ? sorted.length : firstAfter;
-}
-
-/** Sem momento, a música vai para o fim. Com momento, entra na ordem da missa. */
+/** Novas músicas entram no fim; o momento não reorganiza a ordem escolhida. */
 export function appendRepertoireItem(
   items: readonly RepertoireItem[],
   songId: SongId,
@@ -55,9 +38,9 @@ export function appendRepertoireItem(
   moment?: LiturgicalMomentId,
 ): RepertoireItem[] {
   const sorted = sortRepertoireItems(items);
-  const index = insertionIndex(sorted, moment);
+  const index = sorted.length;
   const item = createRepertoireItem({ id: itemId, songId, source, position: index + 1, ...(moment ? { moment } : {}) });
-  return withSequentialPositions([...sorted.slice(0, index), item, ...sorted.slice(index)]);
+  return withSequentialPositions([...sorted, item]);
 }
 
 /** A mesma música não entra duas vezes no repertório; a origem faz parte da identidade. */

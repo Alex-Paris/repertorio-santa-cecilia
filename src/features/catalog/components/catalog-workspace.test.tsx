@@ -1,3 +1,4 @@
+import { clickReaderControl } from "@/test/reader-actions";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -61,7 +62,7 @@ describe("endereço do catálogo", () => {
     expect(play.closest("a")).toBeNull();
     fireEvent.click(play);
     expect(screen.getByTitle("Referência em vídeo: Canto Fictício A").getAttribute("src")).toContain("start=45&autoplay=1");
-    expect(screen.getByRole("link", { name: /Canto Fictício A/ }).getAttribute("href")).toBe("/catalogo?musica=cat-a");
+    expect(screen.getByRole("link", { name: /Canto Fictício A/ }).getAttribute("href")).toBe("/catalogo/cat-a?retorno=%2Fcatalogo");
   });
 
   it("guarda busca, filtros, página, música e repertório, nessa ordem", () => {
@@ -100,7 +101,8 @@ describe("repertório atual ao lado do catálogo", () => {
   it("visitante é convidado a entrar, sem dados de conta", async () => {
     await openSignedOut();
     render(<CatalogRepertoireDock repertoireId={null} locationHref="/catalogo" addMore="search" />);
-    const panel = screen.getByRole("region", { name: "Repertório atual" });
+    fireEvent.click(screen.getByRole("button", {name:/^Abrir repertório atual,/i}));
+    const panel = screen.getByRole("dialog", { name: "Repertório atual" });
     expect(await within(panel).findByRole("link", { name: "Entrar" })).toBeDefined();
     expect(writes()).toEqual([]);
   });
@@ -108,7 +110,8 @@ describe("repertório atual ao lado do catálogo", () => {
   it("mostra o repertório alterado mais recentemente e reordena com a revisão carregada", async () => {
     const repertoire = await accountWithRepertoire();
     render(<CatalogRepertoireDock repertoireId={null} locationHref="/catalogo?q=canto" addMore="search" />);
-    const panel = screen.getByRole("region", { name: "Repertório atual" });
+    fireEvent.click(screen.getByRole("button", {name:/^Abrir repertório atual,/i}));
+    const panel = screen.getByRole("dialog", { name: "Repertório atual" });
     await within(panel).findByText("Canto Fictício A");
 
     fireEvent.click(within(panel).getByRole("button", { name: "Descer Canto Fictício A" }));
@@ -120,7 +123,8 @@ describe("repertório atual ao lado do catálogo", () => {
   it("ajusta o tom do item e remove a música, sem tocar no catálogo", async () => {
     await accountWithRepertoire();
     render(<CatalogRepertoireDock repertoireId={null} locationHref="/catalogo" addMore="search" />);
-    const panel = screen.getByRole("region", { name: "Repertório atual" });
+    fireEvent.click(screen.getByRole("button", {name:/^Abrir repertório atual,/i}));
+    const panel = screen.getByRole("dialog", { name: "Repertório atual" });
     await within(panel).findByText("Canto Fictício B");
 
     fireEvent.click(within(panel).getByRole("button", { name: "Aumentar um semitom de Canto Fictício B" }));
@@ -131,13 +135,14 @@ describe("repertório atual ao lado do catálogo", () => {
     expect(B.originalKey).toBe("G");
   });
 
-  it("trocar de repertório mantém a busca no endereço", async () => {
+  it("trocar de repertório mantém busca e filtros, sem duplicar o parâmetro", async () => {
     const repertoire = await accountWithRepertoire();
-    render(<CatalogRepertoireDock repertoireId={null} locationHref="/catalogo?q=canto" addMore="search" />);
-    const panel = screen.getByRole("region", { name: "Repertório atual" });
+    render(<CatalogRepertoireDock repertoireId={null} locationHref="/catalogo?q=canto&tempo=advento&repertorio=anterior" addMore="search" />);
+    fireEvent.click(screen.getByRole("button", {name:/^Abrir repertório atual,/i}));
+    const panel = screen.getByRole("dialog", { name: "Repertório atual" });
     fireEvent.click(await within(panel).findByRole("button", { name: "Trocar de repertório" }));
     fireEvent.click(within(panel).getByRole("button", { name: /Ensaio fictício/ }));
-    expect(router.replace).toHaveBeenCalledWith(`/catalogo?q=canto&repertorio=${repertoire.id}`, { scroll: false });
+    expect(router.replace).toHaveBeenCalledWith(`/catalogo?q=canto&tempo=advento&repertorio=${repertoire.id}`, { scroll: false });
   });
 });
 
@@ -165,8 +170,8 @@ describe("música aberta no painel central", () => {
     expect(screen.getByRole("button", { name: "Apresentar" })).toBeDefined();
     expect(screen.queryByRole("button", { name: "Restaurar tom original" })).toBeNull();
 
-    fireEvent.click(screen.getByRole("button", { name: "Aumentar um semitom" }));
-    fireEvent.click(screen.getByRole("button", { name: "Restaurar tom original" }));
+    clickReaderControl("Aumentar um semitom");
+    clickReaderControl("Restaurar tom original");
     expect(screen.queryByRole("button", { name: "Restaurar tom original" })).toBeNull();
   });
 

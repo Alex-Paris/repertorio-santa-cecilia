@@ -21,7 +21,7 @@ export const metadata: Metadata = { title: "Catálogo" };
 
 interface CatalogSongPageProps {
   params: Promise<{ id: string }>;
-  searchParams: Promise<RepertoireContextQuery & { missa?: string | string[]; repertorio?: string | string[] }>;
+  searchParams: Promise<RepertoireContextQuery & { missa?: string | string[]; repertorio?: string | string[]; retorno?: string | string[] }>;
 }
 
 async function load(id: string): Promise<{ status: "ready"; song: CatalogSongView | null } | { status: "failed" }> {
@@ -57,16 +57,19 @@ async function CatalogSongContent({ params, searchParams }: CatalogSongPageProps
   // Vindo da preparação de uma missa, o caminho de volta leva à mesma celebração.
   const massDate = isValidIsoDate(query.missa) ? query.missa : null;
   const repertoireId = isValidEntityId(query.repertorio) ? query.repertorio : null;
+  // O destino de volta é exclusivamente a lista local do catálogo, sem redirecionamento externo.
+  const catalogReturn = typeof query.retorno === "string" && /^\/catalogo(?:\?[^#\\]*)?$/.test(query.retorno) ? query.retorno : "/catalogo";
   return loaded.song ? (
     // Sem Hero: o espaço sob o cabeçalho vem da regra comum do layout (`--page-top`).
     <div data-layout="wide">
-      <div className="grid gap-4 pb-24 xl:grid-cols-[minmax(0,1fr)_19.5rem] xl:pb-0">
+      <div className="space-y-6 pb-28">
         <CatalogSongScreen
           song={loaded.song}
-          back={massDate ? { href: `/preparar-missa?data=${massDate}`, label: "Preparar missa" } : undefined}
+          back={massDate ? { href: `/preparar-missa?data=${massDate}`, label: "Preparar missa" } : { href: catalogReturn, label: "Catálogo" }}
+          repertoirePanel={<CatalogRepertoireDock inline repertoireId={repertoireId} locationHref={`/catalogo/${encodeURIComponent(id)}?retorno=${encodeURIComponent(catalogReturn)}${massDate ? `&missa=${massDate}` : ""}`} addMore="catalog" />}
           currentRepertoire={{ repertoireId }}
         />
-        <CatalogRepertoireDock repertoireId={repertoireId} locationHref={`/catalogo/${encodeURIComponent(id)}`} addMore="catalog" />
+
       </div>
     </div>
   ) : (

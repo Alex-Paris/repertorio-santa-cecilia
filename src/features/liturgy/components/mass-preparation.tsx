@@ -25,6 +25,7 @@ import type { CelebrationRecommendation } from "../domain/recommendation";
 import { LITURGICAL_MOMENT_IDS, type LiturgicalMomentId } from "../domain/vocabulary";
 import { CelebrationNotice } from "./celebration-card";
 import { CelebrationChooser } from "./celebration-chooser";
+import { CelebrationAmbience } from "./celebration-ambience";
 import { CelebrationList } from "./celebration-picker";
 import { MassPlanner } from "./mass-planner";
 
@@ -208,11 +209,13 @@ export async function MassPreparation({ title, subtitle, searchParams, defaultTo
   const recommendation: CelebrationRecommendation | null = await settle(getCelebrationSuggestions(context, moment ?? undefined));
 
   return (
-    <>
+    <div className="music-workspace mass-workspace">
       <PageHero align="compact" title={title} subtitle={subtitle}>
-        <CelebrationChooser date={date} context={context} />
-        {celebrations.length > 1 && <VariantPicker celebrations={celebrations} selected={context.celebrationId} />}
-        <OtherCelebrationsLink />
+        <CelebrationAmbience context={context} />
+        <details className="mb-4 rounded-xl border bg-card px-4">
+          <summary className="flex min-h-12 cursor-pointer items-center text-sm font-semibold text-primary">Escolher outra data ou celebração</summary>
+          <div className="pb-4"><CelebrationChooser date={date} context={context} />{celebrations.length > 1 && <VariantPicker celebrations={celebrations} selected={context.celebrationId} />}<OtherCelebrationsLink /><Link href="/creditos-das-imagens" className="inline-flex min-h-11 items-center text-xs text-muted-foreground underline">Créditos das imagens</Link></div>
+        </details>
       </PageHero>
       <MassPlanner
         celebration={{
@@ -231,6 +234,6 @@ export async function MassPreparation({ title, subtitle, searchParams, defaultTo
         activeMoment={moment}
         repertoireId={repertoireId}
       />
-    </>
+    </div>
   );
 }

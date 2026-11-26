@@ -37,19 +37,19 @@ export function RepertoireEntryRow({
 
   return (
     <li data-item-id={item.id}>
-      <div className="flex flex-col sm:flex-row sm:items-center">
+      <div className="flex items-center">
         {song ? (
           <Link
             href={getRepertoireSongHref(repertoireId, item)}
-            className="flex min-w-0 flex-1 items-center gap-3 px-4 py-3 transition-colors hover:bg-muted"
+            className="flex min-w-0 flex-1 items-center gap-3 px-3 py-4 sm:px-4 transition-colors hover:bg-muted"
           >
             <EntryNumber number={number} />
             <div className="min-w-0 flex-1">
               {item.moment && (
-                <span className="block truncate text-xs text-muted-foreground">{momentLabel(item.moment)}</span>
+                <span className="block wrap-break-word text-xs text-muted-foreground">{momentLabel(item.moment)}</span>
               )}
-              <p className="truncate font-medium">{song.title}</p>
-              <p className="truncate text-sm text-muted-foreground">{song.artist}</p>
+              <p className="wrap-break-word font-medium">{song.title}</p>
+              <p className="wrap-break-word text-sm text-muted-foreground">{song.artist}</p>
               {item.notes && (
                 <p className="mt-1 text-sm text-pretty wrap-break-word whitespace-pre-line">
                   {item.notes}
@@ -66,10 +66,10 @@ export function RepertoireEntryRow({
                 <span className="text-xs text-muted-foreground">original {song.originalKey}</span>
               )}
             </div>
-            <ChevronRight className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+            {!controls && <ChevronRight className="size-4 shrink-0 text-muted-foreground" aria-hidden />}
           </Link>
         ) : (
-          <div className="flex min-w-0 flex-1 items-center gap-3 px-4 py-3">
+          <div className="flex min-w-0 flex-1 items-center gap-3 px-3 py-4 sm:px-4">
             <EntryNumber number={number} />
             <p className="text-sm text-muted-foreground">
               {item.moment && <span className="block text-xs">{momentLabel(item.moment)}</span>}
@@ -80,7 +80,7 @@ export function RepertoireEntryRow({
           </div>
         )}
         {controls && (
-          <div className="flex shrink-0 justify-end gap-1 px-2 pb-2 sm:py-2 sm:pr-3 sm:pl-0">
+          <div className="flex shrink-0 justify-end py-2 pr-3">
             {controls}
           </div>
         )}

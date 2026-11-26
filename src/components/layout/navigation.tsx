@@ -5,6 +5,7 @@ import { BookOpen, Church, House, Layers, UserRound, type LucideIcon } from "luc
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Suspense } from "react";
+import { useKeyboardOpen } from "@/lib/utils/use-keyboard-open";
 
 interface NavItem {
   href: string;
@@ -67,7 +68,7 @@ function isItemActive(item: NavItem, pathname: string | null): boolean {
 
 function TopLinks({ pathname }: { pathname: string | null }) {
   return (
-    <nav aria-label="Navegação principal" className="hidden shrink-0 md:block">
+    <nav aria-label="Navegação principal" className="hidden shrink-0 lg:block">
       <ul className="flex items-stretch gap-1 lg:gap-3">
         {NAV_ITEMS.filter((item) => !item.mobileOnly).map((item) => {
           const active = isItemActive(item, pathname);
@@ -78,10 +79,9 @@ function TopLinks({ pathname }: { pathname: string | null }) {
                 aria-current={active ? "page" : undefined}
                 className={cn(
                   "group relative flex h-11 min-w-16 items-center justify-center gap-2 rounded-lg px-3 text-sm whitespace-nowrap transition-colors",
-                  active ? "bg-white/10 text-header-foreground" : "text-header-muted hover:bg-white/5 hover:text-header-foreground",
+                  active ? "bg-secondary text-primary" : "text-header-muted hover:bg-muted hover:text-header-foreground",
                 )}
               >
-                <item.icon className="size-[1.1rem] stroke-[1.7]" aria-hidden />
                 <span className="font-medium">{item.label}</span>
                 <span
                   aria-hidden
@@ -100,12 +100,16 @@ function TopLinks({ pathname }: { pathname: string | null }) {
 }
 
 function BottomLinks({ pathname }: { pathname: string | null }) {
+  const keyboardOpen = useKeyboardOpen();
+  const reader = pathname && ((/^\/(catalogo|musicas)\/[^/]+$/.test(pathname) && pathname !== "/musicas/nova") || /^\/s\/[^/]+\/musicas\/[^/]+$/.test(pathname));
+  if (keyboardOpen) return <style>{":root { --workspace-nav-inset: 0px; }"}</style>;
+  if (reader || pathname === "/entrar" || pathname === "/cadastro") return null;
   return (
     <nav
       data-app-chrome
       data-print-hide
       aria-label="Navegação principal"
-      className="fixed inset-x-0 bottom-0 z-30 border-t bg-card/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
+      className="fixed inset-x-0 bottom-0 z-30 border-t bg-card pb-[env(safe-area-inset-bottom)] lg:hidden"
     >
       <ul className="grid grid-cols-5">
         {NAV_ITEMS.map((item) => {
@@ -116,7 +120,7 @@ function BottomLinks({ pathname }: { pathname: string | null }) {
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex h-16 flex-col items-center justify-center gap-1 text-xs font-medium transition-colors [@media(max-height:520px)]:h-12 [@media(max-height:520px)]:gap-0",
+                  "flex min-h-[72px] flex-col items-center justify-center gap-1 text-xs font-medium transition-colors",
                   active ? "font-semibold text-primary" : "text-muted-foreground hover:bg-muted/60",
                 )}
               >
